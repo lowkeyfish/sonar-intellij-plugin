@@ -1,1 +1,2 @@
-# sonar-intellij-plugin
+# Sonar Intellij Plugin
+
