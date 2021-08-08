@@ -1,0 +1,82 @@
+<idea-plugin url="https://github.com/lowkeyfish/sonar-intellij-plugin">
+    <id>com.yujunyang.intellij.plugin.sonar</id>
+    <name>SonarAnalyzer</name>
+    <vendor email="hnyujunyang@163.com" url="https://github.com/lowkeyfish">Yu Junyang</vendor>
+
+    <description>
+        <![CDATA[
+        Sonar Intellij Plugin使你可以直接在Intellij IDEA中对Java项目进行Sonar代码检查并直接在Intellij IDEA中查看检测结果。
+        <p>
+        插件底层使用SonarScanner执行代码检查，关于SonarScanner的更多信息可以查看
+        <a href="https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/">https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/</a>
+        </p>
+        <p>
+        特点：
+        <ul>
+            <li>代码问题按Bugs、漏洞、异味分类展示</li>
+            <li>检测结果直接在Intellij IDEA中查看，不需要再打开SonarQube</li>
+        </ul>
+        </p>
+        ]]>
+    </description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings"/>
+        <toolWindow
+                icon="PluginIcons.LOGO_13X13"
+                factoryClass="com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl"
+                id="SonarAnalyzer"
+                anchor="bottom"
+        />
+        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.SettingService"/>
+    </extensions>
+
+    <actions>
+        <group id="SonarAnalyzer.AnalyzeMenu" text="SonarAnalyzer" popup="true">
+            <add-to-group anchor="last" group-id="AnalyzeMenu"/>
+            <add-to-group anchor="after" group-id="EditorPopupMenu" relative-to-action="AnalyzeMenu"/>
+            <add-to-group anchor="after" group-id="ProjectViewPopupMenu" relative-to-action="AnalyzeMenu"/>
+            <action id="SonarAnalyzer.ProjectFilesNotIncludingTestsAction"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeProjectFilesNotIncludingTests"
+                    text="Analyze Project Files Not Including Test Sources"
+                    description="Run Sonar analysis on all project files not including test sources"
+                    icon="PluginIcons.ANALYZE_PROJECT_FILES_NOT_INCLUDING_TESTS_ICON">
+            </action>
+        </group>
+
+        <group id="SonarAnalyzer.ToolBarActions.left" text="SonarAnalyzer Actions" popup="true">
+            <action id="SonarAnalyzer.Start"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeProjectFilesNotIncludingTests"
+                    text="Analyze Project Files Not Including Test Sources"
+                    description="Run Sonar analysis on all project files not including test sources"
+                    icon="PluginIcons.ANALYZE_EXECUTE">
+            </action>
+            <action id="SonarAnalyzer.Cancel"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.StopAnalyzeAction"
+                    text="Stop"
+                    description="Stop the currently running analysis"
+                    icon="PluginIcons.ANALYZE_SUSPEND">
+            </action>
+            <separator/>
+            <action id="SonarAnalyzer.Setting"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.ShowSettingDialogAction"
+                    text="Setting"
+                    description="Setting Intellij Sonar plugin"
+                    icon="PluginIcons.PLUGIN_SETTING">
+            </action>
+            <separator/>
+            <action id="SonarAnalyzer.Help"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.ShowHelpAction"
+                    text="Help"
+                    description="Show the IntelliJ Sonar plugin help"
+                    icon="PluginIcons.PLUGIN_HELP">
+            </action>
+        </group>
+    </actions>
+</idea-plugin>
