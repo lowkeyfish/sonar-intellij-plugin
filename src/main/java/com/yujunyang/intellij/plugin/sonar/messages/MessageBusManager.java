@@ -64,6 +64,13 @@ public final class MessageBusManager {
 		publish(project, LogListener.TOPIC).log(formattedMessage, level);
 	}
 
+	public static void publishLogToEDT(@NotNull final Project project, @NotNull final String formattedMessage, LogOutput.Level level) {
+		EventDispatchThreadHelper.checkNotEDT();
+		EventDispatchThreadHelper.invokeLater(() -> {
+			publish(project, LogListener.TOPIC).log(formattedMessage, level);
+		});
+	}
+
 	public static void publishAnalysisStarted(@NotNull final Project project) {
 		EventDispatchThreadHelper.checkEDT();
 		ReportAnalyzer.deleteReportDir(project);
@@ -105,6 +112,17 @@ public final class MessageBusManager {
 			AnalyzeState.set(project, AnalyzeState.Finished);
 			publish(project, AnalysisFinishedListener.TOPIC).analysisFinished(resultRef.get(), errorRef.get());
 		});
+	}
+
+	public static void publishAnalysisFinished(@NotNull final Project project, @NotNull final Object result, @Nullable final Throwable error) {
+		EventDispatchThreadHelper.checkEDT();
+		/*
+		 * Guarantee thread visibility *one* time.
+		 */
+		final AtomicReference<Object> resultRef = new AtomicReference<>(result);
+		final AtomicReference<Throwable> errorRef = new AtomicReference<>(error);
+		AnalyzeState.set(project, AnalyzeState.Finished);
+		publish(project, AnalysisFinishedListener.TOPIC).analysisFinished(resultRef.get(), errorRef.get());
 	}
 
 	@NotNull

@@ -1,9 +1,15 @@
 package com.yujunyang.intellij.plugin.sonar.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import org.sonarsource.scanner.api.EmbeddedScanner;
@@ -17,13 +23,16 @@ public final class EmbeddedScannerHelper {
             props.put("sonar.projectKey", "com.yujunyang.intellij.plugin.sonar");
             props.put("sonar.projectName", project.getName());
             props.put("sonar.projectVersion", "1.0.0");
-            props.put("sonar.projectBaseDir", IdeaUtils.getProjectPath(project).getAbsolutePath());
+            props.put("sonar.projectBaseDir", project.getBasePath());
             props.put("sonar.working.directory", "./target/.scannerwork");
             props.put("sonar.java.source", "8");
-            props.put("sonar.tests", "./src/test");
-            props.put("sonar.sources", "./src/main");
+//            props.put("sonar.tests", "./src/test");
+            props.put("sonar.sources", "");
+//            props.put("sonar.sources", "./src/main");
+            props.put("sonar.sources", IdeaUtils.getAllSourceRootPath(project));
             props.put("sonar.java.libraries", IdeaUtils.getFullClassPath(project));
-            props.put("sonar.java.binaries", "./target/classes");
+//            props.put("sonar.java.binaries", "./target/classes");
+            props.put("sonar.java.binaries", IdeaUtils.getAllCompilerOutPath(project));
         }
 
         return props;
@@ -36,4 +45,5 @@ public final class EmbeddedScannerHelper {
         scanner.start();
         scanner.execute(taskProperties);
     }
+
 }

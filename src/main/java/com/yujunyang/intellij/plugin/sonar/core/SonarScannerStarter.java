@@ -81,22 +81,53 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     public final void start() {
         EventDispatchThreadHelper.checkEDT();
+        MessageBusManager.publishAnalysisStarted(project);
+
+        if (!ApplicationManager.getApplication().isUnitTestMode()) {
+            final ToolWindow toolWindow = ToolWindowFactoryImpl.getWindow(project);
+            if (toolWindow == null) {
+                throw new IllegalStateException("No SonarAnalyzer ToolWindow");
+            }
+            /*
+             * Important: Make sure the tool window is initialized.
+             * This call is to important to make it just in case of false = toolWindowToFront
+             * because we have no guarantee that activateToolWindow works.
+             */
+            ((ToolWindowImpl) toolWindow).ensureContentInitialized();
+            ToolWindowFactoryImpl.showWindowContent(toolWindow, 1);
+        }
 
         final CompilerManager compilerManager = CompilerManager.getInstance(project);
         createCompileScope(compilerManager, compileScope -> {
             if (compileScope != null) {
+                MessageBusManager.publishLog(project, "Start build project [" + project.getName() + "]", LogOutput.Level.INFO);
+
                 finalizeCompileScope(compileScope);
                 compilerManager.make(compileScope, (aborted, errors, warnings, compileContext) -> {
-                    // TODO: 这里原先是要判断了只有设置的是编译后不启动检测才会执行
-                    // 猜测原因是有其他地方设置了编译后自动执行检测，因此防止触发两次
-                    if (!aborted && errors == 0) {
-                        EventDispatchThreadHelper.checkEDT(); // see javadoc of CompileStatusNotification
-                        // Compiler can cause dumb mode, and finished() is invoked inside.
-                        // We need to continue outside dumb mode to make activateToolWindow work f. e.
-                        DumbService.getInstance(project).runWhenSmart(() -> {
-                            EventDispatchThreadHelper.checkEDT();
-                            startImpl(true);
-                        });
+                    try {
+                        ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 1);
+                        if (aborted) {
+                            MessageBusManager.publishLog(project, "build aborted", LogOutput.Level.ERROR);
+                        }
+                        if (errors > 0) {
+                            MessageBusManager.publishLog(project, "build failed", LogOutput.Level.ERROR);
+                        }
+                        if (aborted || errors > 0) {
+                            MessageBusManager.publishAnalysisFinished(project, new Object(), null);
+                        }
+                        // TODO: 这里原先是要判断了只有设置的是编译后不启动检测才会执行
+                        // 猜测原因是有其他地方设置了编译后自动执行检测，因此防止触发两次
+                        if (!aborted && errors == 0) {
+                            EventDispatchThreadHelper.checkEDT(); // see javadoc of CompileStatusNotification
+                            // Compiler can cause dumb mode, and finished() is invoked inside.
+                            // We need to continue outside dumb mode to make activateToolWindow work f. e.
+                            DumbService.getInstance(project).runWhenSmart(() -> {
+                                EventDispatchThreadHelper.checkEDT();
+                                startImpl(true);
+                            });
+                        }
+                    } catch (Exception e) {
+                        MessageBusManager.publishAnalysisFinished(project, new Object(), e);
                     }
                 });
             }
@@ -134,31 +165,16 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
     }
 
     private void startImpl(final boolean justCompiled) {
-        MessageBusManager.publishAnalysisStarted(project);
-        if (!ApplicationManager.getApplication().isUnitTestMode()) {
-            final ToolWindow toolWindow = ToolWindowFactoryImpl.getWindow(project);
-            if (toolWindow == null) {
-                throw new IllegalStateException("No SonarAnalyzer ToolWindow");
-            }
-            /*
-             * Important: Make sure the tool window is initialized.
-             * This call is to important to make it just in case of false = toolWindowToFront
-             * because we have no guarantee that activateToolWindow works.
-             */
-            ((ToolWindowImpl) toolWindow).ensureContentInitialized();
-            ToolWindowFactoryImpl.showWindowContent(toolWindow, 1);
-        }
-
         final Task task;
         if (startProgressModal) {
-            task = new Task.Modal(project, title, true) {
+            task = new Task.Modal(project, title, false) {
                 @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
                     asyncStart(indicator, justCompiled);
                 }
             };
         } else {
-            task = new Task.Backgroundable(project, title, true) {
+            task = new Task.Backgroundable(project, title, false) {
                 @Override
                 public void run(@NotNull final ProgressIndicator indicator) {
                     asyncStart(indicator, justCompiled);
@@ -199,8 +215,8 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         ret.append("<h2>").append("Sonar analysis failed").append("</h2>");
         ret.append("<p>").append(errorMessage).append("</p>");
         ret.append("<br>");
-        ret.append("Go to Log for more details");
-        ret.append("<br>");
+//        ret.append("Go to Log for more details");
+//        ret.append("<br>");
         return ret;
     }
 

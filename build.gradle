@@ -27,6 +27,7 @@ dependencies {
     implementation group: 'com.squareup.retrofit2', name: 'converter-scalars', version: '2.9.0'
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.14.9'
     implementation group: 'org.sonarsource.scanner.api', name: 'sonar-scanner-api', version: '2.16.1.361'
+    implementation group: 'org.sonarsource.sonarqube', name: 'sonar-scanner-protocol', version: '7.9.6'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

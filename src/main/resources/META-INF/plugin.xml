@@ -34,7 +34,7 @@
                 id="SonarAnalyzer"
                 anchor="bottom"
         />
-        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.SettingService"/>
+        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService"/>
     </extensions>
 
     <actions>
@@ -76,6 +76,12 @@
                     text="Help"
                     description="Show the IntelliJ Sonar plugin help"
                     icon="PluginIcons.PLUGIN_HELP">
+            </action>
+            <action id="SonarAnalyzer.Test"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.TestAction"
+                    text="Test"
+                    description="Test"
+                    icon="PluginIcons.SMILE">
             </action>
         </group>
     </actions>

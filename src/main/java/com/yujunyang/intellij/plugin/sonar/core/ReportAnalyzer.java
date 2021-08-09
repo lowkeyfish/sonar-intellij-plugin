@@ -11,12 +11,12 @@ import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import org.apache.commons.io.FileUtils;
 
-public class ReportAnalyzer {
+public final class ReportAnalyzer {
     private static final String ORIGINAL_REPORT_DIR = "target/.scannerwork/scanner-report";
     private static final String TARGET_REPORT_DIR = "target/.scannerwork/scanner-report-copy";
 
     public static void copyReportDir(Project project) {
-        String projectPath = IdeaUtils.getProjectPath(project).getAbsolutePath();
+        String projectPath = project.getBasePath();
         Path originalPath = Paths.get(projectPath, ORIGINAL_REPORT_DIR);
         Path targetPath = Paths.get(projectPath, TARGET_REPORT_DIR);
         try {
@@ -31,10 +31,16 @@ public class ReportAnalyzer {
         Path targetPath = Paths.get(projectPath, TARGET_REPORT_DIR);
         if (Files.exists(targetPath)) {
             try {
-                Files.delete(targetPath);
+                FileUtils.deleteDirectory(targetPath.toFile());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Report createReport(Project project) {
+        String projectPath = project.getBasePath();
+        Path reportDirPath = Paths.get(projectPath, TARGET_REPORT_DIR);
+        return new Report(project, reportDirPath.toFile());
     }
 }

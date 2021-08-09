@@ -28,6 +28,8 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.CompilerModuleExtension;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
@@ -481,4 +483,35 @@ public final class IdeaUtils {
 		});
 		return String.join(",", ret);
 	}
+
+	public static String getAllCompilerOutPath(Project project) {
+		List<String> ret = new ArrayList<>();
+		Module[] modules = ModuleManager.getInstance(project).getModules();
+		for (Module module : modules) {
+			CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
+			VirtualFile compilerOutPath = compilerModuleExtension.getCompilerOutputPath();
+			if (compilerOutPath != null) {
+				ret.add(compilerOutPath.getCanonicalPath());
+			}
+		}
+		return String.join(",", ret);
+	}
+
+	public static String getAllSourceRootPath(Project project) {
+		List<String> ret = new ArrayList<>();
+		Module[] modules = ModuleManager.getInstance(project).getModules();
+		for (Module module : modules) {
+			ModuleRootManager rootManager = ModuleRootManager.getInstance(module);
+			VirtualFile[] sourceRoots = rootManager.getSourceRoots(false);
+			for (VirtualFile sourceRoot : sourceRoots) {
+				ret.add(sourceRoot.getCanonicalPath());
+			}
+		}
+		return String.join(",", ret);
+	}
+
+	public static PsiFile getPsiFile(Project project, File file) {
+		return PsiManager.getInstance(project).findFile(findFileByIoFile(file));
+	}
+
 }

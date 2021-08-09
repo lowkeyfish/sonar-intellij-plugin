@@ -21,4 +21,6 @@ public interface PluginIcons {
     Icon ANALYZE_SUSPEND = AllIcons.Actions.Suspend;
     Icon PLUGIN_SETTING = AllIcons.General.GearPlain;
     Icon PLUGIN_HELP = AllIcons.Actions.Help;
+
+    Icon SMILE = ResourcesLoader.loadIcon("smile.svg");
 }

@@ -15,8 +15,8 @@ public class StopAnalyzeAction extends AbstractAction {
             @NotNull AnalyzeState state) {
         final boolean enable = state.isStarted();
 
-        e.getPresentation().setEnabled(enable);
-        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(false);
+        e.getPresentation().setVisible(false);
     }
 
 
