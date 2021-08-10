@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
-import com.yujunyang.intellij.plugin.sonar.core.ReportAnalyzer;
+import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sonarsource.scanner.api.LogOutput;
@@ -73,7 +73,7 @@ public final class MessageBusManager {
 
 	public static void publishAnalysisStarted(@NotNull final Project project) {
 		EventDispatchThreadHelper.checkEDT();
-		ReportAnalyzer.deleteReportDir(project);
+		ReportUtils.deleteReportDir(project);
 		AnalyzeState.set(project, AnalyzeState.Started);
 		publish(project, AnalysisStartedListener.TOPIC).analysisStarted();
 	}
@@ -81,7 +81,7 @@ public final class MessageBusManager {
 	public static void publishAnalysisStartedToEDT(@NotNull final Project project) {
 		EventDispatchThreadHelper.checkNotEDT();
 		EventDispatchThreadHelper.invokeLater(() -> {
-			ReportAnalyzer.deleteReportDir(project);
+			ReportUtils.deleteReportDir(project);
 			AnalyzeState.set(project, AnalyzeState.Started);
 			publish(project, AnalysisStartedListener.TOPIC).analysisStarted();
 		});

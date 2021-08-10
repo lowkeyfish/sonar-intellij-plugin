@@ -28,7 +28,7 @@ public class Report {
     private int codeSmellCount;
     private int vulnerabilityCount;
     private int duplicatedBlocksCount;
-    private ConcurrentMap<PsiFile, List<Issue>> issues;
+    private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
 
     public Report(@NotNull Project project, @NotNull File reportDir) {
         this.project = project;
@@ -37,16 +37,52 @@ public class Report {
         analyze();
     }
 
+    public int getBugCount() {
+        return bugCount;
+    }
+
+    public int getCodeSmellCount() {
+        return codeSmellCount;
+    }
+
+    public int getVulnerabilityCount() {
+        return vulnerabilityCount;
+    }
+
+    public int getDuplicatedBlocksCount() {
+        return duplicatedBlocksCount;
+    }
+
+    public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
+        return issues;
+    }
+
     private void analyze() {
+        // TODO:xml的规则没有
         List<RulesSearchResponse.Rule> javaDefaultProfileRules = getJavaDefaultProfileRules();
         List<Integer> componentFileNumbers = getAllComponentFileNumbers();
         ScannerReportReader reader = new ScannerReportReader(reportDir);
         for (Integer componentFileNumber : componentFileNumbers) {
             ScannerReport.Component component = reader.readComponent(componentFileNumber);
-            String projectRelativePath = component.getProjectRelativePath();
-            File file = Paths.get(project.getBasePath(), projectRelativePath).toFile();
-            PsiFile psiFile = IdeaUtils.getPsiFile(project, file);
             CloseableIterator<ScannerReport.Issue> reportIssues = reader.readComponentIssues(componentFileNumber);
+            CloseableIterator<ScannerReport.Duplication> reportDuplications = reader.readComponentDuplications(componentFileNumber);
+
+            String projectRelativePath;
+            File file;
+            PsiFile psiFile;
+
+            if (reportIssues.hasNext() || reportDuplications.hasNext()) {
+                projectRelativePath = component.getProjectRelativePath();
+                file = Paths.get(project.getBasePath(), projectRelativePath).toFile();
+                psiFile = IdeaUtils.getPsiFile(project, file);
+
+                if (!issues.containsKey(psiFile)) {
+                    issues.put(psiFile, new ArrayList<>());
+                }
+            } else {
+                continue;
+            }
+
             while (reportIssues.hasNext()) {
                 ScannerReport.Issue reportIssue = reportIssues.next();
                 String issueRuleKey = String.format("%s:%s", reportIssue.getRuleRepository(), reportIssue.getRuleKey());
@@ -82,21 +118,58 @@ public class Report {
                         reportIssue.getTextRange().getStartLine(),
                         reportIssue.getTextRange().getEndLine(),
                         new TextRange(reportIssue.getTextRange().getStartOffset(), reportIssue.getTextRange().getEndOffset()),
-                        rule.getType());
-                if (!issues.containsKey(psiFile)) {
-                    List<Issue> list = new ArrayList<>();
-                    list.add(issue);
-                    issues.put(psiFile, list);
-                } else {
+                        rule.getType(),
+                        rule.getName(),
+                        rule.getHtmlDesc());
+                issues.get(psiFile).add(issue);
+            }
+
+            while (reportDuplications.hasNext()) {
+                String issueRuleKey = String.format("%s:%s", "common-java", "DuplicatedBlocks");
+                RulesSearchResponse.Rule rule = findRule(javaDefaultProfileRules, issueRuleKey);
+
+                AbstractIssue issue = issues.get(psiFile).stream().filter(n -> n.ruleKey.equalsIgnoreCase("DuplicatedBlocks")).findFirst().orElse(null);
+                if (issue == null) {
+                    issue = new DuplicatedBlocksIssue(
+                            psiFile,
+                            "common-java",
+                            "DuplicatedBlocks",
+                            rule.getSeverity(),
+                            rule.getType(),
+                            rule.getName(),
+                            rule.getHtmlDesc()
+                    );
                     issues.get(psiFile).add(issue);
+                    codeSmellCount++;
+                }
+
+                ScannerReport.Duplication duplication = reportDuplications.next();
+                DuplicatedBlocksIssue.Block block = new DuplicatedBlocksIssue.Block(duplication.getOriginPosition().getStartLine(), duplication.getOriginPosition().getEndLine());
+                ((DuplicatedBlocksIssue)issue).addBlock(block);
+                duplicatedBlocksCount++;
+
+                for (ScannerReport.Duplicate d : duplication.getDuplicateList()) {
+                    DuplicatedBlocksIssue.Duplicate duplicate = new DuplicatedBlocksIssue.Duplicate(
+                            d.getOtherFileRef() == 0 ? projectRelativePath : reader.readComponent(d.getOtherFileRef()).getProjectRelativePath(),
+                            d.getRange().getStartLine(),
+                            d.getRange().getEndLine()
+                    );
+                    block.addDuplicate(duplicate);
+
+                    // TODO:同一个文件多个重复的，还要继续完善
+                    if (d.getOtherFileRef() == 0) {
+                        DuplicatedBlocksIssue.Block blockSelf = new DuplicatedBlocksIssue.Block(d.getRange().getStartLine(), d.getRange().getEndLine());
+                        DuplicatedBlocksIssue.Duplicate duplicateSelf = new DuplicatedBlocksIssue.Duplicate(
+                                projectRelativePath,
+                                duplication.getOriginPosition().getStartLine(),
+                                duplication.getOriginPosition().getEndLine()
+                        );
+                        blockSelf.addDuplicate(duplicateSelf);
+                        ((DuplicatedBlocksIssue)issue).getBlocks().add(block);
+                        duplicatedBlocksCount++;
+                    }
                 }
             }
-
-            CloseableIterator<ScannerReport.Duplication> reportDuplications = reader.readComponentDuplications(componentFileNumber);
-            while (reportDuplications.hasNext()) {
-
-            }
-
         }
     }
 

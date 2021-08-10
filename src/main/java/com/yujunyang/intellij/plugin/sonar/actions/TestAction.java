@@ -19,6 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class TestAction extends AbstractAction {
@@ -61,6 +62,6 @@ public class TestAction extends AbstractAction {
 //            }
 //        }
 
-
+        ReportUtils.createReport(e.getProject());
     }
 }

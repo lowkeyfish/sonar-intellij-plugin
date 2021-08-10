@@ -17,7 +17,10 @@ public class LogOutputImpl implements LogOutput {
     @Override
     public void log(String formattedMessage, Level level) {
         if (formattedMessage.startsWith("Analysis report generated in")) {
-            ReportAnalyzer.copyReportDir(project);
+            ReportUtils.copyReportDir(project);
+            EventDispatchThreadHelper.invokeLater(() -> {
+                Report report = ReportUtils.createReport(project);
+            });
         }
         EventDispatchThreadHelper.invokeLater(() -> {
             if (level == Level.ERROR) {

@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import org.apache.commons.io.FileUtils;
 
-public final class ReportAnalyzer {
+public final class ReportUtils {
     private static final String ORIGINAL_REPORT_DIR = "target/.scannerwork/scanner-report";
     private static final String TARGET_REPORT_DIR = "target/.scannerwork/scanner-report-copy";
 
