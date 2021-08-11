@@ -1,5 +1,8 @@
 package com.yujunyang.intellij.plugin.sonar.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -19,6 +22,9 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
 
     @Tag
     public String sonarToken = "";
+
+    @Tag
+    public List<String> languages = Arrays.asList("java", "xml");
 
     @Nullable
     @Override

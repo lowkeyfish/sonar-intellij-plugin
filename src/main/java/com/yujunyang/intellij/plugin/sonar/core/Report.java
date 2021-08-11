@@ -14,6 +14,7 @@ import com.yujunyang.intellij.plugin.sonar.api.RulesSearchResponse;
 import com.yujunyang.intellij.plugin.sonar.api.SonarApiImpl;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
+import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import org.jetbrains.annotations.NotNull;
 import org.sonar.core.util.CloseableIterator;
@@ -58,8 +59,7 @@ public class Report {
     }
 
     private void analyze() {
-        // TODO:xml的规则没有
-        List<RulesSearchResponse.Rule> javaDefaultProfileRules = getJavaDefaultProfileRules();
+        List<RulesSearchResponse.Rule> rules = getRules();
         List<Integer> componentFileNumbers = getAllComponentFileNumbers();
         ScannerReportReader reader = new ScannerReportReader(reportDir);
         for (Integer componentFileNumber : componentFileNumbers) {
@@ -86,7 +86,7 @@ public class Report {
             while (reportIssues.hasNext()) {
                 ScannerReport.Issue reportIssue = reportIssues.next();
                 String issueRuleKey = String.format("%s:%s", reportIssue.getRuleRepository(), reportIssue.getRuleKey());
-                RulesSearchResponse.Rule rule = findRule(javaDefaultProfileRules, issueRuleKey);
+                RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
 
                 boolean ignoreIssue = false;
                 switch (rule.getType()) {
@@ -126,7 +126,7 @@ public class Report {
 
             while (reportDuplications.hasNext()) {
                 String issueRuleKey = String.format("%s:%s", "common-java", "DuplicatedBlocks");
-                RulesSearchResponse.Rule rule = findRule(javaDefaultProfileRules, issueRuleKey);
+                RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
 
                 AbstractIssue issue = issues.get(psiFile).stream().filter(n -> n.ruleKey.equalsIgnoreCase("DuplicatedBlocks")).findFirst().orElse(null);
                 if (issue == null) {
@@ -171,6 +171,8 @@ public class Report {
                 }
             }
         }
+
+        int count = bugCount + codeSmellCount + vulnerabilityCount;
     }
 
     private List<Integer> getAllComponentFileNumbers() {
@@ -185,9 +187,10 @@ public class Report {
         return componentFileNumbers;
     }
 
-    private List<RulesSearchResponse.Rule> getJavaDefaultProfileRules() {
+    private List<RulesSearchResponse.Rule> getRules() {
         try {
-            List<RulesSearchResponse.Rule> rules = new SonarApiImpl().getJavaDefaultProfileRules();
+            List<String> languages = WorkspaceSettings.getInstance().languages;
+            List<RulesSearchResponse.Rule> rules = new SonarApiImpl().getRules(languages);
             return rules;
         } catch (ApiRequestFailedException e) {
             throw new RuntimeException(e.getMessage(), e);

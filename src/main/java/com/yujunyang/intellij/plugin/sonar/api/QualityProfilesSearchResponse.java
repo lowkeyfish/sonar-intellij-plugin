@@ -15,6 +15,7 @@ public class QualityProfilesSearchResponse {
 
     public static class Profile {
         private String key;
+        private String language;
 
         public String getKey() {
             return key;
@@ -22,6 +23,14 @@ public class QualityProfilesSearchResponse {
 
         public void setKey(String key) {
             this.key = key;
+        }
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(String language) {
+            this.language = language;
         }
     }
 }
