@@ -26,6 +26,9 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
     @Tag
     public List<String> languages = Arrays.asList("java", "xml");
 
+    @Tag
+    public boolean annotationGutterIcon = true;
+
     @Nullable
     @Override
     public WorkspaceSettings getState() {

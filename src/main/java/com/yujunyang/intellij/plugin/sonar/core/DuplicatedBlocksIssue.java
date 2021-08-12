@@ -38,22 +38,22 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
     }
 
     public static class Block {
-        private int startLine;
-        private int endLine;
+        private int lineStart;
+        private int lineEnd;
         private List<Duplicate> duplicates;
 
-        public Block(int startLine, int endLine) {
-            this.startLine = startLine;
-            this.endLine = endLine;
+        public Block(int lineStart, int lineEnd) {
+            this.lineStart = lineStart;
+            this.lineEnd = lineEnd;
             this.duplicates = new ArrayList<>();
         }
 
-        public int getStartLine() {
-            return startLine;
+        public int getLineStart() {
+            return lineStart;
         }
 
-        public int getEndLine() {
-            return endLine;
+        public int getLineEnd() {
+            return lineEnd;
         }
 
         public List<Duplicate> getDuplicates() {
@@ -66,6 +66,10 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
 
         public void addDuplicate(Duplicate duplicate) {
             duplicates.add(duplicate);
+        }
+
+        public void addDuplicates(List<Duplicate> duplicates) {
+            this.duplicates.addAll(duplicates);
         }
     }
 

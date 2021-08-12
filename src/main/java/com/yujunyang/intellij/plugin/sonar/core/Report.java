@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.api.RulesSearchResponse;
 import com.yujunyang.intellij.plugin.sonar.api.SonarApiImpl;
@@ -143,36 +145,47 @@ public class Report {
                     codeSmellCount++;
                 }
 
+                DuplicatedBlocksIssue duplicatedBlocksIssue = (DuplicatedBlocksIssue)issue;
                 ScannerReport.Duplication duplication = reportDuplications.next();
                 DuplicatedBlocksIssue.Block block = new DuplicatedBlocksIssue.Block(duplication.getOriginPosition().getStartLine(), duplication.getOriginPosition().getEndLine());
-                ((DuplicatedBlocksIssue)issue).addBlock(block);
+                duplicatedBlocksIssue.addBlock(block);
                 duplicatedBlocksCount++;
 
+                boolean existDuplicateInSameFile = false;
                 for (ScannerReport.Duplicate d : duplication.getDuplicateList()) {
                     DuplicatedBlocksIssue.Duplicate duplicate = new DuplicatedBlocksIssue.Duplicate(
-                            d.getOtherFileRef() == 0 ? projectRelativePath : reader.readComponent(d.getOtherFileRef()).getProjectRelativePath(),
+                            d.getOtherFileRef() == 0 ? "" : reader.readComponent(d.getOtherFileRef()).getProjectRelativePath(),
                             d.getRange().getStartLine(),
                             d.getRange().getEndLine()
                     );
                     block.addDuplicate(duplicate);
-
-                    // TODO:同一个文件多个重复的，还要继续完善
-                    if (d.getOtherFileRef() == 0) {
-                        DuplicatedBlocksIssue.Block blockSelf = new DuplicatedBlocksIssue.Block(d.getRange().getStartLine(), d.getRange().getEndLine());
-                        DuplicatedBlocksIssue.Duplicate duplicateSelf = new DuplicatedBlocksIssue.Duplicate(
-                                projectRelativePath,
-                                duplication.getOriginPosition().getStartLine(),
-                                duplication.getOriginPosition().getEndLine()
-                        );
-                        blockSelf.addDuplicate(duplicateSelf);
-                        ((DuplicatedBlocksIssue)issue).getBlocks().add(block);
-                        duplicatedBlocksCount++;
+                    boolean duplicateInSameFile = d.getOtherFileRef() == 0;
+                    if (duplicateInSameFile) {
+                        existDuplicateInSameFile = true;
                     }
+                }
+
+                if (existDuplicateInSameFile) {
+                    DuplicatedBlocksIssue.Duplicate duplicateUseCurrentBlock = new DuplicatedBlocksIssue.Duplicate(
+                            "",
+                            block.getLineStart(),
+                            block.getLineEnd()
+                    );
+                    block.getDuplicates().forEach(d -> {
+                        if (StringUtil.isEmpty(d.getPath())) {
+                            DuplicatedBlocksIssue.Block additionalBlock = new DuplicatedBlocksIssue.Block(d.getStartLine(), d.getEndLine());
+                            additionalBlock.addDuplicate(duplicateUseCurrentBlock);
+                            List<DuplicatedBlocksIssue.Duplicate> otherDuplicates = block.getDuplicates().stream()
+                                    .filter(n -> !StringUtil.isEmpty(n.getPath()) || n.getStartLine() != d.getStartLine() || n.getEndLine() != d.getEndLine())
+                                    .collect(Collectors.toList());
+                            additionalBlock.addDuplicates(otherDuplicates);
+                            duplicatedBlocksIssue.getBlocks().add(additionalBlock);
+                            duplicatedBlocksCount++;
+                        }
+                    });
                 }
             }
         }
-
-        int count = bugCount + codeSmellCount + vulnerabilityCount;
     }
 
     private List<Integer> getAllComponentFileNumbers() {

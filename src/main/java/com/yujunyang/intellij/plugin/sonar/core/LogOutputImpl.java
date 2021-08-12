@@ -1,9 +1,11 @@
 package com.yujunyang.intellij.plugin.sonar.core;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.sonarsource.scanner.api.LogOutput;
 
 public class LogOutputImpl implements LogOutput {
@@ -20,6 +22,9 @@ public class LogOutputImpl implements LogOutput {
             ReportUtils.copyReportDir(project);
             EventDispatchThreadHelper.invokeLater(() -> {
                 Report report = ReportUtils.createReport(project);
+                ProblemCacheService.getInstance(project).setIssues(report.getIssues());
+                MessageBusManager.publishAnalysisFinished(project, report, null);
+                DaemonCodeAnalyzer.getInstance(project).restart();
             });
         }
         EventDispatchThreadHelper.invokeLater(() -> {

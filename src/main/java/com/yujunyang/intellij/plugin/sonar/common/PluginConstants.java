@@ -1,6 +1,8 @@
 
 package com.yujunyang.intellij.plugin.sonar.common;
 
+import java.io.File;
+
 public final class PluginConstants {
 	public static final String PLUGIN_WEBSITE = "https://github.com/lowkeyfish/sonar-intellij-plugin";
 	public static final String PLUGIN_DOWNLOAD_WEBSITE = "https://plugins.jetbrains.com/plugin/";
@@ -10,6 +12,8 @@ public final class PluginConstants {
 
 	public static final String TOOL_WINDOW_ID = "SonarAnalyzer";
 	public static final String ACTION_GROUP_LEFT = "SonarAnalyzer.ToolBarActions.left";
+
+	public static final String FILE_SEPARATOR = File.separator;
 
 	private PluginConstants() {
 	}

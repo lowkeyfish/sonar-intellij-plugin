@@ -35,6 +35,12 @@
                 anchor="bottom"
         />
         <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService"/>
+<!--        <annotator language="JAVA"-->
+<!--                   implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueAnnotator"/>-->
+        <externalAnnotator language="JAVA"
+                           implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
+        <externalAnnotator language="XML"
+                           implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
     </extensions>
 
     <actions>
