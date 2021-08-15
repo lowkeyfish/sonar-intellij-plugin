@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.ide.macro.ModuleSdkPathMacro;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -19,7 +20,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.core.Report;
+import com.yujunyang.intellij.plugin.sonar.core.Report2;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
 public class TestAction extends AbstractAction {
@@ -62,6 +66,8 @@ public class TestAction extends AbstractAction {
 //            }
 //        }
 
-        ReportUtils.createReport(e.getProject());
+        Report2 report = ReportUtils.createReport(e.getProject());
+        ProblemCacheService.getInstance(e.getProject()).setIssues(report.getIssues());
+        DaemonCodeAnalyzer.getInstance(project).restart();
     }
 }

@@ -41,6 +41,10 @@
                            implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
         <externalAnnotator language="XML"
                            implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="XML"
+                                        implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueLineMarkerProvider"/>
     </extensions>
 
     <actions>

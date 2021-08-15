@@ -23,4 +23,6 @@ public interface PluginIcons {
     Icon PLUGIN_HELP = AllIcons.Actions.Help;
 
     Icon SMILE = ResourcesLoader.loadIcon("smile.svg");
+
+    Icon ISSUE = ResourcesLoader.loadIcon("issue.svg");
 }

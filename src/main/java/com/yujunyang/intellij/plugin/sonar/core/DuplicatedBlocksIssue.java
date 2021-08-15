@@ -37,6 +37,9 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
         blocks.add(block);
     }
 
+
+
+
     public static class Block {
         private int lineStart;
         private int lineEnd;
@@ -71,6 +74,8 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
         public void addDuplicates(List<Duplicate> duplicates) {
             this.duplicates.addAll(duplicates);
         }
+
+
     }
 
 

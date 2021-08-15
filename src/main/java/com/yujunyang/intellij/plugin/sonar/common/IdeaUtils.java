@@ -393,17 +393,17 @@ public final class IdeaUtils {
 //	@Nullable
 //	public static PsiElement findClassPsiElement(@Nullable final PsiFileSystemItem psiFile, @NotNull final BugInstance bugInstance, @NotNull final Project project) {
 //		if (psiFile != null) {
-////			final String classNameToFind = BugInstanceUtil.getSimpleClassName(bugInstance);
-//////			final ClassCollector cc = new ClassCollector(project);
-//////			cc.addContainingClasses(psiFile.getVirtualFile());
-//////			final Map<String, PsiElement> classes = cc.getClasses();
-//////
-//////			for (final Entry<String, PsiElement> entry : classes.entrySet()) {
-//////				final String fileName = new File(entry.getKey()).getName();
-//////				if (fileName.equals(classNameToFind + AbstractClassAdder.CLASS_FILE_SUFFIX)) {
-//////					return entry.getValue();
-//////				}
-//////			}
+//			final String classNameToFind = BugInstanceUtil.getSimpleClassName(bugInstance);
+//			final ClassCollector cc = new ClassCollector(project);
+//			cc.addContainingClasses(psiFile.getVirtualFile());
+//			final Map<String, PsiElement> classes = cc.getClasses();
+//
+//			for (final Entry<String, PsiElement> entry : classes.entrySet()) {
+//				final String fileName = new File(entry.getKey()).getName();
+//				if (fileName.equals(classNameToFind + AbstractClassAdder.CLASS_FILE_SUFFIX)) {
+//					return entry.getValue();
+//				}
+//			}
 //		}
 //		return null;
 //	}
@@ -413,7 +413,7 @@ public final class IdeaUtils {
 //		if (psiFile == null) {
 //			return null;
 //		}
-////		PsiElement result = findClassPsiElement(psiFile, bugInstance, project);
+//		PsiElement result = findClassPsiElement(psiFile, bugInstance, project);
 ////		final FieldAnnotation primaryField = bugInstance.getPrimaryField();
 ////		if (result != null && primaryField != null) {
 ////			result =  ((PsiClass) result).findFieldByName(primaryField.getFieldName(), false);

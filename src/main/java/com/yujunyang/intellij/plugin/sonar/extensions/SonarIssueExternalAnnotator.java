@@ -17,6 +17,7 @@ import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
+import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue2;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
@@ -61,16 +62,21 @@ public class SonarIssueExternalAnnotator extends ExternalAnnotator<SonarIssueExt
         issues.forEach(n -> {
             if (n instanceof Issue) {
                 Issue issue = (Issue)n;
-                int startLine = issue.getLineStart();
-                int endLine = issue.getLineEnd();
-                int lineStartOffset = document.getLineStartOffset(startLine);
-                int lineEndOffset = document.getLineEndOffset(endLine);
-                Annotation annotation = holder.createErrorAnnotation(new TextRange(lineStartOffset, lineEndOffset), "SonarAnalyzer: " + issue.getMsg());
-            } else if (n instanceof DuplicatedBlocksIssue) {
-
+                Annotation annotation = holder.createErrorAnnotation(issue.getTextRange(), msg(issue));
+            } else if (n instanceof DuplicatedBlocksIssue2) {
+                DuplicatedBlocksIssue2 issue = (DuplicatedBlocksIssue2)n;
+                Annotation annotation = holder.createErrorAnnotation(issue.getTextRange(), msg(issue));
             }
         });
 
+    }
+
+    private static String msg(Issue issue) {
+        return String.format("SonarAnalyzer: %s", issue.getMsg());
+    }
+
+    private static String msg(DuplicatedBlocksIssue2 issue) {
+        return String.format("SonarAnalyzer: 行[%s-%s]与其他[%s]个代码块重复", issue.getLineStart(), issue.getLineEnd(), issue.getDuplicateCount());
     }
 
 
