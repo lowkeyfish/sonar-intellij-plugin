@@ -23,6 +23,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.Report;
 import com.yujunyang.intellij.plugin.sonar.core.Report2;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +68,10 @@ public class TestAction extends AbstractAction {
 //        }
 
         Report2 report = ReportUtils.createReport(e.getProject());
-        ProblemCacheService.getInstance(e.getProject()).setIssues(report.getIssues());
+        ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+        problemCacheService.setIssues(report.getIssues());
+        problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
         DaemonCodeAnalyzer.getInstance(project).restart();
+        MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -34,6 +35,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -275,6 +277,56 @@ public final class UIUtils {
             panel.add(component.first, component.second);
         }
         return panel;
+    }
+
+    public static JBLabel createHorizontalAlignmentCenterLabel(String text) {
+        JBLabel ret = new JBLabel(text);
+        ret.setHorizontalAlignment(SwingConstants.CENTER);
+        return ret;
+    }
+
+    public static JBLabel createHorizontalAlignmentCenterLabel(String text, Font font) {
+        JBLabel ret = new JBLabel(text);
+        ret.setHorizontalAlignment(SwingConstants.CENTER);
+        ret.setFont(font);
+        return ret;
+    }
+
+    public static JBPanel createBoxLayoutPanel(int axis) {
+        JBPanel panel = new JBPanel();
+        BoxLayout layout = new BoxLayout(panel, axis);
+        panel.setLayout(layout);
+        return panel;
+    }
+
+    public static Pair<String, Icon> typeInfo(String type) {
+        switch (type) {
+            case "BUG":
+                return new Pair<>("Bug", PluginIcons.BUGS);
+            case "VULNERABILITY":
+                return new Pair<>("漏洞", PluginIcons.VULNERABILITY);
+            case "CODE_SMELL":
+                return new Pair<>("异味", PluginIcons.CODE_SMELL);
+            default:
+                return new Pair<>("", null);
+        }
+    }
+
+    public static Pair<String, Icon> severityInfo(String severity) {
+        switch (severity) {
+            case "BLOCKER":
+                return new Pair<>("阻断", PluginIcons.BLOCKER);
+            case "CRITICAL":
+                return new Pair<>("严重", PluginIcons.CRITICAL);
+            case "MAJOR":
+                return new Pair<>("主要", PluginIcons.MAJOR);
+            case "MINOR":
+                return new Pair<>("次要", PluginIcons.MINOR);
+            case "INFO":
+                return new Pair<>("提示", PluginIcons.INFO);
+            default:
+                return new Pair<>("", null);
+        }
     }
 
 }

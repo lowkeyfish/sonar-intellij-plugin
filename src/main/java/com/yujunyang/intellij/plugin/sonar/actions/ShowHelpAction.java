@@ -13,15 +13,15 @@ import org.jetbrains.annotations.NotNull;
 public class ShowHelpAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        BalloonTipFactory.showToolWindowInfoNotifier(
-                e.getProject(),
-                createHelpInfo().toString(),
-                evt -> {
-                    if (HyperlinkEvent.EventType.ACTIVATED.equals(evt.getEventType())) {
-                        BrowserUtil.browse(evt.getURL());
-                    }
-                }
-        );
+//        BalloonTipFactory.showToolWindowInfoNotifier(
+//                e.getProject(),
+//                createHelpInfo().toString(),
+//                evt -> {
+//                    if (HyperlinkEvent.EventType.ACTIVATED.equals(evt.getEventType())) {
+//                        BrowserUtil.browse(evt.getURL());
+//                    }
+//                }
+//        );
     }
 
     private StringBuilder createHelpInfo() {

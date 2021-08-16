@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.intellij.history.core.Paths;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -513,6 +514,12 @@ public final class IdeaUtils {
 
 	public static PsiFile getPsiFile(Project project, File file) {
 		return PsiManager.getInstance(project).findFile(findFileByIoFile(file));
+	}
+
+	public static String getPath(PsiFile psiFile) {
+		String projectPath = psiFile.getProject().getBasePath();
+		String psiFilePath = psiFile.getVirtualFile().getPath();
+		return Paths.relativeIfUnder(psiFilePath, projectPath);
 	}
 
 }

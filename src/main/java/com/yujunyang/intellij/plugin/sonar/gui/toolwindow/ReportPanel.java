@@ -3,22 +3,69 @@ package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 import java.awt.BorderLayout;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
+import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
+import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ReportPanel extends JBPanel {
+public class ReportPanel extends JBPanel implements AnalysisStateListener {
+    private Project project;
 
     private LeftToolbarPanel leftToolbarPanel;
-    private Project project;
+    private IssuesPanel issuesPanel;
+    private IssueDetailPanel issueDetailPanel;
 
     public ReportPanel(@NotNull Project project) {
         this.project = project;
         setLayout(new BorderLayout());
         init();
+        MessageBusManager.subscribeAnalysisState(project, this, this);
     }
 
     private void init() {
         leftToolbarPanel = new LeftToolbarPanel();
         add(leftToolbarPanel, BorderLayout.WEST);
+
+        OnePixelSplitter listAndCurrentSplitter = new OnePixelSplitter();
+        listAndCurrentSplitter.getDivider().setBackground(UIUtils.borderColor());
+
+        issuesPanel = new IssuesPanel(project);
+        listAndCurrentSplitter.setFirstComponent(issuesPanel);
+
+        issueDetailPanel = new IssueDetailPanel();
+        listAndCurrentSplitter.setSecondComponent(issueDetailPanel);
+
+        listAndCurrentSplitter.setProportion(0.3f);
+        add(listAndCurrentSplitter, BorderLayout.CENTER);
+    }
+
+    public void refresh() {
+        issuesPanel.refresh();
+    }
+
+    @Override
+    public void analysisAborted() {
+
+    }
+
+    @Override
+    public void analysisAborting() {
+
+    }
+
+    @Override
+    public void analysisFinished(@NotNull Object result, @Nullable Throwable error) {
+        EventDispatchThreadHelper.invokeLater(() -> {
+            refresh();
+        });
+    }
+
+    @Override
+    public void analysisStarted() {
+
     }
 }

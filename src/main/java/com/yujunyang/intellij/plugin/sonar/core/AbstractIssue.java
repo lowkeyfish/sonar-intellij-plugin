@@ -142,7 +142,11 @@ public abstract class AbstractIssue {
     protected PsiElement getPsiElement(int offset) {
         PsiElement findPsiElement = psiFile.findElementAt(offset);
         if (findPsiElement instanceof PsiWhiteSpace) {
-            return findPsiElement.getNextSibling();
+            PsiElement nextSibling = findPsiElement.getNextSibling();
+            if (nextSibling != null) {
+                return nextSibling;
+            }
+            return findPsiElement.getParent().getNextSibling();
         } else {
             return findPsiElement;
         }

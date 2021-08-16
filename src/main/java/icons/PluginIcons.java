@@ -25,4 +25,13 @@ public interface PluginIcons {
     Icon SMILE = ResourcesLoader.loadIcon("smile.svg");
 
     Icon ISSUE = ResourcesLoader.loadIcon("issue.svg");
+
+    Icon BUGS = ResourcesLoader.loadIcon("bugs.svg");
+    Icon VULNERABILITY = ResourcesLoader.loadIcon("vulnerability.svg");
+    Icon CODE_SMELL = ResourcesLoader.loadIcon("codeSmell.svg");
+    Icon BLOCKER = ResourcesLoader.loadIcon("blocker.svg");
+    Icon CRITICAL = ResourcesLoader.loadIcon("critical.svg");
+    Icon MAJOR = ResourcesLoader.loadIcon("major.svg");
+    Icon MINOR = ResourcesLoader.loadIcon("minor.svg");
+    Icon INFO = ResourcesLoader.loadIcon("info.svg");
 }

@@ -191,7 +191,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     private void asyncStart(@NotNull final ProgressIndicator indicator, final boolean justCompiled) {
         indicator.setIndeterminate(true);
-        indicator.setText("Start Sonar analysis of " + project.getName());
+        indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
         try {
             asyncStartImpl(indicator, justCompiled);
             MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);

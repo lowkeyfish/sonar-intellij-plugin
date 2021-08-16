@@ -22,7 +22,9 @@ public class LogOutputImpl implements LogOutput {
             ReportUtils.copyReportDir(project);
             EventDispatchThreadHelper.invokeLater(() -> {
                 Report2 report = ReportUtils.createReport(project);
-                ProblemCacheService.getInstance(project).setIssues(report.getIssues());
+                ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+                problemCacheService.setIssues(report.getIssues());
+                problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
                 MessageBusManager.publishAnalysisFinished(project, report, null);
                 DaemonCodeAnalyzer.getInstance(project).restart();
             });

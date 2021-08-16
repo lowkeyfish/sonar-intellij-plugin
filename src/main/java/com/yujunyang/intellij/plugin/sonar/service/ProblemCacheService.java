@@ -1,5 +1,6 @@
 package com.yujunyang.intellij.plugin.sonar.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -14,19 +15,19 @@ import org.jetbrains.annotations.NotNull;
 public class ProblemCacheService {
     private Project project;
 
-    private final ConcurrentMap<PsiFile, List<ExtendedProblemDescriptor>> problems;
-
     private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
+    private int bugCount;
+    private int codeSmellCount;
+    private int vulnerabilityCount;
+    private int duplicatedBlocksCount;
 
     public ProblemCacheService(Project project) {
         this.project = project;
-        problems = new ConcurrentHashMap<>();
         issues = new ConcurrentHashMap<>();
-    }
-
-
-    public ConcurrentMap<PsiFile, List<ExtendedProblemDescriptor>> getProblems() {
-        return problems;
+        bugCount = 0;
+        codeSmellCount = 0;
+        vulnerabilityCount = 0;
+        duplicatedBlocksCount = 0;
     }
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
@@ -35,6 +36,29 @@ public class ProblemCacheService {
 
     public void setIssues(ConcurrentMap<PsiFile, List<AbstractIssue>> issues) {
         this.issues = issues;
+    }
+
+    public int getBugCount() {
+        return bugCount;
+    }
+
+    public int getCodeSmellCount() {
+        return codeSmellCount;
+    }
+
+    public int getVulnerabilityCount() {
+        return vulnerabilityCount;
+    }
+
+    public int getDuplicatedBlocksCount() {
+        return duplicatedBlocksCount;
+    }
+
+    public void setStats(int bugCount, int codeSmellCount, int vulnerabilityCount, int duplicatedBlocksCount) {
+        this.bugCount = bugCount;
+        this.codeSmellCount = codeSmellCount;
+        this.vulnerabilityCount = vulnerabilityCount;
+        this.duplicatedBlocksCount = duplicatedBlocksCount;
     }
 
     public static ProblemCacheService getInstance(@NotNull Project project) {

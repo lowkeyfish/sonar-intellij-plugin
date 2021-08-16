@@ -21,13 +21,13 @@ public final class EmbeddedScannerHelper {
         {
             props.put("sonar.host.url", WorkspaceSettings.getInstance().sonarHostUrl);
             props.put("sonar.projectKey", "com.yujunyang.intellij.plugin.sonar");
-            props.put("sonar.projectName", project.getName());
+            props.put("sonar.projectName", "com.yujunyang.intellij.plugin.sonar:" + project.getName());
             props.put("sonar.projectVersion", "1.0.0");
             props.put("sonar.projectBaseDir", project.getBasePath());
             props.put("sonar.working.directory", "./target/.scannerwork");
             props.put("sonar.java.source", "8");
 //            props.put("sonar.tests", "./src/test");
-            props.put("sonar.sources", "");
+            props.put("sonar.tests", "");
 //            props.put("sonar.sources", "./src/main");
             props.put("sonar.sources", IdeaUtils.getAllSourceRootPath(project));
             props.put("sonar.java.libraries", IdeaUtils.getFullClassPath(project));
