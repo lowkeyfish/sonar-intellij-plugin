@@ -1,27 +1,11 @@
 package com.yujunyang.intellij.plugin.sonar.actions;
 
-import java.awt.EventQueue;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.ide.macro.ModuleSdkPathMacro;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.CompilerModuleExtension;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.OrderEnumerator;
-import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
-import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.Report;
-import com.yujunyang.intellij.plugin.sonar.core.Report2;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
@@ -67,7 +51,7 @@ public class TestAction extends AbstractAction {
 //            }
 //        }
 
-        Report2 report = ReportUtils.createReport(e.getProject());
+        Report report = ReportUtils.createReport(e.getProject());
         ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
         problemCacheService.setIssues(report.getIssues());
         problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());

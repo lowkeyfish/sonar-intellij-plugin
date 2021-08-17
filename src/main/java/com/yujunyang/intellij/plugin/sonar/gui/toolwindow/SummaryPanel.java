@@ -33,7 +33,10 @@ public class SummaryPanel extends JBPanel {
 
     private void init() {
         setLayout(new GridLayout(1, 4, 10, 0));
-        setBorder(JBUI.Borders.empty(5));
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 0, UIUtils.borderColor()),
+                JBUI.Borders.empty(5, 5, 15, 5)
+        ));
 
         vulnerabilityCountPanel = createPanel();
         add(vulnerabilityCountPanel);

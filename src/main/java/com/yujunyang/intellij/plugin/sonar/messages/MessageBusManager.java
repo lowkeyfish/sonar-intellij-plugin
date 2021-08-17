@@ -2,6 +2,7 @@
 package com.yujunyang.intellij.plugin.sonar.messages;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -9,6 +10,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
+import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -123,6 +126,16 @@ public final class MessageBusManager {
 		final AtomicReference<Throwable> errorRef = new AtomicReference<>(error);
 		AnalyzeState.set(project, AnalyzeState.Finished);
 		publish(project, AnalysisFinishedListener.TOPIC).analysisFinished(resultRef.get(), errorRef.get());
+	}
+
+	public static void publishIssueClick(@NotNull final Project project, @NotNull final Issue issue) {
+		EventDispatchThreadHelper.checkEDT();
+		publish(project, IssueClickListener.TOPIC).click(issue);
+	}
+
+	public static void publishDuplicatedBlocksIssueClick(@NotNull final Project project, @NotNull final List<DuplicatedBlocksIssue> issues) {
+		EventDispatchThreadHelper.checkEDT();
+		publish(project, DuplicatedBlocksIssueClickListener.TOPIC).click(issues);
 	}
 
 	@NotNull

@@ -5,13 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JComponent;
-
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -20,14 +16,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.tree.LeafElement;
 import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.ui.awt.RelativePoint;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.util.Function;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
-import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue2;
-import com.yujunyang.intellij.plugin.sonar.core.Issue;
+import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.gui.popup.LineMarkerProviderPopupPanel;
-import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
@@ -120,9 +113,9 @@ public class SonarIssueLineMarkerProvider implements LineMarkerProvider {
                 buffer.append("<p>");
                 buffer.append(issue.getName());
                 buffer.append("</p>");
-                if (issue instanceof DuplicatedBlocksIssue2) {
-                    DuplicatedBlocksIssue2 duplicatedBlocksIssue = (DuplicatedBlocksIssue2)issue;
-                    for (DuplicatedBlocksIssue2.Duplicate duplicate : duplicatedBlocksIssue.getDuplicates()) {
+                if (issue instanceof DuplicatedBlocksIssue) {
+                    DuplicatedBlocksIssue duplicatedBlocksIssue = (DuplicatedBlocksIssue)issue;
+                    for (DuplicatedBlocksIssue.Duplicate duplicate : duplicatedBlocksIssue.getDuplicates()) {
                         buffer.append("<p>");
                         buffer.append("<span>");
                         buffer.append(duplicateInfo(duplicate));
@@ -136,7 +129,7 @@ public class SonarIssueLineMarkerProvider implements LineMarkerProvider {
             return buffer.toString();
         }
 
-        private String duplicateInfo(DuplicatedBlocksIssue2.Duplicate duplicate) {
+        private String duplicateInfo(DuplicatedBlocksIssue.Duplicate duplicate) {
             return String.format("<span>%s</span><span>%s-%s</span>", duplicate.getPath(), duplicate.getStartLine(), duplicate.getEndLine());
         }
     }

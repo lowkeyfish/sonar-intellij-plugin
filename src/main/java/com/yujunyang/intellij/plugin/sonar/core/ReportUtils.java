@@ -38,9 +38,9 @@ public final class ReportUtils {
         }
     }
 
-    public static Report2 createReport(Project project) {
+    public static Report createReport(Project project) {
         String projectPath = project.getBasePath();
         Path reportDirPath = Paths.get(projectPath, TARGET_REPORT_DIR);
-        return new Report2(project, reportDirPath.toFile());
+        return new Report(project, reportDirPath.toFile());
     }
 }

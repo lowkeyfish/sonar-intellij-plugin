@@ -24,7 +24,7 @@ import org.sonar.scanner.protocol.output.ScannerReport;
 import org.sonar.scanner.protocol.output.ScannerReportReader;
 import org.sonarsource.scanner.api.LogOutput;
 
-public class Report2 {
+public class Report_Del {
     private Project project;
     private File reportDir;
     private int bugCount;
@@ -33,7 +33,7 @@ public class Report2 {
     private int duplicatedBlocksCount;
     private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
 
-    public Report2(@NotNull Project project, @NotNull File reportDir) {
+    public Report_Del(@NotNull Project project, @NotNull File reportDir) {
         this.project = project;
         this.reportDir = reportDir;
         issues = new ConcurrentHashMap<>();
@@ -130,34 +130,35 @@ public class Report2 {
                 String issueRuleKey = String.format("%s:%s", "common-java", "DuplicatedBlocks");
                 RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
 
-                boolean currentFileNotExistDuplicatedBlocksIssue = issues.get(psiFile).stream().filter(n -> n.ruleKey.equalsIgnoreCase("DuplicatedBlocks")).findFirst().orElse(null) == null;
-                if (currentFileNotExistDuplicatedBlocksIssue) {
+                AbstractIssue issue = issues.get(psiFile).stream().filter(n -> n.ruleKey.equalsIgnoreCase("DuplicatedBlocks")).findFirst().orElse(null);
+                if (issue == null) {
+                    issue = new DuplicatedBlocksIssue_Del(
+                            psiFile,
+                            "common-java",
+                            "DuplicatedBlocks",
+                            rule.getSeverity(),
+                            rule.getType(),
+                            rule.getName(),
+                            rule.getHtmlDesc()
+                    );
+                    issues.get(psiFile).add(issue);
                     codeSmellCount++;
                 }
 
+                DuplicatedBlocksIssue_Del duplicatedBlocksIssue = (DuplicatedBlocksIssue_Del)issue;
                 ScannerReport.Duplication duplication = reportDuplications.next();
-                DuplicatedBlocksIssue2 issue = new DuplicatedBlocksIssue2(
-                        psiFile,
-                        "common-java",
-                        "DuplicatedBlocks",
-                        rule.getSeverity(),
-                        rule.getType(),
-                        rule.getName(),
-                        rule.getHtmlDesc(),
-                        duplication.getOriginPosition().getStartLine(),
-                        duplication.getOriginPosition().getEndLine()
-                );
-                issues.get(psiFile).add(issue);
+                DuplicatedBlocksIssue_Del.Block block = new DuplicatedBlocksIssue_Del.Block(duplication.getOriginPosition().getStartLine(), duplication.getOriginPosition().getEndLine());
+                duplicatedBlocksIssue.addBlock(block);
                 duplicatedBlocksCount++;
 
                 boolean existDuplicateInSameFile = false;
                 for (ScannerReport.Duplicate d : duplication.getDuplicateList()) {
-                    DuplicatedBlocksIssue2.Duplicate duplicate = new DuplicatedBlocksIssue2.Duplicate(
+                    DuplicatedBlocksIssue_Del.Duplicate duplicate = new DuplicatedBlocksIssue_Del.Duplicate(
                             d.getOtherFileRef() == 0 ? "" : reader.readComponent(d.getOtherFileRef()).getProjectRelativePath(),
                             d.getRange().getStartLine(),
                             d.getRange().getEndLine()
                     );
-                    issue.addDuplicate(duplicate);
+                    block.addDuplicate(duplicate);
                     boolean duplicateInSameFile = d.getOtherFileRef() == 0;
                     if (duplicateInSameFile) {
                         existDuplicateInSameFile = true;
@@ -165,30 +166,20 @@ public class Report2 {
                 }
 
                 if (existDuplicateInSameFile) {
-                    DuplicatedBlocksIssue2.Duplicate duplicateUseCurrentBlock = new DuplicatedBlocksIssue2.Duplicate(
+                    DuplicatedBlocksIssue_Del.Duplicate duplicateUseCurrentBlock = new DuplicatedBlocksIssue_Del.Duplicate(
                             "",
-                            issue.getLineStart(),
-                            issue.getLineEnd()
+                            block.getLineStart(),
+                            block.getLineEnd()
                     );
-                    issue.getDuplicates().forEach(d -> {
+                    block.getDuplicates().forEach(d -> {
                         if (StringUtil.isEmpty(d.getPath())) {
-                            DuplicatedBlocksIssue2 additionalIssue = new DuplicatedBlocksIssue2(
-                                    psiFile,
-                                    "common-java",
-                                    "DuplicatedBlocks",
-                                    rule.getSeverity(),
-                                    rule.getType(),
-                                    rule.getName(),
-                                    rule.getHtmlDesc(),
-                                    d.getStartLine(),
-                                    d.getEndLine()
-                            );
-                            additionalIssue.addDuplicate(duplicateUseCurrentBlock);
-                            List<DuplicatedBlocksIssue2.Duplicate> otherDuplicates = issue.getDuplicates().stream()
+                            DuplicatedBlocksIssue_Del.Block additionalBlock = new DuplicatedBlocksIssue_Del.Block(d.getStartLine(), d.getEndLine());
+                            additionalBlock.addDuplicate(duplicateUseCurrentBlock);
+                            List<DuplicatedBlocksIssue_Del.Duplicate> otherDuplicates = block.getDuplicates().stream()
                                     .filter(n -> !StringUtil.isEmpty(n.getPath()) || n.getStartLine() != d.getStartLine() || n.getEndLine() != d.getEndLine())
                                     .collect(Collectors.toList());
-                            additionalIssue.addDuplicates(otherDuplicates);
-                            issues.get(psiFile).add(additionalIssue);
+                            additionalBlock.addDuplicates(otherDuplicates);
+                            duplicatedBlocksIssue.getBlocks().add(additionalBlock);
                             duplicatedBlocksCount++;
                         }
                     });

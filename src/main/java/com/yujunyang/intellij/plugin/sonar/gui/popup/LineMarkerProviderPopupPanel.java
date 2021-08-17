@@ -10,7 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
-import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue2;
+import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 
 public class LineMarkerProviderPopupPanel extends JBPanel {
@@ -39,8 +39,8 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
         for (AbstractIssue issue : issues) {
             if (issue instanceof Issue) {
                 whenIssue(ret, (Issue)issue);
-            } else if (issue instanceof DuplicatedBlocksIssue2) {
-                whenDuplicatedBlocksIssue(ret, (DuplicatedBlocksIssue2)issue);
+            } else if (issue instanceof DuplicatedBlocksIssue) {
+                whenDuplicatedBlocksIssue(ret, (DuplicatedBlocksIssue)issue);
             }
         }
 
@@ -57,14 +57,14 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
 
     }
 
-    private void whenDuplicatedBlocksIssue(JBPanel ret, DuplicatedBlocksIssue2 issue) {
+    private void whenDuplicatedBlocksIssue(JBPanel ret, DuplicatedBlocksIssue issue) {
         ret.add(Box.createVerticalStrut(5));
         JBLabel msgLabel = new JBLabel(String.format("[%s-%s]行代码与%s个代码块重复", issue.getLineStart(), issue.getLineEnd(), issue.getDuplicateCount()));
         ret.add(msgLabel);
         String info = String.format("%s, %s", issue.getType(), issue.getSeverity());
         JBLabel infoLabel = new JBLabel(info);
         ret.add(infoLabel);
-        for (DuplicatedBlocksIssue2.Duplicate duplicate : issue.getDuplicates()) {
+        for (DuplicatedBlocksIssue.Duplicate duplicate : issue.getDuplicates()) {
             String duplicateInfo = String.format("[%s-%s] %s", duplicate.getStartLine(), duplicate.getEndLine(), duplicate.getPath());
             JBLabel duplicateInfoLabel = new JBLabel(duplicateInfo);
             ret.add(duplicateInfoLabel);

@@ -35,6 +35,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,7 +123,7 @@ public final class UIUtils {
     }
 
     public static void setBackgroundRecursively(@NotNull Component component, Color color) {
-        if (component instanceof JBPanel || component instanceof JBScrollPane) {
+        if (component instanceof JBPanel || component instanceof JBScrollPane || component instanceof JBTextArea) {
             component.setBackground(color);
         }
 
@@ -241,7 +242,7 @@ public final class UIUtils {
         return UIUtil.isUnderDarcula() ? new Color(49, 51, 53) : Color.WHITE;
     }
 
-    public static Color gistListItemMouseHoverBackgroundColor() {
+    public static Color highlightBackgroundColor() {
         return UIUtil.isUnderDarcula() ? new Color(54, 57, 59) : new Color(245, 249, 255);
     }
 
@@ -327,6 +328,17 @@ public final class UIUtils {
             default:
                 return new Pair<>("", null);
         }
+    }
+
+    public static JBTextArea createWrapLabelLikedTextArea(String text) {
+        JBTextArea textArea = new JBTextArea(text);
+        textArea.setFont(UIUtil.getLabelFont());
+        textArea.setEditable(false);
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+//        textArea.setOpaque(true);
+//        textArea.setBackground(UIUtils.backgroundColor());
+        return textArea;
     }
 
 }

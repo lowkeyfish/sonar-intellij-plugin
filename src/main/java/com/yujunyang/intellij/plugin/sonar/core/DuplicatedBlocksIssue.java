@@ -3,10 +3,11 @@ package com.yujunyang.intellij.plugin.sonar.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 
 public class DuplicatedBlocksIssue extends AbstractIssue {
-    private List<Block> blocks;
+    private List<Duplicate> duplicates;
 
     public DuplicatedBlocksIssue(
             PsiFile psiFile,
@@ -15,67 +16,30 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
             String severity,
             String type,
             String name,
-            String htmlDesc) {
+            String htmlDesc,
+            int lineStart,
+            int lineEnd) {
         super(psiFile, ruleRepository, ruleKey, "", severity, type, name, htmlDesc);
-        this.blocks = new ArrayList<>();
+        this.lineStart = lineStart;
+        this.lineEnd = lineEnd;
+        this.textRange = new TextRange(0, 0);
+        this.duplicates = new ArrayList<>();
     }
 
-    @Override
-    public String getMsg() {
-        return String.format("%s duplicated blocks of code must be removed.", blocks.size());
+    public List<Duplicate> getDuplicates() {
+        return duplicates;
     }
 
-    public List<Block> getBlocks() {
-        return blocks;
+    public int getDuplicateCount() {
+        return duplicates.size();
     }
 
-    public int getBlockCount() {
-        return blocks.size();
+    public void addDuplicate(Duplicate duplicate) {
+        duplicates.add(duplicate);
     }
 
-    public void addBlock(Block block) {
-        blocks.add(block);
-    }
-
-
-
-
-    public static class Block {
-        private int lineStart;
-        private int lineEnd;
-        private List<Duplicate> duplicates;
-
-        public Block(int lineStart, int lineEnd) {
-            this.lineStart = lineStart;
-            this.lineEnd = lineEnd;
-            this.duplicates = new ArrayList<>();
-        }
-
-        public int getLineStart() {
-            return lineStart;
-        }
-
-        public int getLineEnd() {
-            return lineEnd;
-        }
-
-        public List<Duplicate> getDuplicates() {
-            return duplicates;
-        }
-
-        public int getDuplicateCount() {
-            return duplicates.size();
-        }
-
-        public void addDuplicate(Duplicate duplicate) {
-            duplicates.add(duplicate);
-        }
-
-        public void addDuplicates(List<Duplicate> duplicates) {
-            this.duplicates.addAll(duplicates);
-        }
-
-
+    public void addDuplicates(List<Duplicate> duplicates) {
+        this.duplicates.addAll(duplicates);
     }
 
 

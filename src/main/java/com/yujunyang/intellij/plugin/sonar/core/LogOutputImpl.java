@@ -21,7 +21,7 @@ public class LogOutputImpl implements LogOutput {
         if (formattedMessage.startsWith("Analysis report generated in")) {
             ReportUtils.copyReportDir(project);
             EventDispatchThreadHelper.invokeLater(() -> {
-                Report2 report = ReportUtils.createReport(project);
+                Report report = ReportUtils.createReport(project);
                 ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
                 problemCacheService.setIssues(report.getIssues());
                 problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());

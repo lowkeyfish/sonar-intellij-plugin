@@ -36,10 +36,10 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
         issuesPanel = new IssuesPanel(project);
         listAndCurrentSplitter.setFirstComponent(issuesPanel);
 
-        issueDetailPanel = new IssueDetailPanel();
+        issueDetailPanel = new IssueDetailPanel(project);
         listAndCurrentSplitter.setSecondComponent(issueDetailPanel);
 
-        listAndCurrentSplitter.setProportion(0.3f);
+        listAndCurrentSplitter.setProportion(0.25f);
         add(listAndCurrentSplitter, BorderLayout.CENTER);
     }
 

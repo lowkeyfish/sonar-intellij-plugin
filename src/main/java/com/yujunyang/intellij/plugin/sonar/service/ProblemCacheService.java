@@ -1,6 +1,5 @@
 package com.yujunyang.intellij.plugin.sonar.service;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -9,7 +8,6 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
-import com.yujunyang.intellij.plugin.sonar.core.ExtendedProblemDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 public class ProblemCacheService {

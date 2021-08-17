@@ -7,13 +7,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import com.intellij.psi.PsiFile;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
-import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue2;
+import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
+import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 
 public class IssueFileGroupPanel extends JBPanel {
     private PsiFile psiFile;
@@ -30,35 +31,36 @@ public class IssueFileGroupPanel extends JBPanel {
         setLayout(layout);
         setBorder(JBUI.Borders.empty(0, 5));
 
-        addPathLabel();
+        List<DuplicatedBlocksIssue> duplicatedBlocksIssues = issues.stream()
+                .filter(n -> n instanceof DuplicatedBlocksIssue).map(n -> (DuplicatedBlocksIssue)n).collect(Collectors.toList());
+        List<Issue> normalIssues = issues.stream().filter(n -> n instanceof Issue).map(n -> (Issue)n).collect(Collectors.toList());
+        int count = (duplicatedBlocksIssues.size() > 0 ? 1 : 0) + normalIssues.size();
+        addTitleTextArea(count);
+        add(Box.createVerticalStrut(2));
 
-        List<DuplicatedBlocksIssue2> duplicatedBlocksIssues = issues.stream()
-                .filter(n -> n instanceof DuplicatedBlocksIssue2).map(n -> (DuplicatedBlocksIssue2)n).collect(Collectors.toList());
         if (duplicatedBlocksIssues.size() > 0) {
             addIssue(duplicatedBlocksIssues);
         }
-        issues.stream().filter(n -> n instanceof Issue).forEach(n -> addIssue((Issue)n));
-        add(Box.createVerticalStrut(5));
+        normalIssues.forEach(n -> addIssue(n));
+        add(Box.createVerticalStrut(10));
     }
 
-
-    private void addPathLabel() {
-        JBLabel label = new JBLabel(IdeaUtils.getPath(psiFile));
-        label.setBorder(JBUI.Borders.empty(5, 0));
-        label.setForeground(Color.GRAY);
-        label.setAlignmentX(LEFT_ALIGNMENT);
-        add(label);
+    private void addTitleTextArea(int count) {
+        JBTextArea textArea = UIUtils.createWrapLabelLikedTextArea(String.format("%s %s个问题", IdeaUtils.getPath(psiFile), count));
+        textArea.setForeground(Color.GRAY);
+        textArea.setAlignmentX(LEFT_ALIGNMENT);
+        add(textArea);
     }
 
-    private void addIssue(List<DuplicatedBlocksIssue2> issues) {
-        IssueItemPanel panel = new IssueItemPanel(issues, null);
+    private void addIssue(List<DuplicatedBlocksIssue> issues) {
+        IssueItemPanel panel = new IssueItemPanel(issues);
         panel.setAlignmentX(LEFT_ALIGNMENT);
         add(panel);
         add(Box.createVerticalStrut(5));
     }
 
     private void addIssue(Issue issue) {
-        IssueItemPanel panel = new IssueItemPanel(issue, null);
+        IssueItemPanel panel = new IssueItemPanel(issue);
         panel.setAlignmentX(LEFT_ALIGNMENT);
         add(panel);
         add(Box.createVerticalStrut(5));
