@@ -10,6 +10,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -85,7 +86,8 @@ public class SonarIssueLineMarkerProvider implements LineMarkerProvider {
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
             JBPopupFactory jbPopupFactory = JBPopupFactory.getInstance();
-            jbPopupFactory.createComponentPopupBuilder(new LineMarkerProviderPopupPanel(elt.getProject(), issues), null).createPopup().show(new RelativePoint(e));
+            JBPopup popup = jbPopupFactory.createComponentPopupBuilder(new LineMarkerProviderPopupPanel(elt.getProject(), issues), null).createPopup();
+            popup.show(new RelativePoint(e));
         }
     }
 

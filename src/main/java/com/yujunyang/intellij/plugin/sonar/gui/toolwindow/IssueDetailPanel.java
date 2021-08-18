@@ -1,6 +1,7 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.util.Arrays;
 import java.util.List;
 
 import com.intellij.openapi.project.Project;
@@ -33,12 +34,12 @@ public class IssueDetailPanel extends JBPanel implements IssueClickListener, Dup
 
     @Override
     public void click(List<DuplicatedBlocksIssue> issues) {
-
+        codePanel.show(issues);
     }
 
     @Override
     public void click(Issue issue) {
-        codePanel.refresh(issue);
+        codePanel.show(Arrays.asList(issue));
     }
 
     private void init() {

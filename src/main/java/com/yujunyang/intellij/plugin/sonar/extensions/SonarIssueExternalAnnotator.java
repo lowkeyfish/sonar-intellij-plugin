@@ -2,10 +2,8 @@ package com.yujunyang.intellij.plugin.sonar.extensions;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.editor.Document;
@@ -15,8 +13,6 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
-import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
-import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,27 +52,15 @@ public class SonarIssueExternalAnnotator extends ExternalAnnotator<SonarIssueExt
     }
 
     private static void addAnnotation(Project project, PsiFile psiFile, List<AbstractIssue> issues, AnnotationHolder holder) {
-        Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
         issues.forEach(n -> {
-            if (n instanceof Issue) {
-                Issue issue = (Issue)n;
-                Annotation annotation = holder.createErrorAnnotation(issue.getTextRange(), msg(issue));
-            } else if (n instanceof DuplicatedBlocksIssue) {
-                DuplicatedBlocksIssue issue = (DuplicatedBlocksIssue)n;
-                Annotation annotation = holder.createErrorAnnotation(issue.getTextRange(), msg(issue));
-            }
+            holder.createErrorAnnotation(n.getTextRange(), msg(n));
         });
 
     }
 
-    private static String msg(Issue issue) {
-        return String.format("SonarAnalyzer: %s", issue.getMsg());
+    private static String msg(AbstractIssue issue) {
+        return String.format("SonarAnalyzer: %s [%s]", issue.getMsg(), issue.getTypeDesc());
     }
-
-    private static String msg(DuplicatedBlocksIssue issue) {
-        return String.format("SonarAnalyzer: 行[%s-%s]与其他[%s]个代码块重复", issue.getLineStart(), issue.getLineEnd(), issue.getDuplicateCount());
-    }
-
 
 
     public static class AnnotationContext {

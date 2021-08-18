@@ -7,6 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiWhiteSpace;
+import com.siyeh.ig.ui.UiUtils;
+import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 
 public abstract class AbstractIssue {
     protected PsiFile psiFile;
@@ -64,6 +66,10 @@ public abstract class AbstractIssue {
 
     public String getType() {
         return type;
+    }
+
+    public String getTypeDesc() {
+        return UIUtils.typeInfo(type).first;
     }
 
     public String getName() {

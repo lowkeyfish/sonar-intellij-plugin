@@ -2,31 +2,32 @@ package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.SwingConstants;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.RangeMarker;
+import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
-import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
-import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
-import org.jetbrains.annotations.NotNull;
 
 public class IssueCodePanel extends JBPanel {
     private Project project;
@@ -38,21 +39,19 @@ public class IssueCodePanel extends JBPanel {
         init();
     }
 
-    public void refresh(@NotNull AbstractIssue issue) {
-        // TODO: 1.定位 2.editor偶尔不显示 3.重复块
-
+    public void show(List<? extends AbstractIssue> issues) {
+        AbstractIssue issue = issues.get(0);
         if (issue.getPsiFile() != lastPsiFile && editor != null) {
             EditorFactory.getInstance().releaseEditor(editor);
             editor = null;
             lastPsiFile = null;
+            removeAll();
         }
 
         if (editor == null) {
-            removeAll();
-
-            JBTextArea filePathTextArea = UIUtils.createWrapLabelLikedTextArea(IdeaUtils.getPath(issue.getPsiFile()));
-            filePathTextArea.setBorder(JBUI.Borders.empty(5));
-            add(filePathTextArea, BorderLayout.NORTH);
+            JBLabel filePathLabel = new JBLabel(issue.getPsiFile().getName(), issue.getPsiFile().getIcon(Iconable.ICON_FLAG_READ_STATUS), SwingConstants.LEFT);
+            filePathLabel.setBorder(JBUI.Borders.empty(5));
+            add(filePathLabel, BorderLayout.NORTH);
 
             lastPsiFile = issue.getPsiFile();
             editor = createEditor(lastPsiFile);
@@ -60,8 +59,25 @@ public class IssueCodePanel extends JBPanel {
             add(component, BorderLayout.CENTER);
         }
 
+        // 使用红框标出问题代码行
         editor.getMarkupModel().removeAllHighlighters();
 
+        for (int i = 0; i < issues.size(); i++) {
+            addRangeHighlighter(issues.get(i), editor);
+        }
+
+        // 滚动定位到第一个问题代码（重复块可能有多个）
+        editor.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
+        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+
+        // 必要，否则界面部分将无法正常显示
+        revalidate();
+        repaint();
+
+        openSource(issue.getPsiFile(), issue.getTextRange().getStartOffset());
+    }
+
+    private void addRangeHighlighter(AbstractIssue issue, Editor editor) {
         TextRange textRange = issue.getTextRange();
         RangeMarker marker = editor.getDocument().createRangeMarker(textRange.getStartOffset(), textRange.getEndOffset());
         editor.getMarkupModel().addRangeHighlighter(
@@ -70,8 +86,6 @@ public class IssueCodePanel extends JBPanel {
                 HighlighterLayer.FIRST - 1,
                 new TextAttributes(null, null, JBColor.RED, EffectType.BOXED, Font.BOLD),
                 HighlighterTargetArea.EXACT_RANGE);
-
-        editor.getScrollingModel().scrollVertically(issue.getTextRange().getStartOffset());
     }
 
     private void init() {
@@ -80,10 +94,9 @@ public class IssueCodePanel extends JBPanel {
 
     private Editor createEditor(PsiFile psiFile) {
         final Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+        document.setReadOnly(true);
         final Editor editor = EditorFactory.getInstance().createEditor(document, project, psiFile.getFileType(), false);
         editor.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
-//        final EditorColorsScheme scheme = editor.getColorsScheme();
-//        scheme.setEditorFontSize(scheme.getEditorFontSize() - 1);
 
         final EditorSettings editorSettings = editor.getSettings();
         editorSettings.setLineMarkerAreaShown(true);
@@ -94,5 +107,10 @@ public class IssueCodePanel extends JBPanel {
         editorSettings.setVariableInplaceRenameEnabled(true);
 
         return editor;
+    }
+
+    private void openSource(PsiFile psiFile, int offset) {
+        OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(project, psiFile.getVirtualFile(), offset);
+        openFileDescriptor.navigate(true);
     }
 }

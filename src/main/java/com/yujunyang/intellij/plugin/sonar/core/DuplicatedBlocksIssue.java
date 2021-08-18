@@ -42,6 +42,10 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
         this.duplicates.addAll(duplicates);
     }
 
+    @Override
+    public String getMsg() {
+        return String.format("行[%s-%s]与其他[%s]个代码块重复", lineStart, lineEnd, duplicates.size());
+    }
 
     public static class Duplicate {
         private String path;

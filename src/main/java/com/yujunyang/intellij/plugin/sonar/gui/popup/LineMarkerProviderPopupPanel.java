@@ -1,17 +1,21 @@
 package com.yujunyang.intellij.plugin.sonar.gui.popup;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.SwingConstants;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
+import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 
 public class LineMarkerProviderPopupPanel extends JBPanel {
     private Project project;
@@ -25,11 +29,14 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
 
     private void init() {
         setLayout(new BorderLayout());
+        setBorder(JBUI.Borders.empty(5));
 
         JBLabel title = new JBLabel("问题: " + issues.size() + "个");
         add(title, BorderLayout.NORTH);
 
         add(createIssues(), BorderLayout.CENTER);
+
+        UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
 
     private JBPanel createIssues() {
@@ -37,24 +44,11 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
         BoxLayout layout = new BoxLayout(ret, BoxLayout.Y_AXIS);
         ret.setLayout(layout);
         for (AbstractIssue issue : issues) {
-            if (issue instanceof Issue) {
-                whenIssue(ret, (Issue)issue);
-            } else if (issue instanceof DuplicatedBlocksIssue) {
-                whenDuplicatedBlocksIssue(ret, (DuplicatedBlocksIssue)issue);
-            }
+            ret.add(Box.createVerticalStrut(5));
+            ret.add(new IssueItemPanel(issue));
         }
 
         return ret;
-    }
-
-    private void whenIssue(JBPanel ret, Issue issue) {
-        ret.add(Box.createVerticalStrut(5));
-        JBLabel msgLabel = new JBLabel(issue.getMsg());
-        ret.add(msgLabel);
-        String info = String.format("%s, %s", issue.getType(), issue.getSeverity());
-        JBLabel infoLabel = new JBLabel(info);
-        ret.add(infoLabel);
-
     }
 
     private void whenDuplicatedBlocksIssue(JBPanel ret, DuplicatedBlocksIssue issue) {
