@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.fileTypes.PlainTextFileType;
@@ -28,6 +29,7 @@ import com.intellij.openapi.fileTypes.UnknownFileType;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.TitledSeparator;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -339,6 +341,16 @@ public final class UIUtils {
 //        textArea.setOpaque(true);
 //        textArea.setBackground(UIUtils.backgroundColor());
         return textArea;
+    }
+
+    public static void navigateToOffset(PsiFile psiFile, int offset) {
+        OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), offset);
+        openFileDescriptor.navigate(true);
+    }
+
+    public static void navigateToLine(PsiFile psiFile, int line) {
+        OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), line, 0);
+        openFileDescriptor.navigate(true);
     }
 
 }

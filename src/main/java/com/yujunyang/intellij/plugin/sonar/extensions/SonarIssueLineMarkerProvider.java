@@ -86,8 +86,10 @@ public class SonarIssueLineMarkerProvider implements LineMarkerProvider {
         @Override
         public void navigate(MouseEvent e, PsiElement elt) {
             JBPopupFactory jbPopupFactory = JBPopupFactory.getInstance();
-            JBPopup popup = jbPopupFactory.createComponentPopupBuilder(new LineMarkerProviderPopupPanel(elt.getProject(), issues), null).createPopup();
+            LineMarkerProviderPopupPanel contentPanel = new LineMarkerProviderPopupPanel(elt.getProject(), issues);
+            JBPopup popup = jbPopupFactory.createComponentPopupBuilder(contentPanel, null).createPopup();
             popup.show(new RelativePoint(e));
+            contentPanel.setPopup(popup);
         }
     }
 

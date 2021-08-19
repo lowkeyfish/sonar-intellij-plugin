@@ -35,11 +35,13 @@ public class IssueDetailPanel extends JBPanel implements IssueClickListener, Dup
     @Override
     public void click(List<DuplicatedBlocksIssue> issues) {
         codePanel.show(issues);
+        descriptionPanel.show(issues);
     }
 
     @Override
     public void click(Issue issue) {
         codePanel.show(Arrays.asList(issue));
+        descriptionPanel.show(Arrays.asList(issue));
     }
 
     private void init() {
@@ -47,13 +49,14 @@ public class IssueDetailPanel extends JBPanel implements IssueClickListener, Dup
 
         OnePixelSplitter listAndCurrentSplitter = new OnePixelSplitter();
         listAndCurrentSplitter.getDivider().setBackground(UIUtils.borderColor());
-        listAndCurrentSplitter.setProportion(0.6f);
         add(listAndCurrentSplitter, BorderLayout.CENTER);
 
         codePanel = new IssueCodePanel(project);
         listAndCurrentSplitter.setFirstComponent(codePanel);
 
-        descriptionPanel = new IssueDescriptionPanel();
+        descriptionPanel = new IssueDescriptionPanel(project);
         listAndCurrentSplitter.setSecondComponent(descriptionPanel);
+
+        listAndCurrentSplitter.setProportion(0.6f);
     }
 }

@@ -117,6 +117,11 @@ public final class IdeaUtils {
 		return psiClass.getContainingFile();
 	}
 
+	public static PsiFile getPsiFile(final Project project, String projectRelativePath) {
+		File file = java.nio.file.Paths.get(project.getBasePath(), projectRelativePath).toFile();
+		return getPsiFile(project, file);
+	}
+
 
 	@Nullable
 	private static VirtualFile getSelectedFile(@NotNull final DataContext dataContext) {

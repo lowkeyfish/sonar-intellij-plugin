@@ -3,12 +3,14 @@ package com.yujunyang.intellij.plugin.sonar.gui.popup;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.SwingConstants;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
@@ -20,6 +22,7 @@ import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 public class LineMarkerProviderPopupPanel extends JBPanel {
     private Project project;
     private List<AbstractIssue> issues;
+    private JBPopup popup;
 
     public LineMarkerProviderPopupPanel(Project project, List<AbstractIssue> issues) {
         this.project = project;
@@ -45,23 +48,16 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
         ret.setLayout(layout);
         for (AbstractIssue issue : issues) {
             ret.add(Box.createVerticalStrut(5));
-            ret.add(new IssueItemPanel(issue));
+            IssueItemPanel issueItemPanel = new IssueItemPanel(issue);
+            Supplier<JBPopup> getOwnerPopupFunction = () -> this.popup;
+            issueItemPanel.putClientProperty("IssueItemPanel.getOwnerPopupFunction",  getOwnerPopupFunction);
+            ret.add(issueItemPanel);
         }
 
         return ret;
     }
 
-    private void whenDuplicatedBlocksIssue(JBPanel ret, DuplicatedBlocksIssue issue) {
-        ret.add(Box.createVerticalStrut(5));
-        JBLabel msgLabel = new JBLabel(String.format("[%s-%s]行代码与%s个代码块重复", issue.getLineStart(), issue.getLineEnd(), issue.getDuplicateCount()));
-        ret.add(msgLabel);
-        String info = String.format("%s, %s", issue.getType(), issue.getSeverity());
-        JBLabel infoLabel = new JBLabel(info);
-        ret.add(infoLabel);
-        for (DuplicatedBlocksIssue.Duplicate duplicate : issue.getDuplicates()) {
-            String duplicateInfo = String.format("[%s-%s] %s", duplicate.getStartLine(), duplicate.getEndLine(), duplicate.getPath());
-            JBLabel duplicateInfoLabel = new JBLabel(duplicateInfo);
-            ret.add(duplicateInfoLabel);
-        }
+    public void setPopup(JBPopup popup) {
+        this.popup = popup;
     }
 }
