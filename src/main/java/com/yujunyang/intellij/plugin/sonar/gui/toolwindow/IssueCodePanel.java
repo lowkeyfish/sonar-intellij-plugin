@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -28,6 +29,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.util.Alarm;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
@@ -36,6 +38,7 @@ public class IssueCodePanel extends JBPanel {
     private Project project;
     private Editor editor;
     private PsiFile lastPsiFile;
+    private Alarm alarm = new Alarm();
 
     public IssueCodePanel(Project project) {
         this.project = project;
@@ -86,6 +89,8 @@ public class IssueCodePanel extends JBPanel {
 //    }
 
     public void show(List<? extends AbstractIssue> issues) {
+        alarm.cancelAllRequests();
+
         AbstractIssue issue = issues.get(0);
         removeAll();
 
@@ -95,26 +100,32 @@ public class IssueCodePanel extends JBPanel {
 
         Editor e = createEditor(issue.getPsiFile());
 
-
         // 使用红框标出问题代码行
         e.getMarkupModel().removeAllHighlighters();
-
         for (int i = 0; i < issues.size(); i++) {
             addRangeHighlighter(issues.get(i), e);
         }
-
-
-
-
-
-        LogicalPosition pos = new LogicalPosition(70, 0);
-        e.getScrollingModel().scrollTo(pos, ScrollType.MAKE_VISIBLE);
 
         JComponent component = e.getComponent();
         add(component, BorderLayout.CENTER);
 
         // 打开源文件并定位到问题代码
         UIUtils.navigateToOffset(issue.getPsiFile(), issue.getTextRange().getStartOffset());
+
+        // TODO:定位总是有问题
+
+        // 定时的话定位好了，不过感觉有不必要的延时不太好
+//        alarm.addRequest(() -> {
+//            e.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
+//            e.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+//        }, 100);
+
+        // 用invokeLater解决了
+        SwingUtilities.invokeLater(() -> {
+            e.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
+            e.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+        });
+
     }
 
     private void addRangeHighlighter(AbstractIssue issue, Editor editor) {
