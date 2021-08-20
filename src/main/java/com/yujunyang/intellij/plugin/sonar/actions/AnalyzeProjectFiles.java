@@ -40,7 +40,7 @@ public abstract class AnalyzeProjectFiles extends AbstractAnalyzeAction {
 			@NotNull final ToolWindow toolWindow,
 			@NotNull final AnalyzeState state
 	) {
-		new SonarScannerStarter(project, "Running Sonar analysis for project '" + project.getName() + "'...") {
+		new SonarScannerStarter(project, "对项目[" + project.getName() + "]执行Sonar代码检测") {
 			@Override
 			protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
 				consumer.consume(compilerManager.createProjectCompileScope(project));

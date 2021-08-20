@@ -83,4 +83,11 @@ public class SummaryPanel extends JBPanel {
         JBLabel label = UIUtils.createHorizontalAlignmentCenterLabel("0", font);
         return label;
     }
+
+    public void reset() {
+        vulnerabilityCountLabel.setText("0");
+        bugCountLabel.setText("0");
+        codeSmellCountLabel.setText("0");
+        duplicatedBlocksCountLabel.setText("0");
+    }
 }

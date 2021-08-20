@@ -55,4 +55,9 @@ public class IssuesPanel extends JBPanel {
         issueListPanel.refresh();
         UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
+
+    public void reset() {
+        summaryPanel.reset();
+        issueListPanel.reset();
+    }
 }

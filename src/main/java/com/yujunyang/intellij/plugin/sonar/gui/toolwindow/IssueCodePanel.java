@@ -38,7 +38,6 @@ public class IssueCodePanel extends JBPanel {
     private Project project;
     private Editor editor;
     private PsiFile lastPsiFile;
-    private Alarm alarm = new Alarm();
 
     public IssueCodePanel(Project project) {
         this.project = project;
@@ -89,8 +88,6 @@ public class IssueCodePanel extends JBPanel {
 //    }
 
     public void show(List<? extends AbstractIssue> issues) {
-        alarm.cancelAllRequests();
-
         AbstractIssue issue = issues.get(0);
         removeAll();
 
@@ -109,17 +106,10 @@ public class IssueCodePanel extends JBPanel {
         JComponent component = e.getComponent();
         add(component, BorderLayout.CENTER);
 
-        // 打开源文件并定位到问题代码
-        UIUtils.navigateToOffset(issue.getPsiFile(), issue.getTextRange().getStartOffset());
+//        // 打开源文件并定位到问题代码
+//        UIUtils.navigateToOffset(issue.getPsiFile(), issue.getTextRange().getStartOffset());
 
-        // TODO:定位总是有问题
-
-        // 定时的话定位好了，不过感觉有不必要的延时不太好
-//        alarm.addRequest(() -> {
-//            e.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
-//            e.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-//        }, 100);
-
+        // 立即调用问题代码的定位会存在不能准确滚动到问题行的问题
         // 用invokeLater解决了
         SwingUtilities.invokeLater(() -> {
             e.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());

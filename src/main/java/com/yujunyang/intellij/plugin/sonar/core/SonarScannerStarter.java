@@ -1,7 +1,5 @@
 package com.yujunyang.intellij.plugin.sonar.core;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.intellij.execution.RunManager;
@@ -20,16 +18,12 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.impl.ToolWindowImpl;
 import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
-import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
-import com.yujunyang.intellij.plugin.sonar.common.PluginConstants;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import org.jetbrains.annotations.NotNull;
-import org.sonarsource.scanner.api.EmbeddedScanner;
 import org.sonarsource.scanner.api.LogOutput;
-import org.sonarsource.scanner.api.StdOutLogOutput;
 import org.sonarsource.scanner.api.internal.ScannerException;
 
 public abstract class SonarScannerStarter implements AnalysisAbortingListener {

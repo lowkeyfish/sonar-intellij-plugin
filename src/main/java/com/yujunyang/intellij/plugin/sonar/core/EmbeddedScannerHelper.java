@@ -1,15 +1,9 @@
 package com.yujunyang.intellij.plugin.sonar.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.CompilerModuleExtension;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import org.sonarsource.scanner.api.EmbeddedScanner;

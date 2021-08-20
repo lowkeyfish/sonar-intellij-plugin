@@ -2,6 +2,7 @@ package com.yujunyang.intellij.plugin.sonar.core;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -110,7 +111,7 @@ public abstract class AbstractIssue {
         int lineEndOffset = document.getLineEndOffset(elementLineStart);
         if (lineEndOffset > elementEndOffset) {
             endOffset = lineEndOffset;
-        } else if (element instanceof PsiMethod) {
+        } else if (!(element instanceof PsiDeclarationStatement)) {
             endOffset = lineEndOffset;
         }
 

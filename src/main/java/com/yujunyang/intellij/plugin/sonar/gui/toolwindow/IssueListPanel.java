@@ -32,4 +32,7 @@ public class IssueListPanel extends JBPanel {
         }
     }
 
+    public void reset() {
+        removeAll();
+    }
 }
