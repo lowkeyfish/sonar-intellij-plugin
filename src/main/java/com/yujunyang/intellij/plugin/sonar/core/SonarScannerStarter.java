@@ -1,3 +1,24 @@
+/*
+ * Copyright 2021 Yu Junyang
+ * https://github.com/lowkeyfish
+ *
+ * This file is part of Sonar Intellij plugin.
+ *
+ * Sonar Intellij plugin is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Sonar Intellij plugin is distributed in the hope that it will
+ * be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Sonar Intellij plugin.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,10 +36,13 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.impl.ToolWindowImpl;
 import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
+import com.yujunyang.intellij.plugin.sonar.common.exceptions.ConfigException;
+import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
@@ -188,11 +212,17 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         indicator.setIndeterminate(true);
         indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
         try {
+            if (!configCompleted()) {
+                throw new ConfigException("尚未设置SonarQube");
+            }
             asyncStartImpl(indicator, justCompiled);
         } catch (Exception exc) {
             // SonarScanner内部错误在log中记录的准确，虽然每个error log会中断检查过程并抛出ScannerException但message变得不直接，因此在log中弹出错误提示而此处忽略
             if (!(exc instanceof ScannerException)) {
-                EventDispatchThreadHelper.invokeLater(() -> BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString()));
+                EventDispatchThreadHelper.invokeLater(() -> {
+                    BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
+                    MessageBusManager.publishLog(project, exc.getMessage(), LogOutput.Level.ERROR);
+                });
             }
         } finally {
             MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);
@@ -204,6 +234,14 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         EmbeddedScannerHelper.startEmbeddedScanner(project, logOutput);
     }
 
+    private boolean configCompleted() {
+        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
+        if (StringUtil.isEmpty(workspaceSettings.sonarHostUrl)) {
+            return false;
+        }
+        return true;
+    }
+
     public static StringBuilder createErrorInfo(String errorMessage) {
         final StringBuilder ret = new StringBuilder();
         ret.append("<h2>").append("Sonar analysis failed").append("</h2>");
@@ -211,6 +249,12 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         ret.append("<br>");
 //        ret.append("Go to Log for more details");
 //        ret.append("<br>");
+        return ret;
+    }
+
+    public static StringBuilder createSuccessInfo() {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("<p>").append("Sonar analysis completed").append("</p>");
         return ret;
     }
 
