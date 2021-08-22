@@ -27,11 +27,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface AnalysisFinishedListener {
-	Topic<AnalysisFinishedListener> TOPIC = Topic.create("Sonar Analysis Finished", AnalysisFinishedListener.class);
+    Topic<AnalysisFinishedListener> TOPIC = Topic.create("Sonar Analysis Finished", AnalysisFinishedListener.class);
 
-	/**
-	 * Invoked by EDT.
-	 */
-	void analysisFinished(@NotNull final Object result, @Nullable final Throwable error);
+    /**
+     * Invoked by EDT.
+     */
+    void analysisFinished(@NotNull final Object result, @Nullable final Throwable error);
 
 }

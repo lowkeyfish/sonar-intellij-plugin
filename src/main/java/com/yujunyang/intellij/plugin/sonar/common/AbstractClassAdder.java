@@ -41,197 +41,197 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractClassAdder {
 
-	private static final Logger LOGGER = Logger.getInstance(AbstractClassAdder.class.getName());
-	public static final String CLASS_FILE_SUFFIX = ".class";
-	private static final String ANONYMOUS_CLASS_DELIMITER = "$";
+    private static final Logger LOGGER = Logger.getInstance(AbstractClassAdder.class.getName());
+    public static final String CLASS_FILE_SUFFIX = ".class";
+    private static final String ANONYMOUS_CLASS_DELIMITER = "$";
 
-	private final Project _project;
-	private final PsiManager _psiManager;
+    private final Project _project;
+    private final PsiManager _psiManager;
 
-	@NotNull
-	private final ProjectFileIndex fileIndex;
+    @NotNull
+    private final ProjectFileIndex fileIndex;
 
-	AbstractClassAdder(@NotNull final Project project) {
-		_project = project;
-		_psiManager = PsiManager.getInstance(_project);
-		fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-	}
+    AbstractClassAdder(@NotNull final Project project) {
+        _project = project;
+        _psiManager = PsiManager.getInstance(_project);
+        fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+    }
 
-	abstract void put(@NotNull final String fqp, @NotNull final PsiElement element);
+    abstract void put(@NotNull final String fqp, @NotNull final PsiElement element);
 
-	public final void addContainingClasses(@NotNull final VirtualFile virtualFile) {
+    public final void addContainingClasses(@NotNull final VirtualFile virtualFile) {
 
-		final PsiFile psiFile = _psiManager.findFile(virtualFile);
+        final PsiFile psiFile = _psiManager.findFile(virtualFile);
 
-		if (psiFile instanceof PsiClassOwner) {
-			final PsiClassOwner psiClassOwner = (PsiClassOwner) psiFile;
-			final PsiClass[] psiClasses = psiClassOwner.getClasses();
+        if (psiFile instanceof PsiClassOwner) {
+            final PsiClassOwner psiClassOwner = (PsiClassOwner) psiFile;
+            final PsiClass[] psiClasses = psiClassOwner.getClasses();
 
-			for (final PsiClass psiClass : psiClasses) {
-				final VirtualFile compilerOutputPath = getCompilerOutputPath(virtualFile);
-				if (compilerOutputPath == null) {
-					continue;
-				}
-				final String fqp = buildFullQualifiedPath(compilerOutputPath.getPresentableUrl(), psiClass);
-				put(fqp, psiClass);
-				addAnonymousClasses(psiClass, fqp);
-				addInnerClasses(psiClass, fqp);
-			}
-		}
-	}
+            for (final PsiClass psiClass : psiClasses) {
+                final VirtualFile compilerOutputPath = getCompilerOutputPath(virtualFile);
+                if (compilerOutputPath == null) {
+                    continue;
+                }
+                final String fqp = buildFullQualifiedPath(compilerOutputPath.getPresentableUrl(), psiClass);
+                put(fqp, psiClass);
+                addAnonymousClasses(psiClass, fqp);
+                addInnerClasses(psiClass, fqp);
+            }
+        }
+    }
 
-	// analyze class under cursor
-	public final void addContainingClasses(@NotNull final VirtualFile virtualFile, @NotNull final PsiClass selectedPsiClass) {
-		final PsiFile psiFile = _psiManager.findFile(virtualFile);
+    // analyze class under cursor
+    public final void addContainingClasses(@NotNull final VirtualFile virtualFile, @NotNull final PsiClass selectedPsiClass) {
+        final PsiFile psiFile = _psiManager.findFile(virtualFile);
 
-		if (psiFile instanceof PsiClassOwner) {
-			final PsiClassOwner psiClassOwner = (PsiClassOwner) psiFile;
-			final PsiClass[] psiClasses = psiClassOwner.getClasses();
+        if (psiFile instanceof PsiClassOwner) {
+            final PsiClassOwner psiClassOwner = (PsiClassOwner) psiFile;
+            final PsiClass[] psiClasses = psiClassOwner.getClasses();
 
-			for (final PsiClass psiClass : psiClasses) {
+            for (final PsiClass psiClass : psiClasses) {
 
-				final String s = selectedPsiClass.getName();
-				final String s1 = psiClass.getName();
+                final String s = selectedPsiClass.getName();
+                final String s1 = psiClass.getName();
 
-				final VirtualFile compilerOutputPath = getCompilerOutputPath(virtualFile);
-				if (compilerOutputPath == null) {
-					LOGGER.warn("No output path specified for " + virtualFile + " in " + _project);
-					return; // f. e. project/module compiled and then compiler output path removed (empty text field)
-				}
+                final VirtualFile compilerOutputPath = getCompilerOutputPath(virtualFile);
+                if (compilerOutputPath == null) {
+                    LOGGER.warn("No output path specified for " + virtualFile + " in " + _project);
+                    return; // f. e. project/module compiled and then compiler output path removed (empty text field)
+                }
 
-				final String fqp = buildFullQualifiedPath(compilerOutputPath.getPresentableUrl(), psiClass);
-				if (s.equals(s1)) {
-					put(fqp, psiClass);
-				} else {
-					addAnonymousClasses(psiClass, fqp, s);
-					addInnerClasses(psiClass, fqp, s);
-				}
-			}
-		}
-	}
+                final String fqp = buildFullQualifiedPath(compilerOutputPath.getPresentableUrl(), psiClass);
+                if (s.equals(s1)) {
+                    put(fqp, psiClass);
+                } else {
+                    addAnonymousClasses(psiClass, fqp, s);
+                    addInnerClasses(psiClass, fqp, s);
+                }
+            }
+        }
+    }
 
-	private void addInnerClasses(final PsiClass psiClass, final String fullQualifiedPath) {
-		addInnerClasses(psiClass, fullQualifiedPath, null);
-	}
+    private void addInnerClasses(final PsiClass psiClass, final String fullQualifiedPath) {
+        addInnerClasses(psiClass, fullQualifiedPath, null);
+    }
 
-	private void addInnerClasses(final PsiClass psiClass, final String fullQualifiedPath, @Nullable final String findClass) {
-		final PsiClass[] psiClasses = psiClass.getInnerClasses();
+    private void addInnerClasses(final PsiClass psiClass, final String fullQualifiedPath, @Nullable final String findClass) {
+        final PsiClass[] psiClasses = psiClass.getInnerClasses();
 
-		for (final PsiClass innerPsiClass : psiClasses) {
-			final String innerClassName = innerPsiClass.getName();
-			final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + innerClassName;
+        for (final PsiClass innerPsiClass : psiClasses) {
+            final String innerClassName = innerPsiClass.getName();
+            final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + innerClassName;
 
-			assert innerClassName != null;
-			if (innerClassName.equals(findClass)) {
-				put(fqp, innerPsiClass);
-				return;
+            assert innerClassName != null;
+            if (innerClassName.equals(findClass)) {
+                put(fqp, innerPsiClass);
+                return;
 
-			} else if (findClass != null) {
-				addAnonymousClasses(innerPsiClass, fqp, findClass);
-				addInnerClasses(innerPsiClass, fqp, findClass);
-			} else { // default branch: no analyze class under cursor
-				put(fqp, innerPsiClass);
-				addAnonymousClasses(innerPsiClass, fqp);
-				addInnerClasses(innerPsiClass, fqp);
-			}
-		}
-	}
+            } else if (findClass != null) {
+                addAnonymousClasses(innerPsiClass, fqp, findClass);
+                addInnerClasses(innerPsiClass, fqp, findClass);
+            } else { // default branch: no analyze class under cursor
+                put(fqp, innerPsiClass);
+                addAnonymousClasses(innerPsiClass, fqp);
+                addInnerClasses(innerPsiClass, fqp);
+            }
+        }
+    }
 
-	private void addInnerClasses(final PsiElement psiElement, final String fullQualifiedPath, final int anonymousClassPrefix) {
-		addInnerClasses(psiElement, fullQualifiedPath, anonymousClassPrefix, null);
-	}
+    private void addInnerClasses(final PsiElement psiElement, final String fullQualifiedPath, final int anonymousClassPrefix) {
+        addInnerClasses(psiElement, fullQualifiedPath, anonymousClassPrefix, null);
+    }
 
-	private void addInnerClasses(final PsiElement psiElement, final String fullQualifiedPath, final int anonymousClassPrefix, @Nullable final String findClass) {
+    private void addInnerClasses(final PsiElement psiElement, final String fullQualifiedPath, final int anonymousClassPrefix, @Nullable final String findClass) {
 
-		final PsiElement[] classes = PsiTreeUtil.collectElements(psiElement, new InnerClassPsiElementFilter(psiElement));
+        final PsiElement[] classes = PsiTreeUtil.collectElements(psiElement, new InnerClassPsiElementFilter(psiElement));
 
-		for (final PsiElement element : classes) {
-			final PsiClass psiClass = (PsiClass) element;
-			final String className = psiClass.getName();
+        for (final PsiElement element : classes) {
+            final PsiClass psiClass = (PsiClass) element;
+            final String className = psiClass.getName();
 
-			if (!"null".equals(className)) {
-				final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + anonymousClassPrefix + className;
+            if (!"null".equals(className)) {
+                final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + anonymousClassPrefix + className;
 
-				if (String.valueOf(anonymousClassPrefix).equals(findClass)) {
-					put(fqp, element);
-					return;
+                if (String.valueOf(anonymousClassPrefix).equals(findClass)) {
+                    put(fqp, element);
+                    return;
 
-				} else if (findClass != null) {
-					addAnonymousClasses(psiElement, fqp, findClass);
-					addInnerClasses(psiClass, fqp, anonymousClassPrefix, findClass);
-				} else { // default branch: no analyze class under cursor
-					put(fqp, element);
-					// add nested inner/anonymous classes of current anonymous psiClass/Element
-					addAnonymousClasses(psiElement, fqp);
-					addInnerClasses(psiClass, fqp);
-				}
-			}
-		}
-	}
+                } else if (findClass != null) {
+                    addAnonymousClasses(psiElement, fqp, findClass);
+                    addInnerClasses(psiClass, fqp, anonymousClassPrefix, findClass);
+                } else { // default branch: no analyze class under cursor
+                    put(fqp, element);
+                    // add nested inner/anonymous classes of current anonymous psiClass/Element
+                    addAnonymousClasses(psiElement, fqp);
+                    addInnerClasses(psiClass, fqp);
+                }
+            }
+        }
+    }
 
-	private void addAnonymousClasses(final PsiElement psiElement, final String fullQualifiedPath) {
-		addAnonymousClasses(psiElement, fullQualifiedPath, null);
-	}
+    private void addAnonymousClasses(final PsiElement psiElement, final String fullQualifiedPath) {
+        addAnonymousClasses(psiElement, fullQualifiedPath, null);
+    }
 
-	private void addAnonymousClasses(final PsiElement psiElement, final String fullQualifiedPath, @Nullable final String findClass) {
+    private void addAnonymousClasses(final PsiElement psiElement, final String fullQualifiedPath, @Nullable final String findClass) {
 
-		final PsiElement[] classes = PsiTreeUtil.collectElements(psiElement, new AnonymousClassPsiElementFilter(psiElement));
+        final PsiElement[] classes = PsiTreeUtil.collectElements(psiElement, new AnonymousClassPsiElementFilter(psiElement));
 
-		final int length = classes.length;
-		for (int i = 0; i < length; i++) {
+        final int length = classes.length;
+        for (int i = 0; i < length; i++) {
 
-			final int anonymousClassPrefix = i + 1;
-			final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + anonymousClassPrefix;
+            final int anonymousClassPrefix = i + 1;
+            final String fqp = fullQualifiedPath + ANONYMOUS_CLASS_DELIMITER + anonymousClassPrefix;
 
-			if (String.valueOf(anonymousClassPrefix).equals(findClass)) {
-				put(fqp, classes[i]);
-				return;
+            if (String.valueOf(anonymousClassPrefix).equals(findClass)) {
+                put(fqp, classes[i]);
+                return;
 
-			} else if (findClass != null) {
-				addAnonymousClasses(classes[i], fqp, findClass);
-				addInnerClasses(classes[i], fqp, anonymousClassPrefix, findClass);
-			} else { // default branch: no analyze class under cursor
-				put(fqp, classes[i]);
-				// add nested inner/anonymous classes of current anonymous psiClass/Element
-				addAnonymousClasses(classes[i], fqp);
-				addInnerClasses(classes[i], fqp, anonymousClassPrefix);
-			}
-		}
-	}
+            } else if (findClass != null) {
+                addAnonymousClasses(classes[i], fqp, findClass);
+                addInnerClasses(classes[i], fqp, anonymousClassPrefix, findClass);
+            } else { // default branch: no analyze class under cursor
+                put(fqp, classes[i]);
+                // add nested inner/anonymous classes of current anonymous psiClass/Element
+                addAnonymousClasses(classes[i], fqp);
+                addInnerClasses(classes[i], fqp, anonymousClassPrefix);
+            }
+        }
+    }
 
-	@NotNull
-	private static String buildFullQualifiedPath(@NotNull final String compileOutputDir, @NotNull final PsiClass psiClass) {
-		final String packageUrl = IdeaUtils.getPackageUrl(psiClass);
-		final StringBuilder fqn = new StringBuilder();
+    @NotNull
+    private static String buildFullQualifiedPath(@NotNull final String compileOutputDir, @NotNull final PsiClass psiClass) {
+        final String packageUrl = IdeaUtils.getPackageUrl(psiClass);
+        final StringBuilder fqn = new StringBuilder();
 
-		fqn.append(compileOutputDir);
-		fqn.append(PluginConstants.FILE_SEPARATOR);
-		if (!packageUrl.isEmpty()) {
-			fqn.append(packageUrl);
-			fqn.append(PluginConstants.FILE_SEPARATOR);
-		}
+        fqn.append(compileOutputDir);
+        fqn.append(PluginConstants.FILE_SEPARATOR);
+        if (!packageUrl.isEmpty()) {
+            fqn.append(packageUrl);
+            fqn.append(PluginConstants.FILE_SEPARATOR);
+        }
 
-		//fqn.append(getParentClassNotation(psiClass));
-		fqn.append(psiClass.getName());
-		return fqn.toString();
-	}
+        //fqn.append(getParentClassNotation(psiClass));
+        fqn.append(psiClass.getName());
+        return fqn.toString();
+    }
 
-	@Nullable
-	private VirtualFile getCompilerOutputPath(@NotNull final VirtualFile virtualFile) {
-		final Module module = ModuleUtilCore.findModuleForFile(virtualFile, _project);
-		if (module == null) {
-			return null;
-		}
-		final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
-		if (compilerModuleExtension != null) {
-			if (fileIndex.isInTestSourceContent(virtualFile)) {
-				return compilerModuleExtension.getCompilerOutputPathForTests();
-			} else {
-				return compilerModuleExtension.getCompilerOutputPath();
-			}
-		}
-		return null;
-	}
+    @Nullable
+    private VirtualFile getCompilerOutputPath(@NotNull final VirtualFile virtualFile) {
+        final Module module = ModuleUtilCore.findModuleForFile(virtualFile, _project);
+        if (module == null) {
+            return null;
+        }
+        final CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
+        if (compilerModuleExtension != null) {
+            if (fileIndex.isInTestSourceContent(virtualFile)) {
+                return compilerModuleExtension.getCompilerOutputPathForTests();
+            } else {
+                return compilerModuleExtension.getCompilerOutputPath();
+            }
+        }
+        return null;
+    }
 
 	/*public static String getParentClassNotation(final PsiClass psiClass) {
 		final StringBuilder fqn = new StringBuilder("");

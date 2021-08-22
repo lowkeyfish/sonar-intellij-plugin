@@ -35,32 +35,32 @@ import org.jetbrains.annotations.NotNull;
  * Check: DebugUtil.dumpClasses(TheClass.class);
  */
 public final class WithPluginClassloader {
-	@NotNull
-	public static final ClassLoader PLUGIN_CLASS_LOADER = ToolWindowFactoryImpl.class.getClassLoader();
+    @NotNull
+    public static final ClassLoader PLUGIN_CLASS_LOADER = ToolWindowFactoryImpl.class.getClassLoader();
 
-	private WithPluginClassloader() {
-	}
+    private WithPluginClassloader() {
+    }
 
-	public static <V, E extends Throwable, E2 extends Throwable> V compute(@NotNull final Throwable2Computable<V, E, E2> computable) throws E, E2 {
-		final Thread currentThread = Thread.currentThread();
-		final ClassLoader cl = currentThread.getContextClassLoader();
-		try {
-			currentThread.setContextClassLoader(PLUGIN_CLASS_LOADER);
-			return computable.compute();
-		} finally {
-			currentThread.setContextClassLoader(cl);
-		}
-	}
+    public static <V, E extends Throwable, E2 extends Throwable> V compute(@NotNull final Throwable2Computable<V, E, E2> computable) throws E, E2 {
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader cl = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(PLUGIN_CLASS_LOADER);
+            return computable.compute();
+        } finally {
+            currentThread.setContextClassLoader(cl);
+        }
+    }
 
-	@NotNull
-	public static <V> V notNull(@NotNull final NotNullComputable<V> computable) {
-		final Thread currentThread = Thread.currentThread();
-		final ClassLoader cl = currentThread.getContextClassLoader();
-		try {
-			currentThread.setContextClassLoader(PLUGIN_CLASS_LOADER);
-			return computable.compute();
-		} finally {
-			currentThread.setContextClassLoader(cl);
-		}
-	}
+    @NotNull
+    public static <V> V notNull(@NotNull final NotNullComputable<V> computable) {
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader cl = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(PLUGIN_CLASS_LOADER);
+            return computable.compute();
+        } finally {
+            currentThread.setContextClassLoader(cl);
+        }
+    }
 }

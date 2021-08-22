@@ -31,30 +31,30 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractAnalyzeAction extends AbstractAction {
 
-	@Override
-	public final void actionPerformedImpl(
-			@NotNull final AnActionEvent e,
-			@NotNull final Project project,
-			@NotNull final ToolWindow toolWindow,
-			@NotNull final AnalyzeState state
-	) {
+    @Override
+    public final void actionPerformedImpl(
+            @NotNull final AnActionEvent e,
+            @NotNull final Project project,
+            @NotNull final ToolWindow toolWindow,
+            @NotNull final AnalyzeState state
+    ) {
 
-		EventDispatchThreadHelper.checkEDT();
+        EventDispatchThreadHelper.checkEDT();
 
-		analyze(
-				e,
-				project,
-				toolWindow,
-				state
-		);
-	}
+        analyze(
+                e,
+                project,
+                toolWindow,
+                state
+        );
+    }
 
-	public abstract void analyze(
-			@NotNull final AnActionEvent e,
-			@NotNull final Project project,
-			@NotNull final ToolWindow toolWindow,
-			@NotNull final AnalyzeState state
-	);
+    public abstract void analyze(
+            @NotNull final AnActionEvent e,
+            @NotNull final Project project,
+            @NotNull final ToolWindow toolWindow,
+            @NotNull final AnalyzeState state
+    );
 
 
 }
