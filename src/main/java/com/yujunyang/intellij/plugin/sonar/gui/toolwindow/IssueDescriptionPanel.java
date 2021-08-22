@@ -60,6 +60,7 @@ public class IssueDescriptionPanel extends JBPanel {
         descriptionEditorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         descriptionEditorPane.setFont(UIUtil.getLabelFont());
         descriptionEditorPane.setEditable(false);
+        descriptionEditorPane.setBackground(UIUtils.backgroundColor());
         // 防止每次更新内容后滚动条发生滚动，期望据顶据左
         ((DefaultCaret)descriptionEditorPane.getCaret()).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
         JBScrollPane descriptionScrollPane = new JBScrollPane(descriptionEditorPane);

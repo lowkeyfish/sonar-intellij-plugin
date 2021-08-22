@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
+import com.intellij.openapi.util.Computable;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import org.apache.commons.io.FileUtils;
 
@@ -39,8 +41,10 @@ public final class ReportUtils {
     }
 
     public static Report createReport(Project project) {
-        String projectPath = project.getBasePath();
-        Path reportDirPath = Paths.get(projectPath, TARGET_REPORT_DIR);
-        return new Report(project, reportDirPath.toFile());
+        return ApplicationManager.getApplication().runReadAction((Computable<Report>) () -> {
+            String projectPath = project.getBasePath();
+            Path reportDirPath = Paths.get(projectPath, TARGET_REPORT_DIR);
+            return new Report(project, reportDirPath.toFile());
+        });
     }
 }

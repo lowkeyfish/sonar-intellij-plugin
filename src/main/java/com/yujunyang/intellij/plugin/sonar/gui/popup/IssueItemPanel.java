@@ -54,6 +54,7 @@ public class IssueItemPanel extends JBPanel {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setSize(400, 1);
+        textArea.setBackground(UIUtils.backgroundColor());
         add(textArea, BorderLayout.NORTH);
 
         Pair<String, Icon> typeInfo = UIUtils.typeInfo(issue.getType());

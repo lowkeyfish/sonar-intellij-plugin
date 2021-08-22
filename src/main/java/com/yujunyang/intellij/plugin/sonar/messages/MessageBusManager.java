@@ -13,6 +13,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sonarsource.scanner.api.LogOutput;
@@ -76,8 +77,9 @@ public final class MessageBusManager {
 
 	public static void publishAnalysisStarted(@NotNull final Project project) {
 		EventDispatchThreadHelper.checkEDT();
-		ReportUtils.deleteReportDir(project);
+		(new Thread(() -> ReportUtils.deleteReportDir(project))).start();
 		AnalyzeState.set(project, AnalyzeState.Started);
+		ProblemCacheService.getInstance(project).reset();
 		publish(project, AnalysisStartedListener.TOPIC).analysisStarted();
 	}
 

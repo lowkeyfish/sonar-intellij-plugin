@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.Report;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
@@ -18,8 +19,8 @@ public class TestAction extends AbstractAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        e.getPresentation().setEnabled(true);
-        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(false);
+        e.getPresentation().setVisible(false);
     }
 
 
@@ -51,11 +52,16 @@ public class TestAction extends AbstractAction {
 //            }
 //        }
 
-        Report report = ReportUtils.createReport(e.getProject());
-        ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
-        problemCacheService.setIssues(report.getIssues());
-        problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
-        DaemonCodeAnalyzer.getInstance(project).restart();
-        MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
+        Thread thread = new Thread(() -> {
+            Report report = ReportUtils.createReport(e.getProject());
+            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+            problemCacheService.setIssues(report.getIssues());
+            problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
+            EventDispatchThreadHelper.invokeLater(() -> {
+                DaemonCodeAnalyzer.getInstance(project).restart();
+                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
+            });
+        });
+        thread.start();
     }
 }

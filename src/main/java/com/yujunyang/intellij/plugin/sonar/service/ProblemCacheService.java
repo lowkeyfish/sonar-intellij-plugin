@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class ProblemCacheService {
     private Project project;
 
+    private boolean initialized = false;
     private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
     private int bugCount;
     private int codeSmellCount;
@@ -53,10 +54,24 @@ public class ProblemCacheService {
     }
 
     public void setStats(int bugCount, int codeSmellCount, int vulnerabilityCount, int duplicatedBlocksCount) {
+        initialized = true;
         this.bugCount = bugCount;
         this.codeSmellCount = codeSmellCount;
         this.vulnerabilityCount = vulnerabilityCount;
         this.duplicatedBlocksCount = duplicatedBlocksCount;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void reset() {
+        initialized = false;
+        issues.clear();
+        bugCount = 0;
+        codeSmellCount = 0;
+        vulnerabilityCount = 0;
+        duplicatedBlocksCount = 0;
     }
 
     public static ProblemCacheService getInstance(@NotNull Project project) {

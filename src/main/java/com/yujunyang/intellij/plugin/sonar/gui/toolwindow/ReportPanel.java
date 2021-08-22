@@ -11,6 +11,7 @@ import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,11 +79,14 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
 
     @Override
     public void analysisFinished(@NotNull Object result, @Nullable Throwable error) {
-        EventDispatchThreadHelper.invokeLater(() -> {
-            refresh();
-            bodyPanelLayout.show(bodyPanel, "REPORT");
-            ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 0);
-        });
+        // 只有成功分析且成功解析分析报告才展示
+        if (ProblemCacheService.getInstance(project).isInitialized()) {
+            EventDispatchThreadHelper.invokeLater(() -> {
+                refresh();
+                bodyPanelLayout.show(bodyPanel, "REPORT");
+                ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 0);
+            });
+        }
     }
 
     @Override

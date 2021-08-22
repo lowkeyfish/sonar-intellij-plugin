@@ -2,6 +2,7 @@ package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -188,14 +189,13 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
         try {
             asyncStartImpl(indicator, justCompiled);
-            MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);
-        } catch (final ProcessCanceledException ignore) {
-            MessageBusManager.publishAnalysisAbortedToEDT(project);
         } catch (Exception exc) {
+            // SonarScanner内部错误在log中记录的准确，虽然每个error log会中断检查过程并抛出ScannerException但message变得不直接，因此在log中弹出错误提示而此处忽略
             if (!(exc instanceof ScannerException)) {
                 EventDispatchThreadHelper.invokeLater(() -> BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString()));
             }
-            MessageBusManager.publishAnalysisFinishedToEDT(project, "", exc);
+        } finally {
+            MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);
         }
     }
 
