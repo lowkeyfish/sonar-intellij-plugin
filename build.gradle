@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 group 'com.yujunyang'
-version '0.1.0-alpha'
+version '0.1.0-alpha.202108221930'
 
 sourceCompatibility = 1.8
 
@@ -39,6 +39,8 @@ intellij {
     plugins 'java'
 }
 patchPluginXml {
+    sinceBuild '191'
+    untilBuild '212.*'
     changeNotes """
       """
 }

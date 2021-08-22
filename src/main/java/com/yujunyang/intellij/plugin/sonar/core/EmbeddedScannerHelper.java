@@ -23,6 +23,7 @@ package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
@@ -35,7 +36,7 @@ public final class EmbeddedScannerHelper {
         Map<String, String> props = new HashMap<>();
         {
             props.put("sonar.host.url", WorkspaceSettings.getInstance().sonarHostUrl);
-            props.put("sonar.projectKey", "com.yujunyang.intellij.plugin.sonar");
+            props.put("sonar.projectKey", "com.yujunyang.intellij.plugin.sonar:" + project.getName());
             props.put("sonar.projectName", "com.yujunyang.intellij.plugin.sonar:" + project.getName());
             props.put("sonar.projectVersion", "1.0.0");
             props.put("sonar.projectBaseDir", project.getBasePath());
