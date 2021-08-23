@@ -23,7 +23,6 @@ package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -31,7 +30,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
@@ -49,7 +47,6 @@ import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import org.jetbrains.annotations.NotNull;
 import org.sonarsource.scanner.api.LogOutput;
-import org.sonarsource.scanner.api.internal.ScannerException;
 
 public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
@@ -218,12 +215,17 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
             asyncStartImpl(indicator, justCompiled);
         } catch (Exception exc) {
             // SonarScanner内部错误在log中记录的准确，虽然每个error log会中断检查过程并抛出ScannerException但message变得不直接，因此在log中弹出错误提示而此处忽略
-            if (!(exc instanceof ScannerException)) {
-                EventDispatchThreadHelper.invokeLater(() -> {
-                    BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
-                    MessageBusManager.publishLog(project, exc.getMessage(), LogOutput.Level.ERROR);
-                });
-            }
+            // 修改：log中的有些error并不会阻断整个分析过程，因此原先此处的处理就显得不合理，因此在log中不再提示，均在catch中提示失败
+            // if (!(exc instanceof ScannerException)) {
+            //     EventDispatchThreadHelper.invokeLater(() -> {
+            //         BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
+            //         MessageBusManager.publishLog(project, exc.getMessage(), LogOutput.Level.ERROR);
+            //     });
+            // }
+            EventDispatchThreadHelper.invokeLater(() -> {
+                BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
+                MessageBusManager.publishLog(project, exc.getMessage(), LogOutput.Level.ERROR);
+            });
         } finally {
             MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);
         }
@@ -244,11 +246,12 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     public static StringBuilder createErrorInfo(String errorMessage) {
         final StringBuilder ret = new StringBuilder();
-        ret.append("<h2>").append("Sonar analysis failed").append("</h2>");
-        ret.append("<p>").append(errorMessage).append("</p>");
-        ret.append("<br>");
+//        ret.append("<h2>").append("Sonar analysis failed").append("</h2>");
+//        ret.append("<p>").append(errorMessage).append("</p>");
+//        ret.append("<br>");
 //        ret.append("Go to Log for more details");
 //        ret.append("<br>");
+        ret.append("<p>Sonar analysis failed: ").append(errorMessage).append("</p>");
         return ret;
     }
 

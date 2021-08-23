@@ -26,8 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.intellij.history.core.Paths;
 import com.intellij.ide.plugins.PluginManager;
@@ -35,9 +33,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.components.ComponentManager;
 import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.editor.Document;
@@ -50,6 +46,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEnumerator;
@@ -69,7 +66,6 @@ import com.intellij.psi.PsiCompiledElement;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileSystemItem;
 import com.intellij.psi.PsiLambdaExpression;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
@@ -403,56 +399,6 @@ public final class IdeaUtils {
         return FileTypeManager.getInstance().getFileTypeByFileName(filename);
     }
 
-//	@Nullable
-//	private static PsiFile getPsiFile(@NotNull final Project project, @NotNull final ExtendedProblemDescriptor problem) {
-//		final PsiFile file = problem.getPsiFile();
-//		return PsiManager.getInstance(project).findFile(file.getVirtualFile());
-//	}
-//
-//
-//	@SuppressWarnings("UnusedDeclaration")
-//	@Nullable
-//	public static Document getDocument(@NotNull final Project project, @NotNull final ExtendedProblemDescriptor issue) {
-//		final PsiFile psiFile = getPsiFile(project, issue);
-//		return psiFile == null ? null : PsiDocumentManager.getInstance(project).getDocument(psiFile);
-//	}
-//
-//	@Nullable
-//	public static PsiElement findClassPsiElement(@Nullable final PsiFileSystemItem psiFile, @NotNull final BugInstance bugInstance, @NotNull final Project project) {
-//		if (psiFile != null) {
-//			final String classNameToFind = BugInstanceUtil.getSimpleClassName(bugInstance);
-//			final ClassCollector cc = new ClassCollector(project);
-//			cc.addContainingClasses(psiFile.getVirtualFile());
-//			final Map<String, PsiElement> classes = cc.getClasses();
-//
-//			for (final Entry<String, PsiElement> entry : classes.entrySet()) {
-//				final String fileName = new File(entry.getKey()).getName();
-//				if (fileName.equals(classNameToFind + AbstractClassAdder.CLASS_FILE_SUFFIX)) {
-//					return entry.getValue();
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
-//	@Nullable
-//	public static PsiElement findPsiElement(@Nullable final PsiFileSystemItem psiFile, @NotNull final BugInstance bugInstance, @NotNull final Project project) {
-//		if (psiFile == null) {
-//			return null;
-//		}
-//		PsiElement result = findClassPsiElement(psiFile, bugInstance, project);
-////		final FieldAnnotation primaryField = bugInstance.getPrimaryField();
-////		if (result != null && primaryField != null) {
-////			result =  ((PsiClass) result).findFieldByName(primaryField.getFieldName(), false);
-////		}
-////		// FIXME: add finding the method
-////		if (result == null) {
-////			return null;
-////		}
-////		return result instanceof PsiAnonymousClass ? result : ((PsiNameIdentifierOwner) result).getNameIdentifier();
-//		return null;
-//	}
-
     @Nullable
     public static String getFirstProjectRootPath(final Project project) {
         final ProjectRootManager projectManager = ProjectRootManager.getInstance(project);
@@ -546,6 +492,11 @@ public final class IdeaUtils {
         String projectPath = psiFile.getProject().getBasePath();
         String psiFilePath = psiFile.getVirtualFile().getPath();
         return Paths.relativeIfUnder(psiFilePath, projectPath);
+    }
+
+    public static String getProjectSdkVersion(Project project) {
+        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        return sdk.getName();
     }
 
 }

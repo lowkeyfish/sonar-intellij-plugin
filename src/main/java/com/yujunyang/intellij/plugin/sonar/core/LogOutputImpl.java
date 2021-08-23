@@ -21,14 +21,10 @@
 
 package com.yujunyang.intellij.plugin.sonar.core;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
-import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.sonarsource.scanner.api.LogOutput;
@@ -68,9 +64,10 @@ public class LogOutputImpl implements LogOutput {
             }
         }
         EventDispatchThreadHelper.invokeLater(() -> {
-            if (level == Level.ERROR) {
-                BalloonTipFactory.showToolWindowErrorNotifier(project, SonarScannerStarter.createErrorInfo(formattedMessage).toString());
-            }
+            // 并非所有的error，SonarScanner都会停止整个分析，所以这里不再针对error做提示，因为已经和原先设想的不同
+//            if (level == Level.ERROR) {
+//                BalloonTipFactory.showToolWindowErrorNotifier(project, SonarScannerStarter.createErrorInfo(formattedMessage).toString());
+//            }
             MessageBusManager.publishLog(project, formattedMessage, level);
         });
 

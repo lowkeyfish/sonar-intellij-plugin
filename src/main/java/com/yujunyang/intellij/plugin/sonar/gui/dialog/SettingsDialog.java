@@ -24,19 +24,18 @@ package com.yujunyang.intellij.plugin.sonar.gui.dialog;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBLabel;
@@ -55,6 +54,7 @@ public class SettingsDialog extends DialogWrapper {
     private Project project;
     private ErrorPainter errorPainter;
     private JBTextField sonarHostUrlField;
+    private JBTextField sonarTokenField;
 
     public SettingsDialog(@Nullable Project project) {
         super(true);
@@ -72,38 +72,61 @@ public class SettingsDialog extends DialogWrapper {
         JBPanel content = new JBPanel();
         content.setPreferredSize(new Dimension(440, content.getPreferredSize().height));
         content.setBorder(JBUI.Borders.empty(20, 20));
-        BoxLayout layout = new BoxLayout(content, BoxLayout.Y_AXIS);
-        content.setLayout(layout);
+        content.setLayout(new BorderLayout());
 
         JBLabel sonarQubeLogoLabel = new JBLabel(PluginIcons.SONAR_QUBE);
         sonarQubeLogoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        content.add(UIUtils.wrappedInBorderLayoutPanel(sonarQubeLogoLabel, BorderLayout.CENTER));
-        content.add(Box.createVerticalStrut(10));
+        content.add(UIUtils.wrappedInBorderLayoutPanel(sonarQubeLogoLabel, BorderLayout.CENTER), BorderLayout.NORTH);
 
         errorPainter = new ErrorPainter();
         errorPainter.installOn((JPanel) getContentPanel(), () -> {
         });
 
-        JBLabel sonarHostUrlLabel = new JBLabel("SonarQube URL: ");
-        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
-        sonarHostUrlField = new JBTextField(workspaceSettings.getSonarHostUrl());
-        sonarHostUrlField.getEmptyText().setText("Example: http://localhost:9000");
-        BooleanFunction<JBTextField> statusVisibleFunction = jbTextField -> "".equals(sonarHostUrlField.getText());
-        sonarHostUrlField.putClientProperty("StatusVisibleFunction", statusVisibleFunction);
-        sonarHostUrlField.getDocument().addDocumentListener(new DocumentAdapter() {
-            @Override
-            protected void textChanged(@NotNull DocumentEvent e) {
-                errorPainter.setValid(sonarHostUrlField, !StringUtil.isEmptyOrSpaces(sonarHostUrlField.getText()));
-            }
-        });
+        JBPanel formPanel = new JBPanel(new GridBagLayout());
+        formPanel.setBorder(JBUI.Borders.empty(20, 0, 20, 0));
+        GridBagConstraints c = new GridBagConstraints();
 
-        content.add(UIUtils.wrappedInBorderLayoutPanel(
-                new Pair<>(sonarHostUrlLabel, BorderLayout.WEST),
-                new Pair<>(sonarHostUrlField, BorderLayout.CENTER))
-        );
-        content.add(Box.createVerticalStrut(20));
+        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
+        sonarHostUrlField = createFiled(workspaceSettings.getSonarHostUrl(), "Example: http://localhost:9000");
+        c.gridy = 0;
+        c.gridx = 0;
+        c.weightx = 0;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(new JBLabel("URL: "), c);
+        c.gridx = 1;
+        c.weightx = 1;
+        formPanel.add(sonarHostUrlField, c);
+
+        c.gridy = 1;
+        c.gridx = 0;
+        c.weightx = 0;
+        c.insets = new Insets(5, 0, 0, 0);
+        sonarTokenField = createFiled(workspaceSettings.getSonarToken(), "");
+        formPanel.add(new JBLabel("Token: "), c);
+
+        c.gridx = 1;
+        c.weightx = 1;
+        c.insets = new Insets(5, 0, 0, 0);
+        formPanel.add(sonarTokenField, c);
+
+        content.add(formPanel, BorderLayout.CENTER);
 
         return content;
+    }
+
+    private JBTextField createFiled(String defaultText, String emptyText) {
+        JBTextField textField = new JBTextField(defaultText);
+        textField.getEmptyText().setText(emptyText);
+        BooleanFunction<JBTextField> statusVisibleFunction = jbTextField -> StringUtil.isEmptyOrSpaces(textField.getText());
+        textField.putClientProperty("StatusVisibleFunction", statusVisibleFunction);
+        textField.getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(@NotNull DocumentEvent e) {
+                errorPainter.setValid(textField, !StringUtil.isEmptyOrSpaces(textField.getText()));
+            }
+        });
+        errorPainter.setValid(textField, !StringUtil.isEmptyOrSpaces(textField.getText()));
+        return textField;
     }
 
 
@@ -132,7 +155,15 @@ public class SettingsDialog extends DialogWrapper {
             return;
         }
 
-        WorkspaceSettings.getInstance().sonarHostUrl = sonarHostUrl;
+        String sonarToken = sonarTokenField.getText();
+        if (StringUtil.isEmptyOrSpaces(sonarToken)) {
+            return;
+        }
+
+        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
+        workspaceSettings.sonarHostUrl = sonarHostUrl;
+        workspaceSettings.sonarToken = sonarToken;
+
         close(0);
     }
 

@@ -24,6 +24,8 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
@@ -72,6 +74,10 @@ public class TestAction extends AbstractAction {
 //                System.out.println(rootUrl);
 //            }
 //        }
+
+        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        String version = sdk.getVersionString();
+
 
         Thread thread = new Thread(() -> {
             Report report = ReportUtils.createReport(e.getProject());

@@ -58,7 +58,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
