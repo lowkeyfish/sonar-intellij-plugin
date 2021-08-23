@@ -238,7 +238,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     private boolean configCompleted() {
         WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
-        if (StringUtil.isEmpty(workspaceSettings.sonarHostUrl)) {
+        if (StringUtil.isEmptyOrSpaces(workspaceSettings.sonarHostUrl) || StringUtil.isEmptyOrSpaces(workspaceSettings.sonarToken)) {
             return false;
         }
         return true;
