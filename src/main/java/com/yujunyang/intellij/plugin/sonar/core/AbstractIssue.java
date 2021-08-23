@@ -153,6 +153,10 @@ public abstract class AbstractIssue {
         Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
 
         int line = lineStart - 1;
+        // Sonar可能会对整个文件提示问题，这种情况下lineStart=0，需要额外处理
+        if (line < 0) {
+            line = 0;
+        }
         int offset = textRange.getStartOffset();
 
         int psiElementOffset = document.getLineStartOffset(line) + offset;
