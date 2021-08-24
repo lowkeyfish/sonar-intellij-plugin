@@ -46,6 +46,7 @@ public final class EmbeddedScannerHelper {
             props.put("sonar.sources", IdeaUtils.getAllSourceRootPath(project));
             props.put("sonar.java.libraries", IdeaUtils.getFullClassPath(project));
             props.put("sonar.java.binaries", IdeaUtils.getAllCompilerOutPath(project));
+
         }
 
         return props;

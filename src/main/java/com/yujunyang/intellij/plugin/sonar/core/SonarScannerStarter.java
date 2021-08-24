@@ -48,6 +48,7 @@ import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import org.jetbrains.annotations.NotNull;
 import org.sonarsource.scanner.api.LogOutput;
+import org.sonarsource.scanner.api.internal.ScannerException;
 
 public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
@@ -225,7 +226,8 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
             // }
             EventDispatchThreadHelper.invokeLater(() -> {
                 BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
-                MessageBusManager.publishLog(project, exc.getMessage() + LogUtils.formatStackTrace(exc.getStackTrace()), LogOutput.Level.ERROR);
+                String logMessage = exc instanceof ConfigException || exc instanceof ScannerException ? exc.getMessage() : exc.getMessage() + LogUtils.formatStackTrace(exc.getStackTrace());
+                MessageBusManager.publishLog(project, logMessage, LogOutput.Level.ERROR);
             });
         } finally {
             MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);
