@@ -30,6 +30,6 @@ public interface SonarApi {
     @GET("/api/qualityprofiles/search?defaults=true")
     Call<QualityProfilesSearchResponse> qualityProfilesSearch();
 
-    @GET("/api/rules/search?activation=true&statuses=READY&ps=500&f=repo,name,htmlDesc,params,severity")
+    @GET("/api/rules/search?activation=true&ps=500&f=repo,name,htmlDesc,params,severity")
     Call<RulesSearchResponse> rulesSearch(@Query("qprofile") String profileKey, @Query("p") int page);
 }

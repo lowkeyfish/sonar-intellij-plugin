@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 group 'com.yujunyang'
-version '0.1.0-alpha.202108241415'
+version '0.1.0-alpha.202108241500'
 
 sourceCompatibility = 1.8
 
