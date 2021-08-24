@@ -40,6 +40,7 @@ public class ProblemCacheService {
     private int codeSmellCount;
     private int vulnerabilityCount;
     private int duplicatedBlocksCount;
+    private int securityHotSpotCount;
 
     public ProblemCacheService(Project project) {
         this.project = project;
@@ -48,6 +49,7 @@ public class ProblemCacheService {
         codeSmellCount = 0;
         vulnerabilityCount = 0;
         duplicatedBlocksCount = 0;
+        securityHotSpotCount = 0;
     }
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
@@ -74,12 +76,17 @@ public class ProblemCacheService {
         return duplicatedBlocksCount;
     }
 
-    public void setStats(int bugCount, int codeSmellCount, int vulnerabilityCount, int duplicatedBlocksCount) {
+    public int getSecurityHotSpotCount() {
+        return securityHotSpotCount;
+    }
+
+    public void setStats(int bugCount, int codeSmellCount, int vulnerabilityCount, int duplicatedBlocksCount, int securityHotSpotCount) {
         initialized = true;
         this.bugCount = bugCount;
         this.codeSmellCount = codeSmellCount;
         this.vulnerabilityCount = vulnerabilityCount;
         this.duplicatedBlocksCount = duplicatedBlocksCount;
+        this.securityHotSpotCount = securityHotSpotCount;
     }
 
     public boolean isInitialized() {
@@ -93,6 +100,7 @@ public class ProblemCacheService {
         codeSmellCount = 0;
         vulnerabilityCount = 0;
         duplicatedBlocksCount = 0;
+        securityHotSpotCount = 0;
     }
 
     public static ProblemCacheService getInstance(@NotNull Project project) {

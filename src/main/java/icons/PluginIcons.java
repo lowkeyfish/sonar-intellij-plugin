@@ -50,6 +50,7 @@ public interface PluginIcons {
     Icon BUGS = ResourcesLoader.loadIcon("bugs.svg");
     Icon VULNERABILITY = ResourcesLoader.loadIcon("vulnerability.svg");
     Icon CODE_SMELL = ResourcesLoader.loadIcon("codeSmell.svg");
+    Icon SECURITY_HOTSPOT = ResourcesLoader.loadIcon("security_hotspot.svg");
     Icon BLOCKER = ResourcesLoader.loadIcon("blocker.svg");
     Icon CRITICAL = ResourcesLoader.loadIcon("critical.svg");
     Icon MAJOR = ResourcesLoader.loadIcon("major.svg");

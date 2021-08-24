@@ -39,6 +39,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.impl.ToolWindowImpl;
 import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
+import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ConfigException;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
@@ -224,7 +225,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
             // }
             EventDispatchThreadHelper.invokeLater(() -> {
                 BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
-                MessageBusManager.publishLog(project, exc.getMessage(), LogOutput.Level.ERROR);
+                MessageBusManager.publishLog(project, exc.getMessage() + LogUtils.formatStackTrace(exc.getStackTrace()), LogOutput.Level.ERROR);
             });
         } finally {
             MessageBusManager.publishAnalysisFinishedToEDT(project, new Object(), null);

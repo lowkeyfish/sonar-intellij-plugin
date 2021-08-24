@@ -27,9 +27,7 @@ import com.intellij.psi.PsiDeclarationStatement;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiWhiteSpace;
-import com.siyeh.ig.ui.UiUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 
 public abstract class AbstractIssue {
@@ -45,7 +43,9 @@ public abstract class AbstractIssue {
     protected PsiElement psiElement;
     protected int lineStart;
     protected int lineEnd;
-    protected TextRange textRange;
+//    protected TextRange textRange;
+    protected int offsetStart;
+    protected int offsetEnd;
 
     public AbstractIssue(
             PsiFile psiFile,
@@ -157,7 +157,8 @@ public abstract class AbstractIssue {
         if (line < 0) {
             line = 0;
         }
-        int offset = textRange.getStartOffset();
+//        int offset = textRange.getStartOffset();
+        int offset = this.offsetStart;
 
         int psiElementOffset = document.getLineStartOffset(line) + offset;
         PsiElement findPsiElement = psiFile.findElementAt(psiElementOffset);

@@ -330,6 +330,8 @@ public final class UIUtils {
                 return new Pair<>("漏洞", PluginIcons.VULNERABILITY);
             case "CODE_SMELL":
                 return new Pair<>("异味", PluginIcons.CODE_SMELL);
+            case "SECURITY_HOTSPOT":
+                return new Pair<>("安全热点", PluginIcons.SECURITY_HOTSPOT);
             default:
                 return new Pair<>("", null);
         }

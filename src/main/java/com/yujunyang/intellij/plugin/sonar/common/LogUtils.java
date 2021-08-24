@@ -19,28 +19,26 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.yujunyang.intellij.plugin.sonar.core;
+package com.yujunyang.intellij.plugin.sonar.common;
 
-import com.intellij.psi.PsiFile;
+public final class LogUtils {
 
-public class Issue extends AbstractIssue {
-    public Issue(
-            PsiFile psiFile,
-            String ruleRepository,
-            String ruleKey,
-            String msg,
-            String severity,
-            int lineStart,
-            int lineEnd,
-            int offsetStart,
-            int offsetEnd,
-            String type,
-            String name,
-            String htmlDesc) {
-        super(psiFile, ruleRepository, ruleKey, msg, severity, type, name, htmlDesc);
-        this.lineStart = lineStart;
-        this.lineEnd = lineEnd;
-        this.offsetStart = offsetStart;
-        this.offsetEnd = offsetEnd;
+    public static String formatStackTrace(StackTraceElement[] stackTraceElements) {
+        StringBuilder builder = new StringBuilder();
+
+        for (StackTraceElement item : stackTraceElements) {
+            builder.append("\n\t");
+            builder.append("at ");
+            builder.append(item.getClassName());
+            builder.append(".");
+            builder.append(item.getMethodName());
+            builder.append("(");
+            builder.append(item.getFileName());
+            builder.append(":");
+            builder.append(item.getLineNumber());
+            builder.append(")");
+        }
+
+        return builder.toString();
     }
 }

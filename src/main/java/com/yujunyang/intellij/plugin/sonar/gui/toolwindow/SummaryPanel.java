@@ -22,12 +22,9 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-
 import javax.swing.BorderFactory;
-import javax.swing.SwingConstants;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
@@ -44,6 +41,8 @@ public class SummaryPanel extends JBPanel {
     private JBLabel bugCountLabel;
     private JBPanel codeSmellCountPanel;
     private JBLabel codeSmellCountLabel;
+    private JBPanel securityHotSpotCountPanel;
+    private JBLabel securityHotSpotCountLabel;
     private JBPanel duplicatedBlocksCountPanel;
     private JBLabel duplicatedBlocksCountLabel;
 
@@ -77,6 +76,12 @@ public class SummaryPanel extends JBPanel {
         codeSmellCountPanel.add(codeSmellCountLabel, BorderLayout.NORTH);
         codeSmellCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("异味"), BorderLayout.CENTER);
 
+        securityHotSpotCountPanel = createPanel();
+        add(securityHotSpotCountPanel);
+        securityHotSpotCountLabel = createLabel();
+        securityHotSpotCountPanel.add(securityHotSpotCountLabel, BorderLayout.NORTH);
+        securityHotSpotCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("安全热点"), BorderLayout.CENTER);
+
         duplicatedBlocksCountPanel = createPanel();
         add(duplicatedBlocksCountPanel);
         duplicatedBlocksCountLabel = createLabel();
@@ -90,6 +95,7 @@ public class SummaryPanel extends JBPanel {
         bugCountLabel.setText(String.valueOf(problemCacheService.getBugCount()));
         codeSmellCountLabel.setText(String.valueOf(problemCacheService.getCodeSmellCount()));
         duplicatedBlocksCountLabel.setText(String.valueOf(problemCacheService.getDuplicatedBlocksCount()));
+        securityHotSpotCountLabel.setText(String.valueOf(problemCacheService.getSecurityHotSpotCount()));
     }
 
     private JBPanel createPanel() {
@@ -110,5 +116,6 @@ public class SummaryPanel extends JBPanel {
         bugCountLabel.setText("0");
         codeSmellCountLabel.setText("0");
         duplicatedBlocksCountLabel.setText("0");
+        securityHotSpotCountLabel.setText("0");
     }
 }

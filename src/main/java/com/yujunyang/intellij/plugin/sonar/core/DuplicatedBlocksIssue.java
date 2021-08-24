@@ -24,7 +24,6 @@ package com.yujunyang.intellij.plugin.sonar.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 
 public class DuplicatedBlocksIssue extends AbstractIssue {
@@ -43,7 +42,9 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
         super(psiFile, ruleRepository, ruleKey, "", severity, type, name, htmlDesc);
         this.lineStart = lineStart;
         this.lineEnd = lineEnd;
-        this.textRange = new TextRange(0, 0);
+//        this.textRange = new TextRange(0, 0);
+        this.offsetStart = 0;
+        this.offsetEnd = 0;
         this.duplicates = new ArrayList<>();
     }
 

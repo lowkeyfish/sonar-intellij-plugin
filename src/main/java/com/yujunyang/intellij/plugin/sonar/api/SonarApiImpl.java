@@ -29,13 +29,17 @@ import java.util.stream.Collectors;
 
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 
 public class SonarApiImpl {
     private static SonarApi sonarApi;
 
     static {
-        Retrofit retrofit = ApiUtils.createRetrofit(WorkspaceSettings.getInstance().sonarHostUrl);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(new SonarQubeBasicAuthInterceptor());
+        OkHttpClient client = httpClient.build();
+        Retrofit retrofit = ApiUtils.createRetrofit(WorkspaceSettings.getInstance().sonarHostUrl, client);
         sonarApi = retrofit.create(SonarApi.class);
     }
 

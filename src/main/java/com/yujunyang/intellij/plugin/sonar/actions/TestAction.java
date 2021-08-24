@@ -83,7 +83,12 @@ public class TestAction extends AbstractAction {
             Report report = ReportUtils.createReport(e.getProject());
             ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
             problemCacheService.setIssues(report.getIssues());
-            problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
+            problemCacheService.setStats(
+                    report.getBugCount(),
+                    report.getCodeSmellCount(),
+                    report.getVulnerabilityCount(),
+                    report.getDuplicatedBlocksCount(),
+                    report.getSecurityHotSpotCount());
             EventDispatchThreadHelper.invokeLater(() -> {
                 DaemonCodeAnalyzer.getInstance(project).restart();
                 MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);

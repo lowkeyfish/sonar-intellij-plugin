@@ -25,6 +25,7 @@ import java.util.concurrent.FutureTask;
 
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
+import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.sonarsource.scanner.api.LogOutput;
@@ -49,7 +50,12 @@ public class LogOutputImpl implements LogOutput {
                 Report report = ReportUtils.createReport(project);
                 ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
                 problemCacheService.setIssues(report.getIssues());
-                problemCacheService.setStats(report.getBugCount(), report.getCodeSmellCount(), report.getVulnerabilityCount(), report.getDuplicatedBlocksCount());
+                problemCacheService.setStats(
+                        report.getBugCount(),
+                        report.getCodeSmellCount(),
+                        report.getVulnerabilityCount(),
+                        report.getDuplicatedBlocksCount(),
+                        report.getSecurityHotSpotCount());
                 return report;
             });
 
@@ -59,7 +65,8 @@ public class LogOutputImpl implements LogOutput {
                 task.get();
                 MessageBusManager.publishLogToEDT(project, "报告解析成功", Level.INFO);
             } catch (Exception e) {
-                MessageBusManager.publishLogToEDT(project, "报告解析成功", Level.ERROR);
+                // TODO:log中抛出的异常并不会被外层捕获
+                MessageBusManager.publishLogToEDT(project, "报告解析出错, " + e.getMessage() + LogUtils.formatStackTrace(e.getStackTrace()), Level.ERROR);
                 throw new RuntimeException("报告解析出错: " + e.getMessage());
             }
         }

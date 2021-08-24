@@ -52,6 +52,7 @@ public class Report {
     private int codeSmellCount;
     private int vulnerabilityCount;
     private int duplicatedBlocksCount;
+    private int securityHotSpotCount;
     private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
 
     public Report(@NotNull Project project, @NotNull File reportDir) {
@@ -75,6 +76,10 @@ public class Report {
 
     public int getDuplicatedBlocksCount() {
         return duplicatedBlocksCount;
+    }
+
+    public int getSecurityHotSpotCount() {
+        return securityHotSpotCount;
     }
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
@@ -122,16 +127,20 @@ public class Report {
                     case "CODE_SMELL":
                         codeSmellCount++;
                         break;
+                    case "SECURITY_HOTSPOT":
+                        securityHotSpotCount++;
+                        break;
                     default:
                         ignoreIssue = true;
                         break;
                 }
 
                 if (ignoreIssue) {
-                    MessageBusManager.publishLog(project, String.format("Rule[%s] type[%s] is not supported", issueRuleKey, rule.getType()), LogOutput.Level.ERROR);
+                    MessageBusManager.publishLogToEDT(project, String.format("Rule[%s] type[%s] 暂未被报告解析程序支持, 展示的报告中将忽略此类型相关问题, 在后续插件更新中可能会增加支持", issueRuleKey, rule.getType()), LogOutput.Level.ERROR);
                     continue;
                 }
 
+                // 构造函数不再使用TextRange传offset，因为可能Sonar提供的TextRange中startOffset会大于endOffset，创建TextRange时将输出一条error提示offset范围异常
                 Issue issue = new Issue(
                         psiFile,
                         reportIssue.getRuleRepository(),
@@ -140,11 +149,14 @@ public class Report {
                         reportIssue.getSeverity().toString(),
                         reportIssue.getTextRange().getStartLine(),
                         reportIssue.getTextRange().getEndLine(),
-                        new TextRange(reportIssue.getTextRange().getStartOffset(), reportIssue.getTextRange().getEndOffset()),
+                        reportIssue.getTextRange().getStartOffset(),
+                        reportIssue.getTextRange().getEndOffset(),
                         rule.getType(),
                         rule.getName(),
                         rule.getHtmlDesc());
+
                 issues.get(psiFile).add(issue);
+
             }
 
             while (reportDuplications.hasNext()) {

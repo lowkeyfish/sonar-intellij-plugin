@@ -140,7 +140,8 @@ public class Report_Del {
                         reportIssue.getSeverity().toString(),
                         reportIssue.getTextRange().getStartLine(),
                         reportIssue.getTextRange().getEndLine(),
-                        new TextRange(reportIssue.getTextRange().getStartOffset(), reportIssue.getTextRange().getEndOffset()),
+                        reportIssue.getTextRange().getStartOffset(),
+                        reportIssue.getTextRange().getEndOffset(),
                         rule.getType(),
                         rule.getName(),
                         rule.getHtmlDesc());
