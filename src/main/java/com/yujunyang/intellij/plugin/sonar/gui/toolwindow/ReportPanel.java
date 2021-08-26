@@ -24,6 +24,7 @@ package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
@@ -108,6 +109,7 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
                 BalloonTipFactory.showToolWindowInfoNotifier(project, SonarScannerStarter.createSuccessInfo().toString());
                 refresh();
                 bodyPanelLayout.show(bodyPanel, "REPORT");
+                DaemonCodeAnalyzer.getInstance(project).restart();
                 ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 0);
             });
         }
@@ -117,5 +119,6 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
     public void analysisStarted() {
         bodyPanelLayout.show(bodyPanel, "EMPTY");
         reset();
+        DaemonCodeAnalyzer.getInstance(project).restart();
     }
 }

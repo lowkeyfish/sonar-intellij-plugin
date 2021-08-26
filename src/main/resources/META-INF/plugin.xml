@@ -32,8 +32,6 @@
                 anchor="bottom"
         />
         <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService"/>
-<!--        <annotator language="JAVA"-->
-<!--                   implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueAnnotator"/>-->
         <externalAnnotator language="JAVA"
                            implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
         <externalAnnotator language="XML"
@@ -42,6 +40,12 @@
                                         implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueLineMarkerProvider"/>
         <codeInsight.lineMarkerProvider language="XML"
                                         implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueLineMarkerProvider"/>
+        <applicationConfigurable parentId="tools" id="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"
+                instance="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"/>
+        <projectConfigurable parentId="com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable"
+                instance="com.yujunyang.intellij.plugin.sonar.extensions.ProjectSettingsConfigurable"
+                             nonDefaultProject="true"
+        />
     </extensions>
 
     <actions>

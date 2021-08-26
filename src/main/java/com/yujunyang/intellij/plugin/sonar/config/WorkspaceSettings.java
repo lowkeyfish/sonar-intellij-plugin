@@ -22,15 +22,24 @@
 package com.yujunyang.intellij.plugin.sonar.config;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.util.xmlb.Constants;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.intellij.util.xmlb.annotations.AbstractCollection;
+import com.intellij.util.xmlb.annotations.MapAnnotation;
 import com.intellij.util.xmlb.annotations.Tag;
+import com.intellij.util.xmlb.annotations.XCollection;
+import org.apache.commons.collections.MapUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +55,26 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
     @Tag
     public List<String> languages = Arrays.asList("java", "xml");
 
-    @Tag
-    public boolean annotationGutterIcon = true;
+
+    @Tag("sonarQubeConnections")
+    @XCollection(elementName = "connection", elementTypes = SonarQubeSettings.class)
+    public Set<SonarQubeSettings> sonarQubeConnections = new HashSet<>();
+
+    @Tag("sonarProperties")
+    @MapAnnotation(
+            surroundWithTag = false,
+            surroundValueWithTag = false,
+            surroundKeyWithTag = false,
+            entryTagName = "property",
+            keyAttributeName = "name",
+            valueAttributeName = "value"
+    )
+    public Map<String, String> sonarProperties = new HashMap<>();
+
+    public WorkspaceSettings() {
+        sonarProperties.put("sonar.exclusions", "");
+        sonarProperties.put("sonar.cpd.exclusions", "");
+    }
 
     @Nullable
     @Override
