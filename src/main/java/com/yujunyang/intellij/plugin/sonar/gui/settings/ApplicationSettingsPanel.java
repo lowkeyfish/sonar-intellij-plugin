@@ -22,21 +22,16 @@
 package com.yujunyang.intellij.plugin.sonar.gui.settings;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
-import javax.swing.DefaultSingleSelectionModel;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.intellij.icons.AllIcons;
@@ -46,19 +41,20 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
+import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
-import javafx.scene.control.TableSelectionModel;
+import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarQubeConnectionDialog;
 import org.jetbrains.annotations.NotNull;
 
 public class ApplicationSettingsPanel extends JBPanel {
     private JBTable connectionsTable;
     private DefaultTableModel connectionsTableModel;
     private int connectionsTableSelectedIndex = -1;
+    private List<SonarQubeSettings> sonarQubeConnections = new ArrayList<>();
     private JBTable propertiesTable;
     private DefaultTableModel propertiesTableModel;
     private int propertiesTableSelectedIndex = -1;
@@ -79,24 +75,16 @@ public class ApplicationSettingsPanel extends JBPanel {
     private void initConnections() {
         addTableLabel("SonarQube connections:");
 
-        connectionsTableModel = new DefaultTableModel(0, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        connectionsTableModel.setColumnIdentifiers(new String[] { "Name", "Url" });
-        connectionsTableModel.addRow(new String[] { "1", "1" });
-        connectionsTableModel.addRow(new String[] { "2", "2" });
+        connectionsTableModel = createDefaultTableModel(new String[] { "Name", "Url" });
 
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
-
-
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-
+                AddSonarQubeConnectionDialog addSonarQubeConnectionDialog = new AddSonarQubeConnectionDialog((sonarQubeSettings) -> addSonarQubeConnection(sonarQubeSettings));
+                addSonarQubeConnectionDialog.setExistNames(sonarQubeConnections.stream().map(n -> n.name).collect(Collectors.toList()));
+                addSonarQubeConnectionDialog.show();
             }
         });
         actionGroup.add(new AnAction("Remove", "", AllIcons.General.Remove) {
@@ -132,41 +120,7 @@ public class ApplicationSettingsPanel extends JBPanel {
     private void initSonarProperties() {
         addTableLabel("SonarScanner properties:");
 
-        String[] columnNames = { "Name", "Value" };
-        String[][] data = {
-            {
-                "asdfsdf", "123123"
-            },
-                {
-                        "asdfsdf", "123123"
-                }
-        };
-        TableModel tableModel = new AbstractTableModel() {
-            @Override
-            public int getRowCount() {
-                return data.length;
-            }
-
-            @Override
-            public int getColumnCount() {
-                return columnNames.length;
-            }
-
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                return "";
-            }
-
-            @Override
-            public String getColumnName(int column) {
-                return columnNames[column];
-            }
-
-            @Override
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        };
+        propertiesTableModel = createDefaultTableModel(new String[] { "Name", "Value" });
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
@@ -196,7 +150,7 @@ public class ApplicationSettingsPanel extends JBPanel {
             }
         });
 
-        propertiesTable = createTable("No properties", tableModel, actionGroup);
+        propertiesTable = createTable("No properties", propertiesTableModel, actionGroup);
         propertiesTable.getSelectionModel().addListSelectionListener(e -> {
             DefaultListSelectionModel target = (DefaultListSelectionModel)e.getSource();
             propertiesTableSelectedIndex = target.getAnchorSelectionIndex();
@@ -221,7 +175,9 @@ public class ApplicationSettingsPanel extends JBPanel {
         scrollPane.setViewportView(table);
 
         ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar("left", actionGroup, false);
-        tablePanel.add(actionToolbar.getComponent(), BorderLayout.EAST);
+        JComponent actionToolbarComponent = actionToolbar.getComponent();
+        actionToolbarComponent.setBorder(JBUI.Borders.empty());
+        tablePanel.add(actionToolbarComponent, BorderLayout.EAST);
 
         return table;
     }
@@ -232,4 +188,21 @@ public class ApplicationSettingsPanel extends JBPanel {
         connectionsLabel.setBorder(JBUI.Borders.empty(0, 0, 5, 0));
         add(connectionsLabel);
     }
+
+    private DefaultTableModel createDefaultTableModel(String[] columns) {
+        DefaultTableModel tableModel = new DefaultTableModel(0, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tableModel.setColumnIdentifiers(columns);
+        return tableModel;
+    }
+
+    private void addSonarQubeConnection(SonarQubeSettings sonarQubeSettings) {
+        sonarQubeConnections.add(sonarQubeSettings);
+        connectionsTableModel.addRow(new Object[] { sonarQubeSettings.name, sonarQubeSettings.url });
+    }
+
 }
