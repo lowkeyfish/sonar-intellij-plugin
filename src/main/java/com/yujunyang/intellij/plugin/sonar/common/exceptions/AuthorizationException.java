@@ -19,21 +19,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.yujunyang.intellij.plugin.sonar.api;
+package com.yujunyang.intellij.plugin.sonar.common.exceptions;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+public class AuthorizationException extends Exception {
+    public AuthorizationException() {
+    }
 
-public interface SonarApi {
+    public AuthorizationException(String message) {
+        super(message);
+    }
 
-    @GET("/api/navigation/global")
-    Call<NavigationGlobalResponse> navigationGlobal();
+    public AuthorizationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public AuthorizationException(Throwable cause) {
+        super(cause);
+    }
 
-    @GET("/api/qualityprofiles/search?defaults=true")
-    Call<QualityProfilesSearchResponse> qualityProfilesSearch();
-
-    @GET("/api/rules/search?activation=true&ps=500&f=repo,name,htmlDesc,params,severity")
-    Call<RulesSearchResponse> rulesSearch(@Query("qprofile") String profileKey, @Query("p") int page);
+    public AuthorizationException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

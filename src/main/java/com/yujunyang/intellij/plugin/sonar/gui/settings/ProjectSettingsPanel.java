@@ -23,52 +23,67 @@ package com.yujunyang.intellij.plugin.sonar.gui.settings;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.options.ex.Settings;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
+import com.yujunyang.intellij.plugin.sonar.config.ProjectSettings;
 import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
+import com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarPropertyDialog;
-import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarQubeConnectionDialog;
 import org.jetbrains.annotations.NotNull;
 
-public class ApplicationSettingsPanel extends JBPanel {
-    private JBTable connectionsTable;
-    private DefaultTableModel connectionsTableModel;
-    private List<SonarQubeSettings> connections = new ArrayList<>();
+public class ProjectSettingsPanel extends JBPanel {
+    private Project project;
+    private ComboBox connectionNameComboBox;
+    private JBCheckBox inheritedFromApplicationCheckBox;
     private JBTable propertiesTable;
     private DefaultTableModel propertiesTableModel;
     private Map<String, String> properties = new HashMap<>();
 
-    public ApplicationSettingsPanel() {
+    public ProjectSettingsPanel(Project project) {
+        this.project = project;
         init();
     }
 
-    public List<SonarQubeSettings> getConnections() {
-        return connections;
+    public String getConnectionName() {
+        return connectionNameComboBox.getName();
+    }
+
+    public boolean isInheritedFromApplication() {
+        return inheritedFromApplicationCheckBox.isSelected();
     }
 
     public Map<String, String> getProperties() {
@@ -79,63 +94,50 @@ public class ApplicationSettingsPanel extends JBPanel {
         BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
         setLayout(layout);
 
-        initConnections();
+        initConnectionName();
         add(Box.createVerticalStrut(15));
         initSonarProperties();
+        inheritedFromApplicationCheckBox = new JBCheckBox("Inherited SonarScanner properties from global settings");
+        inheritedFromApplicationCheckBox.setAlignmentX(LEFT_ALIGNMENT);
+        add(inheritedFromApplicationCheckBox);
 
         // 这个不用主动调用，settings窗口打开时就会调用重写的reset方法，内部就是下面的reset
         // reset();
     }
 
-    private void initConnections() {
-        addTableLabel("SonarQube connections:");
+    private void initConnectionName() {
+        JBPanel panel = new JBPanel(new BorderLayout());
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+        add(panel);
+        panel.add(new JBLabel("SonarQube connection: "), BorderLayout.WEST);
 
-        connectionsTableModel = createDefaultTableModel(new String[] { "Name", "Url" });
+        Set<SonarQubeSettings> connections = WorkspaceSettings.getInstance().sonarQubeConnections;
 
+        connectionNameComboBox = new ComboBox(connections.stream().map(n -> n.name).toArray());
+        connectionNameComboBox.setEditable(false);
+        panel.add(connectionNameComboBox, BorderLayout.CENTER);
 
-        DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
+        JButton button = new JButton("Configure the connection");
+        JComponent that = this;
+        button.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                AddSonarQubeConnectionDialog addSonarQubeConnectionDialog = new AddSonarQubeConnectionDialog((sonarQubeSettings) -> addSonarQubeConnection(sonarQubeSettings));
-                addSonarQubeConnectionDialog.setExistNames(connections.stream().map(n -> n.name).collect(Collectors.toList()));
-                addSonarQubeConnectionDialog.show();
+            public void mouseClicked(MouseEvent e) {
+                Settings allSettings = Settings.KEY.getData(DataManager.getInstance().getDataContext(that));
+                if (allSettings != null) {
+                    final ApplicationSettingsConfigurable globalConfigurable = allSettings.find(ApplicationSettingsConfigurable.class);
+                    if (globalConfigurable != null) {
+                        allSettings.select(globalConfigurable);
+                    }
+                } else {
+                    ApplicationSettingsConfigurable globalConfigurable = new ApplicationSettingsConfigurable();
+                    ShowSettingsUtil.getInstance().editConfigurable(that, globalConfigurable);
+                }
             }
         });
-        actionGroup.add(new AnAction("Remove", "", AllIcons.General.Remove) {
-            @Override
-            public void update(@NotNull AnActionEvent e) {
-                e.getPresentation().setEnabled(connectionsTable.getSelectionModel().getAnchorSelectionIndex() > -1);
-            }
+        panel.add(button, BorderLayout.EAST);
 
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                int selectionIndex = connectionsTable.getSelectionModel().getAnchorSelectionIndex();
-                connectionsTableModel.removeRow(selectionIndex);
-                connections.remove(selectionIndex);
-                connectionsTableModel.fireTableDataChanged();
-            }
-        });
-        actionGroup.add(new AnAction("Edit", "", AllIcons.Actions.Edit) {
-            @Override
-            public void update(@NotNull AnActionEvent e) {
-                e.getPresentation().setEnabled(connectionsTable.getSelectionModel().getAnchorSelectionIndex() > -1);
-            }
-
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                int selectionIndex = connectionsTable.getSelectionModel().getAnchorSelectionIndex();
-                SonarQubeSettings selectedSonarQubeSettings = connections.get(selectionIndex);
-                AddSonarQubeConnectionDialog addSonarQubeConnectionDialog = new AddSonarQubeConnectionDialog((sonarQubeSettings) -> updateSonarQubeConnection(selectionIndex, sonarQubeSettings));
-                addSonarQubeConnectionDialog.setExistNames(connections.stream().map(n -> n.name).collect(Collectors.toList()));
-                addSonarQubeConnectionDialog.initConnection(selectedSonarQubeSettings.name, selectedSonarQubeSettings.url, selectedSonarQubeSettings.token);
-                addSonarQubeConnectionDialog.show();
-            }
-        });
-
-        connectionsTable = createTable("No connections", connectionsTableModel, actionGroup);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
     }
-
 
 
     private void initSonarProperties() {
@@ -229,20 +231,6 @@ public class ApplicationSettingsPanel extends JBPanel {
         return tableModel;
     }
 
-    private void addSonarQubeConnection(SonarQubeSettings sonarQubeSettings) {
-        connections.add(sonarQubeSettings);
-        connectionsTableModel.addRow(new Object[] { sonarQubeSettings.name, sonarQubeSettings.url });
-    }
-
-    private void updateSonarQubeConnection(int selectionIndex, SonarQubeSettings sonarQubeSettings) {
-        SonarQubeSettings original = connections.get(selectionIndex);
-        original.name = sonarQubeSettings.name;
-        original.url = sonarQubeSettings.url;
-        original.token = sonarQubeSettings.token;
-
-        connectionsTableModel.setValueAt(sonarQubeSettings.url, selectionIndex, 1);
-    }
-
     private void addSonarScannerProperty(Pair<String, String> property) {
         properties.put(property.first, property.second);
         propertiesTableModel.addRow(new Object[] { property.first, property.second });
@@ -255,33 +243,22 @@ public class ApplicationSettingsPanel extends JBPanel {
     }
 
     public void reset() {
-        connections.clear();
-        int connectionsTableRowCount = connectionsTableModel.getRowCount();
-        for (int i = 0; i < connectionsTableRowCount; i++) {
-            connectionsTableModel.removeRow(i);
+        ProjectSettings projectSettings = ProjectSettings.getInstance(project);
+        if (!StringUtil.isEmptyOrSpaces(projectSettings.sonarQubeConnectionName)) {
+            connectionNameComboBox.setSelectedItem(projectSettings.sonarQubeConnectionName);
         }
-        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
-        Set<SonarQubeSettings> existConnections = workspaceSettings.sonarQubeConnections;
-        existConnections.forEach(c -> {
-            SonarQubeSettings sqs = new SonarQubeSettings();
-            {
-                sqs.name = c.name;
-                sqs.url = c.url;
-                sqs.token = c.token;
-            }
-            connections.add(sqs);
-            connectionsTableModel.addRow(new Object[] { c.name, c.url });
-        });
 
         properties.clear();
         int propertiesTableRowCount = propertiesTableModel.getRowCount();
         for (int i = 0; i < propertiesTableRowCount; i++) {
             propertiesTableModel.removeRow(i);
         }
-        Map<String, String> existProperties = WorkspaceSettings.getInstance().sonarProperties;
+        Map<String, String> existProperties = projectSettings.sonarProperties;
         for (Map.Entry<String, String> item : existProperties.entrySet()) {
             properties.put(item.getKey(), item.getValue());
             propertiesTableModel.addRow(new Object[] { item.getKey(), item.getValue() });
         }
+
+        inheritedFromApplicationCheckBox.setSelected(projectSettings.inheritedFromApplication);
     }
 }

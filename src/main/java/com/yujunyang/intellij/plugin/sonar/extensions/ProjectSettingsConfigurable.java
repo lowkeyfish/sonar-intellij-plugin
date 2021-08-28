@@ -22,13 +22,23 @@
 package com.yujunyang.intellij.plugin.sonar.extensions;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.yujunyang.intellij.plugin.sonar.gui.settings.ProjectSettingsPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 public class ProjectSettingsConfigurable implements Configurable {
+    Project project;
+    ProjectSettingsPanel projectSettingsPanel;
+
+    public ProjectSettingsConfigurable(Project project) {
+        this.project = project;
+    }
+
     @Override
     public @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
         return "Project Settings";
@@ -36,7 +46,8 @@ public class ProjectSettingsConfigurable implements Configurable {
 
     @Override
     public @Nullable JComponent createComponent() {
-        return null;
+        projectSettingsPanel = new ProjectSettingsPanel(project);
+        return projectSettingsPanel;
     }
 
     @Override
@@ -47,5 +58,10 @@ public class ProjectSettingsConfigurable implements Configurable {
     @Override
     public void apply() throws ConfigurationException {
 
+    }
+
+    @Override
+    public void reset() {
+        projectSettingsPanel.reset();
     }
 }

@@ -25,6 +25,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings"/>
+        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.config.ProjectSettings"/>
         <toolWindow
                 icon="PluginIcons.LOGO_13X13"
                 factoryClass="com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl"

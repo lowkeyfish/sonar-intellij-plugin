@@ -21,19 +21,14 @@
 
 package com.yujunyang.intellij.plugin.sonar.api;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+public class NavigationGlobalResponse {
+    private String version;
 
-public interface SonarApi {
+    public String getVersion() {
+        return version;
+    }
 
-    @GET("/api/navigation/global")
-    Call<NavigationGlobalResponse> navigationGlobal();
-
-
-    @GET("/api/qualityprofiles/search?defaults=true")
-    Call<QualityProfilesSearchResponse> qualityProfilesSearch();
-
-    @GET("/api/rules/search?activation=true&ps=500&f=repo,name,htmlDesc,params,severity")
-    Call<RulesSearchResponse> rulesSearch(@Query("qprofile") String profileKey, @Query("p") int page);
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }

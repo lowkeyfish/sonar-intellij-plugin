@@ -22,72 +22,67 @@
 package com.yujunyang.intellij.plugin.sonar.gui.dialog;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.util.BooleanFunction;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
-import com.yujunyang.intellij.plugin.sonar.api.SonarApiImpl;
-import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
-import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
-import com.yujunyang.intellij.plugin.sonar.common.exceptions.AuthorizationException;
-import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
-import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.intellij.util.ui.UIUtil;
 import com.yujunyang.intellij.plugin.sonar.gui.error.ErrorPainter;
-import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class AddSonarQubeConnectionDialog extends DialogWrapper {
+public class AddSonarPropertyDialog extends DialogWrapper {
+    private static final List<String> VALID_PROPERTIES = Arrays.asList("sonar.exclusions", "sonar.cpd.exclusions");
+
     private ErrorPainter errorPainter;
     private JBTextField nameField;
-    private JBTextField urlField;
-    private JBTextField tokenField;
+    private JBTextArea valueTextArea;
     private List<String> existNames;
     private boolean edit;
-    private Consumer<SonarQubeSettings> saveConsumer;
+    private Consumer<Pair<String, String>> saveConsumer;
 
 
-    public AddSonarQubeConnectionDialog(Consumer<SonarQubeSettings> saveConsumer) {
+    public AddSonarPropertyDialog(Consumer<Pair<String, String>> saveConsumer) {
         super(true);
         this.existNames = new ArrayList<>();
         this.saveConsumer = saveConsumer;
 
         init();
-        setTitle("Add SonarQube connection");
-        setResizable(false);
+        setTitle("Add SonarScanner property");
+        setResizable(true);
         getContentPanel().setBorder(JBUI.Borders.empty());
         ((JComponent)getContentPanel().getComponent(1)).setBorder(JBUI.Borders.empty(0, 12, 8, 12));
     }
 
-    public void initConnection(String name, String url, String token) {
+    public void initProperty(String name, String value) {
         this.edit = true;
-        setTitle("Edit SonarQube connection");
+        setTitle("Edit SonarScanner property");
         this.nameField.setText(name);
         this.nameField.setEnabled(false);
-        this.urlField.setText(url);
-        this.tokenField.setText(token);
+        this.valueTextArea.setText(value);
     }
 
     public void setExistNames(List<String> existNames) {
@@ -103,16 +98,11 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
         content.setBorder(JBUI.Borders.empty(20, 20));
         content.setLayout(new BorderLayout());
 
-        JBLabel sonarQubeLogoLabel = new JBLabel(PluginIcons.SONAR_QUBE);
-        sonarQubeLogoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        content.add(UIUtils.wrappedInBorderLayoutPanel(sonarQubeLogoLabel, BorderLayout.CENTER), BorderLayout.NORTH);
-
         errorPainter = new ErrorPainter();
         errorPainter.installOn((JPanel) getContentPanel(), () -> {
         });
 
         JBPanel formPanel = new JBPanel(new GridBagLayout());
-        formPanel.setBorder(JBUI.Borders.empty(20, 0, 20, 0));
         GridBagConstraints c = new GridBagConstraints();
 
         c.gridy = 0;
@@ -122,38 +112,37 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
         formPanel.add(new JBLabel("Name: "), c);
         c.gridx = 1;
         c.weightx = 1;
-        nameField = createFiled("", "");
+        nameField = createFiled("");
         formPanel.add(nameField, c);
 
         c.gridy = 1;
         c.gridx = 0;
         c.weightx = 0;
         c.insets = new Insets(5, 0, 0, 0);
-        formPanel.add(new JBLabel("URL: "), c);
+        formPanel.add(new JBLabel("Value: "), c);
         c.gridx = 1;
         c.weightx = 1;
-        urlField = createFiled("", "Example: http://localhost:9000");
-        formPanel.add(urlField, c);
-
-        c.gridy = 2;
-        c.gridx = 0;
-        c.weightx = 0;
-        formPanel.add(new JBLabel("Token: "), c);
-        c.gridx = 1;
-        c.weightx = 1;
-        tokenField = createFiled("", "");
-        formPanel.add(tokenField, c);
+        c.ipady = 100;
+        valueTextArea = new JBTextArea("");
+        valueTextArea.setFont(UIUtil.getLabelFont());
+        valueTextArea.setLineWrap(true);
+        valueTextArea.setBorder(BorderFactory.createEmptyBorder(1, 5, 1, 5));
+        JBScrollPane scrollPane = new JBScrollPane();
+        scrollPane.setViewportView(valueTextArea);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0, 1, 0, 1),
+                BorderFactory.createLineBorder(UIUtil.getBoundsColor(), 1)
+        ));
+        scrollPane.setBackground(UIUtil.getPanelBackground());
+        formPanel.add(scrollPane, c);
 
         content.add(formPanel, BorderLayout.CENTER);
 
         return content;
     }
 
-    private JBTextField createFiled(String defaultText, String emptyText) {
+    private JBTextField createFiled(String defaultText) {
         JBTextField textField = new JBTextField(defaultText);
-        textField.getEmptyText().setText(emptyText);
-        BooleanFunction<JBTextField> statusVisibleFunction = jbTextField -> StringUtil.isEmptyOrSpaces(textField.getText());
-        textField.putClientProperty("StatusVisibleFunction", statusVisibleFunction);
         textField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull DocumentEvent e) {
@@ -190,56 +179,20 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
             return;
         }
 
-        String url = urlField.getText().trim();
-        if (StringUtil.isEmptyOrSpaces(url)) {
-            return;
-        }
-
-        String token = tokenField.getText().trim();
-        if (StringUtil.isEmptyOrSpaces(token)) {
-            return;
-        }
-
-        if (!(url.startsWith("http://") || url.startsWith("https://"))) {
-            Messages.showDialog("Please provide a valid URL", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
-            return;
-        }
+        String value = valueTextArea.getText().trim();
 
         if (!edit && existNames.contains(name)) {
-            Messages.showDialog("There is already a connection with that name. Please choose another name", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            Messages.showDialog("There is already a property with that name. Please choose another name", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 
-        Task task = new Task.Modal(null, "Test connection to SonarQube", false) {
-            @Override
-            public void run(@NotNull final ProgressIndicator indicator) {
-                try {
-                    indicator.setText(String.format("Connecting to server %s", url));
-                    new SonarApiImpl().checkConnection(url, token);
-                    SonarQubeSettings sonarQubeSettings = new SonarQubeSettings();
-                    {
-                        sonarQubeSettings.name = name;
-                        sonarQubeSettings.url = url;
-                        sonarQubeSettings.token = token;
-                    }
-                    EventDispatchThreadHelper.invokeLater(() -> {
-                        saveConsumer.consume(sonarQubeSettings);
-                        close(0);
-                    });
-                } catch (AuthorizationException e) {
-                    EventDispatchThreadHelper.invokeLater(() -> {
-                        Messages.showDialog("Failed to connect to the server. Please check the Token.", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
-                    });
-                    return;
-                } catch (ApiRequestFailedException e) {
-                    EventDispatchThreadHelper.invokeLater(() -> {
-                        Messages.showDialog("Failed to connect to the server. Please check the URL.", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
-                    });
-                    return;
-                }
-            }
-        };
-        task.queue();
-    }
+        if (!VALID_PROPERTIES.contains(name)) {
+            Messages.showDialog(String.format("Only [%s] is supported for property names",
+                    String.join(", ", VALID_PROPERTIES)), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            return;
+        }
 
+        saveConsumer.consume(new Pair<>(name, value));
+        close(0);
+    }
 }

@@ -21,45 +21,28 @@
 
 package com.yujunyang.intellij.plugin.sonar.config;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.xmlb.Constants;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import com.intellij.util.xmlb.annotations.AbstractCollection;
 import com.intellij.util.xmlb.annotations.MapAnnotation;
 import com.intellij.util.xmlb.annotations.Tag;
-import com.intellij.util.xmlb.annotations.XCollection;
-import org.apache.commons.collections.MapUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@State(name = "SonarAnalyzer-Workspace", storages = { @Storage("intellij-sonar-plugin.xml") })
-public final class WorkspaceSettings implements PersistentStateComponent<WorkspaceSettings> {
+@State(name = "SonarAnalyzer-Project", storages = { @Storage("intellij-sonar-plugin.xml") })
+public class ProjectSettings implements PersistentStateComponent<ProjectSettings>  {
 
     @Tag
-    public String sonarHostUrl = "";
+    public String sonarQubeConnectionName;
 
     @Tag
-    public String sonarToken = "";
-
-    @Tag
-    public List<String> languages = Arrays.asList("java", "xml");
-
-
-    @Tag("sonarQubeConnections")
-    @AbstractCollection(surroundWithTag = false, elementTag = Constants.SET)
-    public Set<SonarQubeSettings> sonarQubeConnections = new HashSet<>();
+    public boolean inheritedFromApplication = true;
 
     @Tag("sonarProperties")
     @MapAnnotation(
@@ -72,39 +55,19 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
     )
     public Map<String, String> sonarProperties = new HashMap<>();
 
-    public WorkspaceSettings() {
-    }
 
     @Nullable
     @Override
-    public WorkspaceSettings getState() {
+    public ProjectSettings getState() {
         return this;
     }
 
     @Override
-    public void loadState(@NotNull WorkspaceSettings state) {
+    public void loadState(@NotNull ProjectSettings state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 
-    public boolean isSonarConfigured() {
-        return StringUtil.isNotEmpty(sonarHostUrl);
-    }
-
-    public String getSonarHostUrl() {
-        if (sonarHostUrl == null) {
-            return "";
-        }
-        return sonarHostUrl;
-    }
-
-    public String getSonarToken() {
-        if (sonarToken == null) {
-            return "";
-        }
-        return sonarToken;
-    }
-
-    public static WorkspaceSettings getInstance() {
-        return ServiceManager.getService(WorkspaceSettings.class);
+    public static ProjectSettings getInstance(Project project) {
+        return ServiceManager.getService(project, ProjectSettings.class);
     }
 }

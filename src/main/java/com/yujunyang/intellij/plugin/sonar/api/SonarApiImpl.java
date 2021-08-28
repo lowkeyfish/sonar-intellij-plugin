@@ -22,14 +22,20 @@
 package com.yujunyang.intellij.plugin.sonar.api;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
+import com.yujunyang.intellij.plugin.sonar.common.exceptions.AuthorizationException;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
+import okhttp3.Credentials;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SonarApiImpl {
@@ -84,6 +90,30 @@ public class SonarApiImpl {
             return ret;
         } catch (IOException e) {
             throw new ApiRequestFailedException("The rules of profile[" + profileKey + "] search failed:" + e.getMessage(), e);
+        }
+    }
+
+    public NavigationGlobalResponse checkConnection(String url, String token) throws ApiRequestFailedException, AuthorizationException {
+        try {
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            httpClient.addInterceptor(chain -> {
+                String credentials = Credentials.basic(token, "", Charset.forName("utf8"));
+                Request request = chain.request();
+                Request authenticatedRequest = request.newBuilder()
+                        .header("Authorization", credentials).build();
+                return chain.proceed(authenticatedRequest);
+            });
+            OkHttpClient client = httpClient.build();
+            Retrofit retrofit = ApiUtils.createRetrofit(url, client);
+            SonarApi api = retrofit.create(SonarApi.class);
+
+            Response<NavigationGlobalResponse> response = api.navigationGlobal().execute();
+            if (response.code() == 401) {
+                throw new AuthorizationException();
+            }
+            return response.body();
+        } catch (IOException e) {
+            throw new ApiRequestFailedException();
         }
     }
 }

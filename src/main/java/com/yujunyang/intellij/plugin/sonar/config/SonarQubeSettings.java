@@ -24,9 +24,10 @@ package com.yujunyang.intellij.plugin.sonar.config;
 import java.util.Objects;
 
 import com.intellij.util.xmlb.annotations.Tag;
+import org.jetbrains.annotations.NotNull;
 
-@Tag("sonarQube")
-public class SonarQubeSettings {
+@Tag(value = "sonarQubeConnection")
+public class SonarQubeSettings implements Comparable<SonarQubeSettings> { // 必须实现Comparable接口否则无法存储
     @Tag
     public String name;
 
@@ -51,5 +52,10 @@ public class SonarQubeSettings {
     public int hashCode() {
         int result = name.hashCode();
         return result;
+    }
+
+    @Override
+    public int compareTo(@NotNull SonarQubeSettings o) {
+        return name.compareTo(o.name);
     }
 }
