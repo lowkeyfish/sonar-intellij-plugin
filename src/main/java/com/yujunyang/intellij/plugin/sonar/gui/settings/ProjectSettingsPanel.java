@@ -23,6 +23,13 @@ package com.yujunyang.intellij.plugin.sonar.gui.settings;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -79,7 +86,10 @@ public class ProjectSettingsPanel extends JBPanel {
     }
 
     public String getConnectionName() {
-        return connectionNameComboBox.getName();
+        if (connectionNameComboBox.getSelectedItem() == null) {
+            return null;
+        }
+        return connectionNameComboBox.getSelectedItem().toString();
     }
 
     public boolean isInheritedFromApplication() {
@@ -111,11 +121,29 @@ public class ProjectSettingsPanel extends JBPanel {
         add(panel);
         panel.add(new JBLabel("SonarQube connection: "), BorderLayout.WEST);
 
-        Set<SonarQubeSettings> connections = WorkspaceSettings.getInstance().sonarQubeConnections;
-
-        connectionNameComboBox = new ComboBox(connections.stream().map(n -> n.name).toArray());
+        connectionNameComboBox = new ComboBox(WorkspaceSettings.getInstance().sonarQubeConnections.stream().map(n -> n.name).toArray());
         connectionNameComboBox.setEditable(false);
         panel.add(connectionNameComboBox, BorderLayout.CENTER);
+//        connectionNameComboBox.addFocusListener(new FocusAdapter() {
+//            @Override
+//            public void focusGained(FocusEvent e) {
+//                connectionNameComboBox.removeAllItems();
+//                Set<SonarQubeSettings> connections = WorkspaceSettings.getInstance().sonarQubeConnections;
+//                connections.forEach(n -> {
+//                    connectionNameComboBox.addItem(n.name);
+//                });
+//                if (connections.size() > 0) {
+//                    String selectedItem = ProjectSettings.getInstance(project).sonarQubeConnectionName;
+//                    if (StringUtil.isEmpty(selectedItem)) {
+//                        connectionNameComboBox.setSelectedIndex(0);
+//                    } else {
+//                        connectionNameComboBox.setSelectedItem(selectedItem);
+//                    }
+//                }
+//                connectionNameComboBox.revalidate();
+//                connectionNameComboBox.repaint();
+//            }
+//        });
 
         JButton button = new JButton("Configure the connection");
         JComponent that = this;
@@ -244,9 +272,7 @@ public class ProjectSettingsPanel extends JBPanel {
 
     public void reset() {
         ProjectSettings projectSettings = ProjectSettings.getInstance(project);
-        if (!StringUtil.isEmptyOrSpaces(projectSettings.sonarQubeConnectionName)) {
-            connectionNameComboBox.setSelectedItem(projectSettings.sonarQubeConnectionName);
-        }
+        connectionNameComboBox.setSelectedItem(projectSettings.sonarQubeConnectionName);
 
         properties.clear();
         int propertiesTableRowCount = propertiesTableModel.getRowCount();
