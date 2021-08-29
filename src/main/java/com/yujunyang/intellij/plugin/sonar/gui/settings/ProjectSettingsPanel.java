@@ -124,26 +124,6 @@ public class ProjectSettingsPanel extends JBPanel {
         connectionNameComboBox = new ComboBox(WorkspaceSettings.getInstance().sonarQubeConnections.stream().map(n -> n.name).toArray());
         connectionNameComboBox.setEditable(false);
         panel.add(connectionNameComboBox, BorderLayout.CENTER);
-//        connectionNameComboBox.addFocusListener(new FocusAdapter() {
-//            @Override
-//            public void focusGained(FocusEvent e) {
-//                connectionNameComboBox.removeAllItems();
-//                Set<SonarQubeSettings> connections = WorkspaceSettings.getInstance().sonarQubeConnections;
-//                connections.forEach(n -> {
-//                    connectionNameComboBox.addItem(n.name);
-//                });
-//                if (connections.size() > 0) {
-//                    String selectedItem = ProjectSettings.getInstance(project).sonarQubeConnectionName;
-//                    if (StringUtil.isEmpty(selectedItem)) {
-//                        connectionNameComboBox.setSelectedIndex(0);
-//                    } else {
-//                        connectionNameComboBox.setSelectedItem(selectedItem);
-//                    }
-//                }
-//                connectionNameComboBox.revalidate();
-//                connectionNameComboBox.repaint();
-//            }
-//        });
 
         JButton button = new JButton("Configure the connection");
         JComponent that = this;

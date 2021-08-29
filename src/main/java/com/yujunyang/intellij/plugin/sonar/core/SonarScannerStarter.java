@@ -40,7 +40,9 @@ import com.intellij.openapi.wm.impl.ToolWindowImpl;
 import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
+import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ConfigException;
+import com.yujunyang.intellij.plugin.sonar.config.ProjectSettings;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
@@ -212,7 +214,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
         try {
             if (!configCompleted()) {
-                throw new ConfigException("尚未设置SonarQube");
+                throw new ConfigException("尚未设置SonarQube, 前往 Settings / Tools / SonarAnalyzer 设置");
             }
             asyncStartImpl(indicator, justCompiled);
         } catch (Exception exc) {
@@ -240,11 +242,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
     }
 
     private boolean configCompleted() {
-        WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
-        if (StringUtil.isEmptyOrSpaces(workspaceSettings.sonarHostUrl) || StringUtil.isEmptyOrSpaces(workspaceSettings.sonarToken)) {
-            return false;
-        }
-        return true;
+        return SettingsUtils.getSonarQubeConnection(project) != null;
     }
 
     public static StringBuilder createErrorInfo(String errorMessage) {

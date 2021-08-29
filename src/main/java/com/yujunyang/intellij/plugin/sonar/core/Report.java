@@ -245,7 +245,7 @@ public class Report {
     private List<RulesSearchResponse.Rule> getRules() {
         try {
             List<String> languages = WorkspaceSettings.getInstance().languages;
-            List<RulesSearchResponse.Rule> rules = new SonarApiImpl().getRules(languages);
+            List<RulesSearchResponse.Rule> rules = new SonarApiImpl(project).getRules(languages);
             return rules;
         } catch (ApiRequestFailedException e) {
             throw new RuntimeException(e.getMessage(), e);

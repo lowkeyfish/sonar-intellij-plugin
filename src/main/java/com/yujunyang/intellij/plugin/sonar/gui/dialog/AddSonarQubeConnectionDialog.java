@@ -215,7 +215,7 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
                     indicator.setText(String.format("Connecting to server %s", url));
-                    new SonarApiImpl().checkConnection(url, token);
+                    SonarApiImpl.checkConnection(url, token);
                     SonarQubeSettings sonarQubeSettings = new SonarQubeSettings();
                     {
                         sonarQubeSettings.name = name;

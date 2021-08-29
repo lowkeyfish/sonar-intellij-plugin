@@ -26,7 +26,8 @@ import java.util.Map;
 
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
-import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
+import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
+import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import org.sonarsource.scanner.api.EmbeddedScanner;
 import org.sonarsource.scanner.api.LogOutput;
 
@@ -34,8 +35,9 @@ public final class EmbeddedScannerHelper {
     public static Map<String, String> createTaskProperties(Project project) {
         Map<String, String> props = new HashMap<>();
         {
-            props.put("sonar.host.url", WorkspaceSettings.getInstance().sonarHostUrl);
-            props.put("sonar.login", WorkspaceSettings.getInstance().sonarToken);
+            SonarQubeSettings connection = SettingsUtils.getSonarQubeConnection(project);
+            props.put("sonar.host.url", connection.url);
+            props.put("sonar.login", connection.token);
             props.put("sonar.projectKey", "com.yujunyang.intellij.plugin.sonar:" + project.getName());
             props.put("sonar.projectName", "com.yujunyang.intellij.plugin.sonar:" + project.getName());
             props.put("sonar.projectVersion", "1.0.0");
@@ -47,6 +49,12 @@ public final class EmbeddedScannerHelper {
             props.put("sonar.java.libraries", IdeaUtils.getFullClassPath(project));
             props.put("sonar.java.binaries", IdeaUtils.getAllCompilerOutPath(project));
 
+            Map<String, String> settingsProperties = SettingsUtils.getSonarProperties(project);
+            for (Map.Entry<String, String> item : settingsProperties.entrySet()) {
+                if (item.getKey().equals("sonar.exclusions") || item.getKey().equals("sonar.cpd.exclusions")) {
+                    props.put(item.getKey(), item.getValue());
+                }
+            }
         }
 
         return props;

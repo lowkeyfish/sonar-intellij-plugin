@@ -28,24 +28,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.intellij.openapi.project.Project;
+import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.AuthorizationException;
-import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
+import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import okhttp3.Credentials;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SonarApiImpl {
-    private static SonarApi sonarApi;
+//    private static SonarApi sonarApi;
+//
+//    static {
+//        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+//        httpClient.addInterceptor(new SonarQubeBasicAuthInterceptor());
+//        OkHttpClient client = httpClient.build();
+//        Retrofit retrofit = ApiUtils.createRetrofit(WorkspaceSettings.getInstance().sonarHostUrl, client);
+//        sonarApi = retrofit.create(SonarApi.class);
+//    }
 
-    static {
+    SonarApi sonarApi;
+
+    public SonarApiImpl(Project project) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        httpClient.addInterceptor(new SonarQubeBasicAuthInterceptor());
+        SonarQubeSettings connection = SettingsUtils.getSonarQubeConnection(project);
+        httpClient.addInterceptor(chain -> {
+            String credentials = Credentials.basic(connection != null ? connection.token : "", "", Charset.forName("utf8"));
+            Request request = chain.request();
+            Request authenticatedRequest = request.newBuilder()
+                    .header("Authorization", credentials).build();
+            return chain.proceed(authenticatedRequest);
+        });
         OkHttpClient client = httpClient.build();
-        Retrofit retrofit = ApiUtils.createRetrofit(WorkspaceSettings.getInstance().sonarHostUrl, client);
+        Retrofit retrofit = ApiUtils.createRetrofit(connection != null ? connection.url : "", client);
         sonarApi = retrofit.create(SonarApi.class);
     }
 
@@ -93,7 +111,7 @@ public class SonarApiImpl {
         }
     }
 
-    public NavigationGlobalResponse checkConnection(String url, String token) throws ApiRequestFailedException, AuthorizationException {
+    public static NavigationGlobalResponse checkConnection(String url, String token) throws ApiRequestFailedException, AuthorizationException {
         try {
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(chain -> {
