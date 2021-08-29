@@ -73,7 +73,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
     public SonarScannerStarter(
             @NotNull final Project project,
             @NotNull final String title) {
-        this(project, title, ProgressStartType.RunInBackgroundFromSettings);
+        this(project, title, ProgressStartType.RunInBackground);
     }
 
     public SonarScannerStarter(
@@ -83,9 +83,8 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         this.project = project;
         this.title = title;
         switch (progressStartType) {
-            case RunInBackgroundFromSettings:
             case RunInBackground:
-                this.startProgressInBackground = false;
+                this.startProgressInBackground = true;
                 this.startProgressModal = false;
                 break;
             case Modal:
