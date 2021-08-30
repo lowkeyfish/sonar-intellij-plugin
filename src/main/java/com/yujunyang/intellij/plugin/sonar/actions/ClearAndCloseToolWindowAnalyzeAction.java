@@ -25,19 +25,21 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
-public class StopAnalyzeAction extends AbstractAction {
+public class ClearAndCloseToolWindowAnalyzeAction extends AbstractAction {
     @Override
     public void updateImpl(
             @NotNull AnActionEvent e,
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        final boolean enable = state.isStarted();
+        final boolean enable = state.isIdle();
 
-        e.getPresentation().setEnabled(false);
-        e.getPresentation().setVisible(false);
+        e.getPresentation().setEnabled(enable);
+        e.getPresentation().setVisible(true);
     }
 
 
@@ -47,6 +49,6 @@ public class StopAnalyzeAction extends AbstractAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-
+        MessageBusManager.publishClear(project);
     }
 }

@@ -42,8 +42,8 @@ public class TestAction extends AbstractAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        e.getPresentation().setEnabled(true);
-        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(false);
+        e.getPresentation().setVisible(false);
     }
 
 

@@ -34,12 +34,13 @@ import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
+import com.yujunyang.intellij.plugin.sonar.messages.ClearListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ReportPanel extends JBPanel implements AnalysisStateListener {
+public class ReportPanel extends JBPanel implements AnalysisStateListener, ClearListener {
     private Project project;
 
     private LeftToolbarPanel leftToolbarPanel;
@@ -54,6 +55,7 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
         setLayout(new BorderLayout());
         init();
         MessageBusManager.subscribeAnalysisState(project, this, this);
+        MessageBusManager.subscribe(project, this, ClearListener.TOPIC, this::clear);
     }
 
     private void init() {
@@ -87,6 +89,7 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
     }
 
     public void reset() {
+        bodyPanelLayout.show(bodyPanel, "EMPTY");
         issuesPanel.reset();
         issueDetailPanel.reset();
     }
@@ -117,8 +120,11 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener {
 
     @Override
     public void analysisStarted() {
-        bodyPanelLayout.show(bodyPanel, "EMPTY");
         reset();
-        DaemonCodeAnalyzer.getInstance(project).restart();
+    }
+
+    @Override
+    public void clear() {
+        reset();
     }
 }

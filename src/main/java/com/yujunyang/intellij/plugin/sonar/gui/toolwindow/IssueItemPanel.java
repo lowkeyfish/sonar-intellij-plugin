@@ -38,6 +38,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
+import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
@@ -155,7 +156,8 @@ public class IssueItemPanel extends JBPanel {
     }
 
     private void click(boolean dblclick) {
-        if (dblclick) {
+        boolean autoScrollToSource = WorkspaceSettings.getInstance().autoScrollToSource;
+        if (dblclick || autoScrollToSource) {
             AbstractIssue targetIssue = isDuplicatedBlockIssue ? duplicatedBlocksIssues.get(0) : issue;
             // 打开源文件并定位到问题代码
             UIUtils.navigateToOffset(targetIssue.getPsiFile(), targetIssue.getTextRange().getStartOffset());

@@ -40,8 +40,10 @@ public interface PluginIcons {
 
     Icon ANALYZE_EXECUTE = AllIcons.Actions.Execute;
     Icon ANALYZE_SUSPEND = AllIcons.Actions.Suspend;
+    Icon ANALYZE_CLEAR = AllIcons.Actions.Cancel;
     Icon PLUGIN_SETTING = AllIcons.General.GearPlain;
     Icon PLUGIN_HELP = AllIcons.Actions.Help;
+    Icon PLUGIN_AUTO_SCROLL_TO_SOURCE = AllIcons.General.AutoscrollToSource;
 
     Icon SMILE = ResourcesLoader.loadIcon("smile.svg");
 

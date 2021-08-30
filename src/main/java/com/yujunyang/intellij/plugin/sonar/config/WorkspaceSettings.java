@@ -56,6 +56,9 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
     @Tag
     public List<String> languages = Arrays.asList("java", "xml");
 
+    @Tag
+    public boolean autoScrollToSource = false;
+
 
     @Tag("sonarQubeConnections")
     @AbstractCollection(surroundWithTag = false, elementTag = Constants.SET)

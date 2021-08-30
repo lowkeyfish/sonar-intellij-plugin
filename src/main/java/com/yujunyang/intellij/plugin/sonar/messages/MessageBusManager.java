@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
@@ -80,7 +81,8 @@ public final class MessageBusManager {
 
     public static void publishClear(@NotNull final Project project) {
         EventDispatchThreadHelper.checkEDT();
-        AnalyzeState.set(project, AnalyzeState.Cleared);
+        ProblemCacheService.getInstance(project).reset();
+        DaemonCodeAnalyzer.getInstance(project).restart();
         publish(project, ClearListener.TOPIC).clear();
     }
 
@@ -101,13 +103,14 @@ public final class MessageBusManager {
         (new Thread(() -> ReportUtils.deleteReportDir(project))).start();
         AnalyzeState.set(project, AnalyzeState.Started);
         ProblemCacheService.getInstance(project).reset();
+        DaemonCodeAnalyzer.getInstance(project).restart();
         publish(project, AnalysisStartedListener.TOPIC).analysisStarted();
     }
 
     public static void publishAnalysisStartedToEDT(@NotNull final Project project) {
         EventDispatchThreadHelper.checkNotEDT();
         EventDispatchThreadHelper.invokeLater(() -> {
-            ReportUtils.deleteReportDir(project);
+            (new Thread(() -> ReportUtils.deleteReportDir(project))).start();
             AnalyzeState.set(project, AnalyzeState.Started);
             publish(project, AnalysisStartedListener.TOPIC).analysisStarted();
         });

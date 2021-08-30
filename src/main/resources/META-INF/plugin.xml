@@ -69,12 +69,7 @@
                     description="对不包含单测的所有项目文件执行Sonar代码分析"
                     icon="PluginIcons.ANALYZE_EXECUTE">
             </action>
-            <action id="SonarAnalyzer.Cancel"
-                    class="com.yujunyang.intellij.plugin.sonar.actions.StopAnalyzeAction"
-                    text="停止"
-                    description="停止当前代码分析"
-                    icon="PluginIcons.ANALYZE_SUSPEND">
-            </action>
+
             <separator/>
             <action id="SonarAnalyzer.Setting"
                     class="com.yujunyang.intellij.plugin.sonar.actions.ShowSettingDialogAction"
@@ -82,7 +77,19 @@
                     description="设置"
                     icon="PluginIcons.PLUGIN_SETTING">
             </action>
+            <action id="SonarAnalyzer.Setting.AutoScrollToSource"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.AutoScrollToSourceAction"
+                    text="自动定位到源文件问题行"
+                    description="自动定位到源文件问题行"
+                    icon="PluginIcons.PLUGIN_AUTO_SCROLL_TO_SOURCE">
+            </action>
             <separator/>
+            <action id="SonarAnalyzer.Cancel"
+                    class="com.yujunyang.intellij.plugin.sonar.actions.ClearAndCloseToolWindowAnalyzeAction"
+                    text="清除检查结果"
+                    description="清除检查结果"
+                    icon="PluginIcons.ANALYZE_CLEAR">
+            </action>
             <action id="SonarAnalyzer.Help"
                     class="com.yujunyang.intellij.plugin.sonar.actions.ShowHelpAction"
                     text="帮助"
