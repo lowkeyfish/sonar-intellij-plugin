@@ -39,6 +39,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 
 public class LineMarkerProviderPopupPanel extends JBPanel {
     private Project project;
@@ -55,7 +56,7 @@ public class LineMarkerProviderPopupPanel extends JBPanel {
         setLayout(new BorderLayout());
         setBorder(JBUI.Borders.empty(5));
 
-        JBLabel title = new JBLabel("问题: " + issues.size() + "个");
+        JBLabel title = new JBLabel(ResourcesLoader.getString("lineMarker.lineSummary",issues.size()));
         add(title, BorderLayout.NORTH);
 
         add(createIssues(), BorderLayout.CENTER);

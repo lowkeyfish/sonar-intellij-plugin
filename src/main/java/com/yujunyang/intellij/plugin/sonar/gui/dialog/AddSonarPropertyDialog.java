@@ -51,6 +51,7 @@ import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.yujunyang.intellij.plugin.sonar.gui.error.ErrorPainter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +72,7 @@ public class AddSonarPropertyDialog extends DialogWrapper {
         this.saveConsumer = saveConsumer;
 
         init();
-        setTitle("Add SonarScanner property");
+        setTitle(ResourcesLoader.getString("settings.dialog.sonarScannerProperty.add.title"));
         setResizable(true);
         getContentPanel().setBorder(JBUI.Borders.empty());
         ((JComponent)getContentPanel().getComponent(1)).setBorder(JBUI.Borders.empty(0, 12, 8, 12));
@@ -79,7 +80,7 @@ public class AddSonarPropertyDialog extends DialogWrapper {
 
     public void initProperty(String name, String value) {
         this.edit = true;
-        setTitle("Edit SonarScanner property");
+        setTitle(ResourcesLoader.getString("settings.dialog.sonarScannerProperty.edit.title"));
         this.nameField.setText(name);
         this.nameField.setEnabled(false);
         this.valueTextArea.setText(value);
@@ -182,12 +183,12 @@ public class AddSonarPropertyDialog extends DialogWrapper {
         String value = valueTextArea.getText().trim();
 
         if (!edit && existNames.contains(name)) {
-            Messages.showDialog("There is already a property with that name. Please choose another name", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.repeat"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 
         if (!VALID_PROPERTIES.contains(name)) {
-            Messages.showDialog(String.format("Only [%s] is supported for property names",
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.unsupported",
                     String.join(", ", VALID_PROPERTIES)), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }

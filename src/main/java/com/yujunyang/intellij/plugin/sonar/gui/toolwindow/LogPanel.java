@@ -27,6 +27,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.components.JBPanel;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
 import com.yujunyang.intellij.plugin.sonar.messages.LogListener;
@@ -50,6 +51,7 @@ public class LogPanel extends JBPanel implements AnalysisStateListener {
     private void init() {
         consoleView = TextConsoleBuilderFactory.getInstance().createBuilder(project).getConsole();
         add(consoleView.getComponent(), BorderLayout.CENTER);
+        Disposer.register(project, consoleView);
     }
 
     private void print(String message, LogOutput.Level level) {
@@ -79,4 +81,6 @@ public class LogPanel extends JBPanel implements AnalysisStateListener {
         consoleView.clear();
         consoleView.print("Sonar analysis start...\n\n", ConsoleViewContentType.LOG_VERBOSE_OUTPUT);
     }
+
+
 }

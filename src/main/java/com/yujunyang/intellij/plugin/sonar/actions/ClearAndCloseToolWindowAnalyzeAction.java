@@ -26,6 +26,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +41,7 @@ public class ClearAndCloseToolWindowAnalyzeAction extends AbstractAction {
 
         e.getPresentation().setEnabled(enable);
         e.getPresentation().setVisible(true);
+        e.getPresentation().setText(ResourcesLoader.getString("action.clear"));
     }
 
 

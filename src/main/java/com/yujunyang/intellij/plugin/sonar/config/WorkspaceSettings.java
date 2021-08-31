@@ -57,7 +57,10 @@ public final class WorkspaceSettings implements PersistentStateComponent<Workspa
     public List<String> languages = Arrays.asList("java", "xml");
 
     @Tag
-    public boolean autoScrollToSource = false;
+    public boolean autoScrollToSource = true;
+
+    @Tag
+    public String uiLanguageLocale = "zh";
 
 
     @Tag("sonarQubeConnections")

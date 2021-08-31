@@ -23,8 +23,21 @@
 package com.yujunyang.intellij.plugin.sonar.actions;
 
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import org.jetbrains.annotations.NotNull;
+
 public final class AnalyzeProjectFilesNotIncludingTests extends AnalyzeProjectFiles {
     public AnalyzeProjectFilesNotIncludingTests() {
         super(false);
+    }
+
+    @Override
+    public void updateImpl(@NotNull AnActionEvent e, @NotNull Project project, @NotNull ToolWindow toolWindow, @NotNull AnalyzeState state) {
+        super.updateImpl(e, project, toolWindow, state);
+        e.getPresentation().setText(ResourcesLoader.getString("action.start"));
     }
 }

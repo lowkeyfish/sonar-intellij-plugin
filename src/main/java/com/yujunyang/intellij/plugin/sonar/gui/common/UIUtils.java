@@ -30,7 +30,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -58,11 +62,19 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
 
 public final class UIUtils {
+    private static final Map<String, String> UI_LANGUAGES = new HashMap<>();
+
+    static {
+        UI_LANGUAGES.put("zh", "中文");
+        UI_LANGUAGES.put("en", "English");
+    }
+
     public static void addLabel(JComponent parent, String text) {
         JBLabel label = new JBLabel(text);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -325,13 +337,13 @@ public final class UIUtils {
     public static Pair<String, Icon> typeInfo(String type) {
         switch (type) {
             case "BUG":
-                return new Pair<>("Bug", PluginIcons.BUGS);
+                return new Pair<>(ResourcesLoader.getString("issueType.bug"), PluginIcons.BUGS);
             case "VULNERABILITY":
-                return new Pair<>("漏洞", PluginIcons.VULNERABILITY);
+                return new Pair<>(ResourcesLoader.getString("issueType.vulnerability"), PluginIcons.VULNERABILITY);
             case "CODE_SMELL":
-                return new Pair<>("异味", PluginIcons.CODE_SMELL);
+                return new Pair<>(ResourcesLoader.getString("issueType.codeSmell"), PluginIcons.CODE_SMELL);
             case "SECURITY_HOTSPOT":
-                return new Pair<>("安全热点", PluginIcons.SECURITY_HOTSPOT);
+                return new Pair<>(ResourcesLoader.getString("issueType.securityHotspot"), PluginIcons.SECURITY_HOTSPOT);
             default:
                 return new Pair<>("", null);
         }
@@ -340,15 +352,15 @@ public final class UIUtils {
     public static Pair<String, Icon> severityInfo(String severity) {
         switch (severity) {
             case "BLOCKER":
-                return new Pair<>("阻断", PluginIcons.BLOCKER);
+                return new Pair<>(ResourcesLoader.getString("severityType.blocker"), PluginIcons.BLOCKER);
             case "CRITICAL":
-                return new Pair<>("严重", PluginIcons.CRITICAL);
+                return new Pair<>(ResourcesLoader.getString("severityType.critical"), PluginIcons.CRITICAL);
             case "MAJOR":
-                return new Pair<>("主要", PluginIcons.MAJOR);
+                return new Pair<>(ResourcesLoader.getString("severityType.major"), PluginIcons.MAJOR);
             case "MINOR":
-                return new Pair<>("次要", PluginIcons.MINOR);
+                return new Pair<>(ResourcesLoader.getString("severityType.minor"), PluginIcons.MINOR);
             case "INFO":
-                return new Pair<>("提示", PluginIcons.INFO);
+                return new Pair<>(ResourcesLoader.getString("severityType.info"), PluginIcons.INFO);
             default:
                 return new Pair<>("", null);
         }
@@ -373,6 +385,28 @@ public final class UIUtils {
     public static void navigateToLine(PsiFile psiFile, int line) {
         OpenFileDescriptor openFileDescriptor = new OpenFileDescriptor(psiFile.getProject(), psiFile.getVirtualFile(), line, 0);
         openFileDescriptor.navigate(true);
+    }
+
+    public static Collection<String> getAllUILanguagesDesc() {
+        return UI_LANGUAGES.values();
+    }
+
+    public static String getLocaleByLanguageDesc(@Nonnull String languageDesc) {
+        for (Map.Entry<String, String> item : UI_LANGUAGES.entrySet()) {
+            if (item.getValue().equals(languageDesc)) {
+                return item.getKey();
+            }
+        }
+        return "";
+    }
+
+    public static String getLanguageDescByLocale(@Nonnull String locale) {
+        for (Map.Entry<String, String> item : UI_LANGUAGES.entrySet()) {
+            if (item.getKey().equals(locale)) {
+                return item.getValue();
+            }
+        }
+        return "";
     }
 
 }

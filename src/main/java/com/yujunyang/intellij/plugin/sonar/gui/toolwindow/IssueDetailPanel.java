@@ -35,6 +35,7 @@ import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.DuplicatedBlocksIssueClickListener;
 import com.yujunyang.intellij.plugin.sonar.messages.IssueClickListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 
 public class IssueDetailPanel extends JBPanel implements IssueClickListener, DuplicatedBlocksIssueClickListener {
     private Project project;
@@ -71,7 +72,7 @@ public class IssueDetailPanel extends JBPanel implements IssueClickListener, Dup
         layout = new CardLayout();
         setLayout(layout);
 
-        add("EMPTY", new MessagePanel("选择一个问题查看"));
+        add("EMPTY", new MessagePanel(ResourcesLoader.getString("toolWindow.report.preview.emptyText")));
 
         JBPanel detailPanel = new JBPanel(new BorderLayout());
         add("DETAIL", detailPanel);

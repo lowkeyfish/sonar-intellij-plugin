@@ -30,6 +30,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AnalyzeProjectFiles extends AbstractAnalyzeAction {
@@ -61,7 +62,7 @@ public abstract class AnalyzeProjectFiles extends AbstractAnalyzeAction {
             @NotNull final ToolWindow toolWindow,
             @NotNull final AnalyzeState state
     ) {
-        new SonarScannerStarter(project, "对项目[" + project.getName() + "]执行Sonar代码检测") {
+        new SonarScannerStarter(project, ResourcesLoader.getString("task.analysis.title", project.getName())) {
             @Override
             protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
                 consumer.consume(compilerManager.createProjectCompileScope(project));

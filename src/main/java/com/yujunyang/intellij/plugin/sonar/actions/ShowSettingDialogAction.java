@@ -24,11 +24,17 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowSettingDialogAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         SettingsUtils.showSettingsDialog(e.getProject());
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setText(ResourcesLoader.getString("action.settings"));
     }
 }

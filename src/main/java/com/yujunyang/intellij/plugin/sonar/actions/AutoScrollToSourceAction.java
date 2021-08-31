@@ -28,6 +28,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class AutoScrollToSourceAction extends ToggleAction {
@@ -39,5 +40,11 @@ public class AutoScrollToSourceAction extends ToggleAction {
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean state) {
         WorkspaceSettings.getInstance().autoScrollToSource = state;
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        super.update(e);
+        e.getPresentation().setText(ResourcesLoader.getString("action.autoScrollToSource"));
     }
 }

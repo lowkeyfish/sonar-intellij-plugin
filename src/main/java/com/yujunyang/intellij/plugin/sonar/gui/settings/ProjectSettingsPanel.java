@@ -23,18 +23,10 @@ package com.yujunyang.intellij.plugin.sonar.gui.settings;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ContainerAdapter;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -57,7 +49,6 @@ import com.intellij.openapi.options.ex.Settings;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -65,11 +56,11 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.config.ProjectSettings;
-import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.extensions.ApplicationSettingsConfigurable;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarPropertyDialog;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class ProjectSettingsPanel extends JBPanel {
@@ -107,7 +98,7 @@ public class ProjectSettingsPanel extends JBPanel {
         initConnectionName();
         add(Box.createVerticalStrut(15));
         initSonarProperties();
-        inheritedFromApplicationCheckBox = new JBCheckBox("Inherited SonarScanner properties from global settings");
+        inheritedFromApplicationCheckBox = new JBCheckBox(ResourcesLoader.getString("settings.project.checkboxLabel"));
         inheritedFromApplicationCheckBox.setAlignmentX(LEFT_ALIGNMENT);
         add(inheritedFromApplicationCheckBox);
 
@@ -119,14 +110,15 @@ public class ProjectSettingsPanel extends JBPanel {
         JBPanel panel = new JBPanel(new BorderLayout());
         panel.setAlignmentX(LEFT_ALIGNMENT);
         add(panel);
-        panel.add(new JBLabel("SonarQube connection: "), BorderLayout.WEST);
+        panel.add(new JBLabel(ResourcesLoader.getString("settings.project.connectionBindComboBoxLabel") + " "), BorderLayout.WEST);
 
         connectionNameComboBox = new ComboBox(WorkspaceSettings.getInstance().sonarQubeConnections.stream().map(n -> n.name).toArray());
         connectionNameComboBox.setEditable(false);
         panel.add(connectionNameComboBox, BorderLayout.CENTER);
 
-        JButton button = new JButton("Configure the connection");
+        JButton button = new JButton(ResourcesLoader.getString("settings.project.goBackButton"));
         JComponent that = this;
+
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -149,12 +141,12 @@ public class ProjectSettingsPanel extends JBPanel {
 
 
     private void initSonarProperties() {
-        addTableLabel("SonarScanner properties:");
+        addTableLabel(ResourcesLoader.getString("settings.sonarScannerProperties.tableTitle"));
 
         propertiesTableModel = createDefaultTableModel(new String[] { "Name", "Value" });
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.add"), "", AllIcons.General.Add) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 AddSonarPropertyDialog addSonarPropertyDialog = new AddSonarPropertyDialog((property) -> addSonarScannerProperty(property));
@@ -162,7 +154,7 @@ public class ProjectSettingsPanel extends JBPanel {
                 addSonarPropertyDialog.show();
             }
         });
-        actionGroup.add(new AnAction("Remove", "", AllIcons.General.Remove) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.remove"), "", AllIcons.General.Remove) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(propertiesTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -176,7 +168,7 @@ public class ProjectSettingsPanel extends JBPanel {
                 propertiesTableModel.fireTableDataChanged();
             }
         });
-        actionGroup.add(new AnAction("Edit", "", AllIcons.Actions.Edit) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.edit"), "", AllIcons.Actions.Edit) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(propertiesTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -193,7 +185,7 @@ public class ProjectSettingsPanel extends JBPanel {
             }
         });
 
-        propertiesTable = createTable("No properties", propertiesTableModel, actionGroup);
+        propertiesTable = createTable(ResourcesLoader.getString("settings.sonarScannerProperties.tableEmpty"), propertiesTableModel, actionGroup);
     }
 
     private JBTable createTable(String emptyText, TableModel tableModel, ActionGroup actionGroup) {
@@ -256,7 +248,7 @@ public class ProjectSettingsPanel extends JBPanel {
 
         properties.clear();
         int propertiesTableRowCount = propertiesTableModel.getRowCount();
-        for (int i = 0; i < propertiesTableRowCount; i++) {
+        for (int i = propertiesTableRowCount - 1; i >= 0; i--) {
             propertiesTableModel.removeRow(i);
         }
         Map<String, String> existProperties = projectSettings.sonarProperties;

@@ -26,16 +26,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.swing.JComponent;
+import javax.swing.event.HyperlinkEvent;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationListener;
+import com.intellij.notification.NotificationType;
+import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.ProjectManager;
 import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.gui.settings.ApplicationSettingsPanel;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ApplicationSettingsConfigurable implements Configurable {
+    NotificationGroup notificationGroup = NotificationGroup.balloonGroup("Sonar Intellij plugin Balloon Notification");
     ApplicationSettingsPanel applicationSettingsPanel;
 
     @Override
@@ -56,6 +66,7 @@ public class ApplicationSettingsConfigurable implements Configurable {
         Map<String, String> existProperties = workspaceSettings.sonarProperties;
         List<SonarQubeSettings> connections = applicationSettingsPanel.getConnections();
         Map<String, String> properties = applicationSettingsPanel.getProperties();
+        String uiLanguageLocale = applicationSettingsPanel.getUILanguageLocale();
 
         if (existConnections.size() != connections.size()) {
             return true;
@@ -76,6 +87,11 @@ public class ApplicationSettingsConfigurable implements Configurable {
                 return true;
             }
         }
+
+        if (!workspaceSettings.uiLanguageLocale.equals(uiLanguageLocale)) {
+            return true;
+        }
+
         return false;
 
     }
@@ -87,6 +103,21 @@ public class ApplicationSettingsConfigurable implements Configurable {
         Map<String, String> properties = applicationSettingsPanel.getProperties();
         workspaceSettings.sonarQubeConnections = connections.stream().collect(Collectors.toSet());
         workspaceSettings.sonarProperties = properties;
+
+        boolean languageSwitched = !workspaceSettings.uiLanguageLocale.equals(applicationSettingsPanel.getUILanguageLocale());
+        workspaceSettings.uiLanguageLocale = applicationSettingsPanel.getUILanguageLocale();
+        if (languageSwitched && ProjectManager.getInstance().getOpenProjects().length > 0) {
+            notificationGroup.createNotification(
+                    "SonarAnalyzer",
+                    ResourcesLoader.getString("settings.uiLanguages.switchSuccess"),
+                    NotificationType.INFORMATION,
+                    new NotificationListener.Adapter() {
+                        @Override
+                        protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
+                            ApplicationManagerEx.getApplicationEx().restart(false);
+                        }
+                    }).notify(ProjectManager.getInstance().getOpenProjects()[0]);
+        }
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.sonarsource.scanner.api.LogOutput;
 
@@ -41,12 +42,12 @@ public class LogOutputImpl implements LogOutput {
     @Override
     public void log(String formattedMessage, Level level) {
         if (formattedMessage.startsWith("Analysis report generated in")) {
-            MessageBusManager.publishLogToEDT(project, "开始复制报告", Level.INFO);
+            MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.copy.start"), Level.INFO);
             ReportUtils.copyReportDir(project);
-            MessageBusManager.publishLogToEDT(project, "报告复制成功", Level.INFO);
+            MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.copy.success"), Level.INFO);
 
             FutureTask<Report> task = new FutureTask<>(() -> {
-                MessageBusManager.publishLogToEDT(project, "开始解析报告", Level.INFO);
+                MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.start"), Level.INFO);
                 Report report = ReportUtils.createReport(project);
                 ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
                 problemCacheService.setIssues(report.getIssues());
@@ -63,11 +64,11 @@ public class LogOutputImpl implements LogOutput {
 
             try {
                 task.get();
-                MessageBusManager.publishLogToEDT(project, "报告解析成功", Level.INFO);
+                MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.success"), Level.INFO);
             } catch (Exception e) {
                 // TODO:log中抛出的异常并不会被外层捕获
-                MessageBusManager.publishLogToEDT(project, "报告解析出错, " + e.getMessage() + LogUtils.formatStackTrace(e.getStackTrace()), Level.ERROR);
-                throw new RuntimeException("报告解析出错: " + e.getMessage());
+                MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.failed", e.getMessage() + LogUtils.formatStackTrace(e.getStackTrace())), Level.ERROR);
+                // throw new RuntimeException("报告解析出错: " + e.getMessage());
             }
         }
         EventDispatchThreadHelper.invokeLater(() -> {

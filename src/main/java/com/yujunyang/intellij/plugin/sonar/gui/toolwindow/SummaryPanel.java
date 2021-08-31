@@ -22,6 +22,7 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
@@ -31,6 +32,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 
 public class SummaryPanel extends JBPanel {
@@ -52,41 +54,41 @@ public class SummaryPanel extends JBPanel {
     }
 
     private void init() {
-        setLayout(new GridLayout(1, 4, 10, 0));
+        setLayout(new GridLayout(1, 4, 5, 0));
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 0, 0, UIUtils.borderColor()),
                 JBUI.Borders.empty(5, 5, 15, 5)
         ));
 
-        vulnerabilityCountPanel = createPanel();
-        add(vulnerabilityCountPanel);
-        vulnerabilityCountLabel = createLabel();
-        vulnerabilityCountPanel.add(vulnerabilityCountLabel, BorderLayout.NORTH);
-        vulnerabilityCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("漏洞"), BorderLayout.CENTER);
-
         bugCountPanel = createPanel();
         add(bugCountPanel);
         bugCountLabel = createLabel();
         bugCountPanel.add(bugCountLabel, BorderLayout.NORTH);
-        bugCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("Bugs"), BorderLayout.CENTER);
+        bugCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel(ResourcesLoader.getString("issueType.bug")), BorderLayout.CENTER);
 
         codeSmellCountPanel = createPanel();
         add(codeSmellCountPanel);
         codeSmellCountLabel = createLabel();
         codeSmellCountPanel.add(codeSmellCountLabel, BorderLayout.NORTH);
-        codeSmellCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("异味"), BorderLayout.CENTER);
+        codeSmellCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel(ResourcesLoader.getString("issueType.codeSmell")), BorderLayout.CENTER);
+
+        vulnerabilityCountPanel = createPanel();
+        add(vulnerabilityCountPanel);
+        vulnerabilityCountLabel = createLabel();
+        vulnerabilityCountPanel.add(vulnerabilityCountLabel, BorderLayout.NORTH);
+        vulnerabilityCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel(ResourcesLoader.getString("issueType.vulnerability")), BorderLayout.CENTER);
 
         securityHotSpotCountPanel = createPanel();
         add(securityHotSpotCountPanel);
         securityHotSpotCountLabel = createLabel();
         securityHotSpotCountPanel.add(securityHotSpotCountLabel, BorderLayout.NORTH);
-        securityHotSpotCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("安全热点"), BorderLayout.CENTER);
+        securityHotSpotCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel(ResourcesLoader.getString("issueType.securityHotspot")), BorderLayout.CENTER);
 
         duplicatedBlocksCountPanel = createPanel();
         add(duplicatedBlocksCountPanel);
         duplicatedBlocksCountLabel = createLabel();
         duplicatedBlocksCountPanel.add(duplicatedBlocksCountLabel, BorderLayout.NORTH);
-        duplicatedBlocksCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel("重复块"), BorderLayout.CENTER);
+        duplicatedBlocksCountPanel.add(UIUtils.createHorizontalAlignmentCenterLabel(ResourcesLoader.getString("issueType.duplication")), BorderLayout.CENTER);
     }
 
     public void refresh() {

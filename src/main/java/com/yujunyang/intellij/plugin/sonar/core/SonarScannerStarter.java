@@ -34,7 +34,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.impl.ToolWindowImpl;
 import com.intellij.util.Consumer;
@@ -42,12 +41,11 @@ import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
 import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
 import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ConfigException;
-import com.yujunyang.intellij.plugin.sonar.config.ProjectSettings;
-import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 import org.sonarsource.scanner.api.LogOutput;
 import org.sonarsource.scanner.api.internal.ScannerException;
@@ -210,10 +208,10 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     private void asyncStart(@NotNull final ProgressIndicator indicator, final boolean justCompiled) {
         indicator.setIndeterminate(true);
-        indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
+//        indicator.setText("对项目[" + project.getName() + "]执行Sonar代码检测");
         try {
             if (!configCompleted()) {
-                throw new ConfigException("尚未设置SonarQube, 前往 Settings / Tools / SonarAnalyzer 设置");
+                throw new ConfigException(ResourcesLoader.getString("error.analysis.noConnection"));
             }
             asyncStartImpl(indicator, justCompiled);
         } catch (Exception exc) {
@@ -251,13 +249,13 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 //        ret.append("<br>");
 //        ret.append("Go to Log for more details");
 //        ret.append("<br>");
-        ret.append("<p>Sonar analysis failed: ").append(errorMessage).append("</p>");
+        ret.append(ResourcesLoader.getString("analysis.failed.message", errorMessage));
         return ret;
     }
 
     public static StringBuilder createSuccessInfo() {
         final StringBuilder ret = new StringBuilder();
-        ret.append("<p>").append("Sonar analysis completed").append("</p>");
+        ret.append(ResourcesLoader.getString("analysis.success.message"));
         return ret;
     }
 

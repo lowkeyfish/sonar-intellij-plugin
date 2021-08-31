@@ -36,6 +36,7 @@ import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
 import com.yujunyang.intellij.plugin.sonar.messages.ClearListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,7 +68,7 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener, Clear
         bodyPanel.setLayout(bodyPanelLayout);
         add(bodyPanel, BorderLayout.CENTER);
 
-        bodyPanel.add("EMPTY", new MessagePanel("无代码分析结果"));
+        bodyPanel.add("EMPTY", new MessagePanel(ResourcesLoader.getString("toolWindow.report.emptyText")));
 
         OnePixelSplitter listAndCurrentSplitter = new OnePixelSplitter();
         listAndCurrentSplitter.getDivider().setBackground(UIUtils.borderColor());

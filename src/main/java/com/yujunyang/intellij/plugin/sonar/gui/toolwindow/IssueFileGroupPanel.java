@@ -36,6 +36,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 
 public class IssueFileGroupPanel extends JBPanel {
     private PsiFile psiFile;
@@ -67,7 +68,7 @@ public class IssueFileGroupPanel extends JBPanel {
     }
 
     private void addTitleTextArea(int count) {
-        JBTextArea textArea = UIUtils.createWrapLabelLikedTextArea(String.format("%s %s个问题", IdeaUtils.getPath(psiFile), count));
+        JBTextArea textArea = UIUtils.createWrapLabelLikedTextArea(ResourcesLoader.getString("report.fileSummary", IdeaUtils.getPath(psiFile), count));
         textArea.setForeground(Color.GRAY);
         textArea.setAlignmentX(LEFT_ALIGNMENT);
         add(textArea);

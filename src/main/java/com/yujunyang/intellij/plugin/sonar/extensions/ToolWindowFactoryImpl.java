@@ -31,6 +31,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.yujunyang.intellij.plugin.sonar.common.PluginConstants;
 import com.yujunyang.intellij.plugin.sonar.gui.toolwindow.LogPanel;
 import com.yujunyang.intellij.plugin.sonar.gui.toolwindow.ReportPanel;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,8 +40,8 @@ public class ToolWindowFactoryImpl implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         JBPanel reportPanel = new ReportPanel(project);
         JBPanel logPanel = new LogPanel(project);
-        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(reportPanel, "Report", false));
-        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(logPanel, "Log", false));
+        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(reportPanel, ResourcesLoader.getString("toolWindow.tab.report"), false));
+        toolWindow.getContentManager().addContent(ContentFactory.SERVICE.getInstance().createContent(logPanel, ResourcesLoader.getString("toolWindow.tab.log"), false));
     }
 
     @Nullable

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.intellij.psi.PsiFile;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 
 public class DuplicatedBlocksIssue extends AbstractIssue {
     private List<Duplicate> duplicates;
@@ -66,7 +67,7 @@ public class DuplicatedBlocksIssue extends AbstractIssue {
 
     @Override
     public String getMsg() {
-        return String.format("行[%s-%s]与其他[%s]个代码块重复", lineStart, lineEnd, duplicates.size());
+        return ResourcesLoader.getString("lineMarker.duplicationSummary", lineStart, lineEnd, duplicates.size());
     }
 
     public static class Duplicate {

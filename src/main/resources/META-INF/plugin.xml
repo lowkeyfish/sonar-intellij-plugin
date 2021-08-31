@@ -56,8 +56,6 @@
             <add-to-group anchor="after" group-id="ProjectViewPopupMenu" relative-to-action="AnalyzeMenu"/>
             <action id="SonarAnalyzer.ProjectFilesNotIncludingTestsAction"
                     class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeProjectFilesNotIncludingTests"
-                    text="分析所有项目文件(不包含单测)"
-                    description="对不包含单测的所有项目文件执行Sonar代码分析"
                     icon="PluginIcons.ANALYZE_PROJECT_FILES_NOT_INCLUDING_TESTS_ICON">
             </action>
         </group>
@@ -65,35 +63,25 @@
         <group id="SonarAnalyzer.ToolBarActions.left" text="SonarAnalyzer Actions" popup="true">
             <action id="SonarAnalyzer.Start"
                     class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeProjectFilesNotIncludingTests"
-                    text="分析所有项目文件(不包含单测)"
-                    description="对不包含单测的所有项目文件执行Sonar代码分析"
                     icon="PluginIcons.ANALYZE_EXECUTE">
             </action>
 
             <separator/>
             <action id="SonarAnalyzer.Setting"
                     class="com.yujunyang.intellij.plugin.sonar.actions.ShowSettingDialogAction"
-                    text="设置"
-                    description="设置"
                     icon="PluginIcons.PLUGIN_SETTING">
             </action>
             <action id="SonarAnalyzer.Setting.AutoScrollToSource"
                     class="com.yujunyang.intellij.plugin.sonar.actions.AutoScrollToSourceAction"
-                    text="自动定位到源文件问题行"
-                    description="自动定位到源文件问题行"
                     icon="PluginIcons.PLUGIN_AUTO_SCROLL_TO_SOURCE">
             </action>
             <separator/>
             <action id="SonarAnalyzer.Cancel"
                     class="com.yujunyang.intellij.plugin.sonar.actions.ClearAndCloseToolWindowAnalyzeAction"
-                    text="清除检查结果"
-                    description="清除检查结果"
                     icon="PluginIcons.ANALYZE_CLEAR">
             </action>
             <action id="SonarAnalyzer.Help"
                     class="com.yujunyang.intellij.plugin.sonar.actions.ShowHelpAction"
-                    text="帮助"
-                    description="查看插件使用帮助"
                     icon="PluginIcons.PLUGIN_HELP">
             </action>
             <action id="SonarAnalyzer.Test"

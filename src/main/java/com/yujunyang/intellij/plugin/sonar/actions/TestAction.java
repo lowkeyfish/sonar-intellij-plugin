@@ -21,8 +21,15 @@
 
 package com.yujunyang.intellij.plugin.sonar.actions;
 
+import javax.swing.event.HyperlinkEvent;
+
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationListener;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -32,6 +39,7 @@ import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.Report;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
@@ -75,25 +83,36 @@ public class TestAction extends AbstractAction {
 //            }
 //        }
 
-        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        String version = sdk.getVersionString();
+//        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+//        String version = sdk.getVersionString();
+//
+//
+//        Thread thread = new Thread(() -> {
+//            Report report = ReportUtils.createReport(e.getProject());
+//            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+//            problemCacheService.setIssues(report.getIssues());
+//            problemCacheService.setStats(
+//                    report.getBugCount(),
+//                    report.getCodeSmellCount(),
+//                    report.getVulnerabilityCount(),
+//                    report.getDuplicatedBlocksCount(),
+//                    report.getSecurityHotSpotCount());
+//            EventDispatchThreadHelper.invokeLater(() -> {
+//                DaemonCodeAnalyzer.getInstance(project).restart();
+//                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
+//            });
+//        });
+//        thread.start();
 
-
-        Thread thread = new Thread(() -> {
-            Report report = ReportUtils.createReport(e.getProject());
-            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
-            problemCacheService.setIssues(report.getIssues());
-            problemCacheService.setStats(
-                    report.getBugCount(),
-                    report.getCodeSmellCount(),
-                    report.getVulnerabilityCount(),
-                    report.getDuplicatedBlocksCount(),
-                    report.getSecurityHotSpotCount());
-            EventDispatchThreadHelper.invokeLater(() -> {
-                DaemonCodeAnalyzer.getInstance(project).restart();
-                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
-            });
-        });
-        thread.start();
+        NotificationGroup.balloonGroup("Sonar Intellij plugin Balloon Notification").createNotification(
+                "Sonar Intellij plugin",
+                ResourcesLoader.getString("settings.uiLanguages.switchSuccess"),
+                NotificationType.INFORMATION,
+                new NotificationListener.Adapter() {
+                    @Override
+                    protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
+                        ApplicationManagerEx.getApplicationEx().restart(false);
+                    }
+                }).notify(e.getProject());
     }
 }

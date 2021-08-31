@@ -55,6 +55,7 @@ import com.yujunyang.intellij.plugin.sonar.common.exceptions.AuthorizationExcept
 import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.error.ErrorPainter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +76,7 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
         this.saveConsumer = saveConsumer;
 
         init();
-        setTitle("Add SonarQube connection");
+        setTitle(ResourcesLoader.getString("settings.dialog.sonarQubeConnection.add.title"));
         setResizable(false);
         getContentPanel().setBorder(JBUI.Borders.empty());
         ((JComponent)getContentPanel().getComponent(1)).setBorder(JBUI.Borders.empty(0, 12, 8, 12));
@@ -83,7 +84,7 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
 
     public void initConnection(String name, String url, String token) {
         this.edit = true;
-        setTitle("Edit SonarQube connection");
+        setTitle(ResourcesLoader.getString("settings.dialog.sonarQubeConnection.edit.title"));
         this.nameField.setText(name);
         this.nameField.setEnabled(false);
         this.urlField.setText(url);
@@ -132,7 +133,7 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
         formPanel.add(new JBLabel("URL: "), c);
         c.gridx = 1;
         c.weightx = 1;
-        urlField = createFiled("", "Example: http://localhost:9000");
+        urlField = createFiled("", ResourcesLoader.getString("settings.sonarQubeConnections.connectionExample"));
         formPanel.add(urlField, c);
 
         c.gridy = 2;
@@ -201,20 +202,20 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
         }
 
         if (!(url.startsWith("http://") || url.startsWith("https://"))) {
-            Messages.showDialog("Please provide a valid URL", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarQube.url.invalid"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 
         if (!edit && existNames.contains(name)) {
-            Messages.showDialog("There is already a connection with that name. Please choose another name", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarQube.name.repeat"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 
-        Task task = new Task.Modal(null, "Test connection to SonarQube", false) {
+        Task task = new Task.Modal(null, ResourcesLoader.getString("task.testConnection.title"), false) {
             @Override
             public void run(@NotNull final ProgressIndicator indicator) {
                 try {
-                    indicator.setText(String.format("Connecting to server %s", url));
+                    indicator.setText(ResourcesLoader.getString("task.testConnection.text", url));
                     SonarApiImpl.checkConnection(url, token);
                     SonarQubeSettings sonarQubeSettings = new SonarQubeSettings();
                     {
@@ -228,12 +229,12 @@ public class AddSonarQubeConnectionDialog extends DialogWrapper {
                     });
                 } catch (AuthorizationException e) {
                     EventDispatchThreadHelper.invokeLater(() -> {
-                        Messages.showDialog("Failed to connect to the server. Please check the Token.", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+                        Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarQube.token.invalid"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
                     });
                     return;
                 } catch (ApiRequestFailedException e) {
                     EventDispatchThreadHelper.invokeLater(() -> {
-                        Messages.showDialog("Failed to connect to the server. Please check the URL.", "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+                        Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarQube.url.failedConnect"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
                     });
                     return;
                 }

@@ -29,6 +29,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.common.PluginConstants;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowHelpAction extends AnAction {
@@ -43,6 +44,11 @@ public class ShowHelpAction extends AnAction {
 //                    }
 //                }
 //        );
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setText(ResourcesLoader.getString("action.help"));
     }
 
     private StringBuilder createHelpInfo() {

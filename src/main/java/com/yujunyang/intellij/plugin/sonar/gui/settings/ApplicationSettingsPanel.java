@@ -23,6 +23,7 @@ package com.yujunyang.intellij.plugin.sonar.gui.settings;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,9 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Pair;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -53,6 +56,7 @@ import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarPropertyDialog;
 import com.yujunyang.intellij.plugin.sonar.gui.dialog.AddSonarQubeConnectionDialog;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class ApplicationSettingsPanel extends JBPanel {
@@ -62,6 +66,7 @@ public class ApplicationSettingsPanel extends JBPanel {
     private JBTable propertiesTable;
     private DefaultTableModel propertiesTableModel;
     private Map<String, String> properties = new HashMap<>();
+    private ComboBox uiLanguagesComboBox;
 
     public ApplicationSettingsPanel() {
         init();
@@ -75,10 +80,16 @@ public class ApplicationSettingsPanel extends JBPanel {
         return properties;
     }
 
+    public String getUILanguageLocale() {
+        return UIUtils.getLocaleByLanguageDesc(uiLanguagesComboBox.getSelectedItem().toString());
+    }
+
     private void init() {
         BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
         setLayout(layout);
 
+        initUILanguages();
+        add(Box.createVerticalStrut(15));
         initConnections();
         add(Box.createVerticalStrut(15));
         initSonarProperties();
@@ -87,14 +98,33 @@ public class ApplicationSettingsPanel extends JBPanel {
         // reset();
     }
 
+    private void initUILanguages() {
+        JBPanel panel = new JBPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+
+        panel.add(new JBLabel(ResourcesLoader.getString("settings.uiLanguages.label") + " "));
+
+        uiLanguagesComboBox = new ComboBox();
+        panel.add(uiLanguagesComboBox);
+        uiLanguagesComboBox.setEditable(false);
+        UIUtils.getAllUILanguagesDesc().forEach(n -> {
+            uiLanguagesComboBox.addItem(n);
+        });
+        uiLanguagesComboBox.setSelectedItem(UIUtils.getLanguageDescByLocale(WorkspaceSettings.getInstance().uiLanguageLocale));
+
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
+
+        add(panel);
+    }
+
     private void initConnections() {
-        addTableLabel("SonarQube connections:");
+        addTableLabel(ResourcesLoader.getString("settings.sonarQubeConnections.tableTitle"));
 
         connectionsTableModel = createDefaultTableModel(new String[] { "Name", "Url" });
 
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.add"), "", AllIcons.General.Add) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 AddSonarQubeConnectionDialog addSonarQubeConnectionDialog = new AddSonarQubeConnectionDialog((sonarQubeSettings) -> addSonarQubeConnection(sonarQubeSettings));
@@ -102,7 +132,7 @@ public class ApplicationSettingsPanel extends JBPanel {
                 addSonarQubeConnectionDialog.show();
             }
         });
-        actionGroup.add(new AnAction("Remove", "", AllIcons.General.Remove) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.remove"), "", AllIcons.General.Remove) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(connectionsTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -116,7 +146,7 @@ public class ApplicationSettingsPanel extends JBPanel {
                 connectionsTableModel.fireTableDataChanged();
             }
         });
-        actionGroup.add(new AnAction("Edit", "", AllIcons.Actions.Edit) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.edit"), "", AllIcons.Actions.Edit) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(connectionsTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -133,18 +163,18 @@ public class ApplicationSettingsPanel extends JBPanel {
             }
         });
 
-        connectionsTable = createTable("No connections", connectionsTableModel, actionGroup);
+        connectionsTable = createTable(ResourcesLoader.getString("settings.sonarQubeConnections.tableEmpty"), connectionsTableModel, actionGroup);
     }
 
 
 
     private void initSonarProperties() {
-        addTableLabel("SonarScanner properties:");
+        addTableLabel(ResourcesLoader.getString("settings.sonarScannerProperties.tableTitle"));
 
         propertiesTableModel = createDefaultTableModel(new String[] { "Name", "Value" });
 
         DefaultActionGroup actionGroup = new DefaultActionGroup();
-        actionGroup.add(new AnAction("Add", "", AllIcons.General.Add) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.add"), "", AllIcons.General.Add) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 AddSonarPropertyDialog addSonarPropertyDialog = new AddSonarPropertyDialog((property) -> addSonarScannerProperty(property));
@@ -152,7 +182,7 @@ public class ApplicationSettingsPanel extends JBPanel {
                 addSonarPropertyDialog.show();
             }
         });
-        actionGroup.add(new AnAction("Remove", "", AllIcons.General.Remove) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.remove"), "", AllIcons.General.Remove) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(propertiesTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -166,7 +196,7 @@ public class ApplicationSettingsPanel extends JBPanel {
                 propertiesTableModel.fireTableDataChanged();
             }
         });
-        actionGroup.add(new AnAction("Edit", "", AllIcons.Actions.Edit) {
+        actionGroup.add(new AnAction(ResourcesLoader.getString("settings.action.edit"), "", AllIcons.Actions.Edit) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(propertiesTable.getSelectionModel().getAnchorSelectionIndex() > -1);
@@ -183,7 +213,7 @@ public class ApplicationSettingsPanel extends JBPanel {
             }
         });
 
-        propertiesTable = createTable("No properties", propertiesTableModel, actionGroup);
+        propertiesTable = createTable(ResourcesLoader.getString("settings.sonarScannerProperties.tableEmpty"), propertiesTableModel, actionGroup);
     }
 
     private JBTable createTable(String emptyText, TableModel tableModel, ActionGroup actionGroup) {
@@ -255,9 +285,11 @@ public class ApplicationSettingsPanel extends JBPanel {
     }
 
     public void reset() {
+        uiLanguagesComboBox.setSelectedItem(UIUtils.getLanguageDescByLocale(WorkspaceSettings.getInstance().uiLanguageLocale));
+
         connections.clear();
         int connectionsTableRowCount = connectionsTableModel.getRowCount();
-        for (int i = 0; i < connectionsTableRowCount; i++) {
+        for (int i = connectionsTableRowCount - 1; i >= 0; i--) {
             connectionsTableModel.removeRow(i);
         }
         WorkspaceSettings workspaceSettings = WorkspaceSettings.getInstance();
@@ -275,7 +307,7 @@ public class ApplicationSettingsPanel extends JBPanel {
 
         properties.clear();
         int propertiesTableRowCount = propertiesTableModel.getRowCount();
-        for (int i = 0; i < propertiesTableRowCount; i++) {
+        for (int i = propertiesTableRowCount - 1; i >= 0; i--) {
             propertiesTableModel.removeRow(i);
         }
         Map<String, String> existProperties = WorkspaceSettings.getInstance().sonarProperties;
