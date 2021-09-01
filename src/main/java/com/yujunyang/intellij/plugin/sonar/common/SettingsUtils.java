@@ -51,7 +51,7 @@ public final class SettingsUtils {
         }
 
         ProjectSettings projectSettings = ProjectSettings.getInstance(project);
-        String bindConnectionName = projectSettings.sonarQubeConnectionName;
+        String bindConnectionName = projectSettings.getSonarQubeConnectionName();
         SonarQubeSettings ret = connections.stream().filter(n -> n.name.equals(bindConnectionName)).findFirst().orElse(null);
         if (ret != null) {
             return ret;

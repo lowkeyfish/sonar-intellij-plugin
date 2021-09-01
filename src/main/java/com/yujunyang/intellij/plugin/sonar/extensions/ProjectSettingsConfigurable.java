@@ -59,7 +59,7 @@ public class ProjectSettingsConfigurable implements Configurable {
     public boolean isModified() {
         ProjectSettings projectSettings = ProjectSettings.getInstance(project);
 
-        if (!Objects.equals(projectSettings.sonarQubeConnectionName, projectSettingsPanel.getConnectionName())) {
+        if (!Objects.equals(projectSettings.getSonarQubeConnectionName(), projectSettingsPanel.getConnectionName())) {
             return true;
         }
 

@@ -244,7 +244,7 @@ public class ProjectSettingsPanel extends JBPanel {
 
     public void reset() {
         ProjectSettings projectSettings = ProjectSettings.getInstance(project);
-        connectionNameComboBox.setSelectedItem(projectSettings.sonarQubeConnectionName);
+        connectionNameComboBox.setSelectedItem(projectSettings.getSonarQubeConnectionName());
 
         properties.clear();
         int propertiesTableRowCount = propertiesTableModel.getRowCount();

@@ -55,6 +55,8 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.encoding.EncodingManager;
+import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.JavaRecursiveElementVisitor;
 import com.intellij.psi.PsiAnnotation;
@@ -497,6 +499,10 @@ public final class IdeaUtils {
     public static String getProjectSdkVersion(Project project) {
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
         return sdk.getName();
+    }
+
+    public static String getProjectFileEncoding(Project project) {
+        return EncodingProjectManager.getInstance(project).getDefaultCharsetName();
     }
 
 }

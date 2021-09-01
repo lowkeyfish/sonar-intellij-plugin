@@ -22,6 +22,7 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
@@ -131,6 +132,7 @@ public class IssueItemPanel extends JBPanel {
 
     private void highlight() {
         UIUtils.setBackgroundRecursively(this, UIUtils.highlightBackgroundColor());
+        this.setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.highlightBorderColor()), JBUI.Borders.empty(5)));
     }
 
     private void cancelHighlight() {
@@ -138,6 +140,7 @@ public class IssueItemPanel extends JBPanel {
             return;
         }
         UIUtils.setBackgroundRecursively(this);
+        this.setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.borderColor()), JBUI.Borders.empty(5)));
     }
 
     public void unSelect() {

@@ -21,13 +21,15 @@
 
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.JBPanel;
+import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.gui.layout.SampleVerticalScrollLayout;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
@@ -48,9 +50,13 @@ public class IssueListPanel extends JBPanel {
         removeAll();
         ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
         ConcurrentMap<PsiFile, List<AbstractIssue>> issues = problemCacheService.getIssues();
-        for (Map.Entry<PsiFile, List<AbstractIssue>> fileIssues : issues.entrySet()) {
-            add(new IssueFileGroupPanel(fileIssues.getKey(), fileIssues.getValue()));
-        }
+        issues.entrySet().stream().
+                sorted(Comparator.comparing(o -> IdeaUtils.getPath(o.getKey()))).
+                collect(Collectors.toList()).
+                forEach(n -> add(new IssueFileGroupPanel(n.getKey(), n.getValue())));
+//        for (Map.Entry<PsiFile, List<AbstractIssue>> fileIssues : issues.entrySet()) {
+//            add(new IssueFileGroupPanel(fileIssues.getKey(), fileIssues.getValue()));
+//        }
     }
 
     public void reset() {

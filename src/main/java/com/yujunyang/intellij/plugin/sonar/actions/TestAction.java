@@ -87,32 +87,32 @@ public class TestAction extends AbstractAction {
 //        String version = sdk.getVersionString();
 //
 //
-//        Thread thread = new Thread(() -> {
-//            Report report = ReportUtils.createReport(e.getProject());
-//            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
-//            problemCacheService.setIssues(report.getIssues());
-//            problemCacheService.setStats(
-//                    report.getBugCount(),
-//                    report.getCodeSmellCount(),
-//                    report.getVulnerabilityCount(),
-//                    report.getDuplicatedBlocksCount(),
-//                    report.getSecurityHotSpotCount());
-//            EventDispatchThreadHelper.invokeLater(() -> {
-//                DaemonCodeAnalyzer.getInstance(project).restart();
-//                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
-//            });
-//        });
-//        thread.start();
+        Thread thread = new Thread(() -> {
+            Report report = ReportUtils.createReport(e.getProject());
+            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+            problemCacheService.setIssues(report.getIssues());
+            problemCacheService.setStats(
+                    report.getBugCount(),
+                    report.getCodeSmellCount(),
+                    report.getVulnerabilityCount(),
+                    report.getDuplicatedBlocksCount(),
+                    report.getSecurityHotSpotCount());
+            EventDispatchThreadHelper.invokeLater(() -> {
+                DaemonCodeAnalyzer.getInstance(project).restart();
+                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
+            });
+        });
+        thread.start();
 
-        NotificationGroup.balloonGroup("Sonar Intellij plugin Balloon Notification").createNotification(
-                "Sonar Intellij plugin",
-                ResourcesLoader.getString("settings.uiLanguages.switchSuccess"),
-                NotificationType.INFORMATION,
-                new NotificationListener.Adapter() {
-                    @Override
-                    protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
-                        ApplicationManagerEx.getApplicationEx().restart(false);
-                    }
-                }).notify(e.getProject());
+//        NotificationGroup.balloonGroup("Sonar Intellij plugin Balloon Notification").createNotification(
+//                "Sonar Intellij plugin",
+//                ResourcesLoader.getString("settings.uiLanguages.switchSuccess"),
+//                NotificationType.INFORMATION,
+//                new NotificationListener.Adapter() {
+//                    @Override
+//                    protected void hyperlinkActivated(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
+//                        ApplicationManagerEx.getApplicationEx().restart(false);
+//                    }
+//                }).notify(e.getProject());
     }
 }

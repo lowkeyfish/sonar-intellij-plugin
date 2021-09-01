@@ -277,7 +277,12 @@ public final class UIUtils {
     }
 
     public static Color highlightBackgroundColor() {
-        return UIUtil.isUnderDarcula() ? new Color(54, 57, 59) : new Color(245, 249, 255);
+//        return UIUtil.isUnderDarcula() ? new Color(54, 57, 59) : new Color(245, 249, 255);
+        return UIUtil.isUnderDarcula() ? new Color(105, 36, 36) : new Color(255, 234, 234);
+    }
+
+    public static Color highlightBorderColor() {
+        return UIUtil.isUnderDarcula() ? new Color(221, 64, 64) : new Color(221, 64, 64);
     }
 
     public static Color labelForegroundColor() {
