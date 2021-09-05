@@ -452,10 +452,10 @@ public final class IdeaUtils {
             );
         }
         String splitChar;
-        if (fullClassPath.indexOf(":") > -1) {
-            splitChar = ":";
-        } else {
+        if (fullClassPath.indexOf(";") > -1) {
             splitChar = ";";
+        } else {
+            splitChar = ":";
         }
         List<String> ret = new ArrayList<>();
         Arrays.stream(fullClassPath.split(splitChar)).forEach(n -> {
