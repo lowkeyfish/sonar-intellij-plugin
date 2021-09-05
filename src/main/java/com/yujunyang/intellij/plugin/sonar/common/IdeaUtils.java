@@ -451,8 +451,14 @@ public final class IdeaUtils {
                     OrderEnumerator.orderEntries(project).recursively().getPathsList().getPathsString()
             );
         }
+        String splitChar;
+        if (fullClassPath.indexOf(":") > -1) {
+            splitChar = ":";
+        } else {
+            splitChar = ";";
+        }
         List<String> ret = new ArrayList<>();
-        Arrays.stream(fullClassPath.split(";")).forEach(n -> {
+        Arrays.stream(fullClassPath.split(splitChar)).forEach(n -> {
             if (n.endsWith(".jar")) {
                 ret.add(n);
             }
