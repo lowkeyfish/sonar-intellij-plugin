@@ -1,12 +1,10 @@
-<p style="text-align:center;">
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:100px;height:100px;">
-    <path stroke="null" id="svg_1" d="m403.52687,177.1871l-9.88005,-8.93755c-1.64938,-2.16939 -3.83502,-3.25002 -6.58941,-3.25002s-4.94003,1.08063 -6.58941,3.25002l-231.40931,227.50117l-81.53479,-80.43791c-1.64938,-2.16939 -3.83502,-3.25002 -6.58941,-3.25002s-4.94003,1.08063 -6.58941,3.25002l-9.88005,8.93755c-1.64938,2.16939 -2.47001,4.6069 -2.47001,7.31254s0.82063,4.87503 2.47001,6.50003l98.00425,96.688c2.18564,2.16939 4.52565,3.25002 7.00379,3.25002s4.81002,-1.08063 7.00379,-3.25002l247.05814,-243.75125c1.64938,-1.62501 2.47001,-3.79439 2.47001,-6.50003s-0.82875,-5.14315 -2.47814,-7.31254zm-258.2057,101.5874c2.15314,2.15314 4.45252,3.22564 6.88191,3.22564s4.72877,-1.07251 6.88191,-3.22564l179.48217,-178.93779c1.61688,-1.62501 2.42939,-3.77814 2.42939,-6.46753s-0.8125,-5.11065 -2.42939,-7.26379l-9.71755,-8.88067c-1.61688,-2.15314 -3.77002,-3.22564 -6.47566,-3.22564s-4.85877,1.07251 -6.47566,3.22564l-164.10147,162.80146l-58.70343,-58.52468c-1.61688,-2.15314 -3.77002,-3.22564 -6.47566,-3.22564s-4.85877,1.07251 -6.47566,3.22564l-9.71755,8.88067c-1.61688,2.15314 -2.42939,4.5744 -2.42939,7.26379s0.8125,4.84252 2.42939,6.45941l74.89663,74.66913z" fill="green"/>
-</svg>
+<p align="center">
+<img width="200" src="src/main/resources/icons/logo.svg">
 </p>
 
-<h1 style="text-align:center;">Sonar Intellij Plugin</h1>
+<h1 align="center">Sonar Intellij Plugin</h1>
 
-<p style="text-align:center;">
+<p>
 <img src="https://img.shields.io/jetbrains/plugin/v/1234"/>
 <img src="https://img.shields.io/github/license/lowkeyfish/sonar-intellij-plugin"/>
 </p>
@@ -46,11 +44,11 @@ Project级别设置主要包含：
 
 每个SonarQube连接必须提供名称、URL和Token。新增SonarQube连接：
 
-![sonar-intellij-plugin-中文-添加连接](https://note.yujunyang.com/static/2021/8/737a08525f1aa64ac24633da9e4ea2a6.png)
+![sonar-intellij-plugin-chinese-add-connection](//note.yujunyang.com/static/2021/8/8c8571056a7f297f9a5d816f657e84f4.png)
 
 在Project级别设置中可以为Project指定要绑定的SonarQube连接：
 
-![sonar-intellij-plugin-中文-project绑定连接](https://note.yujunyang.com/static/2021/8/b7ebf0765e7b7ac96260329327895021.png)
+![sonar-intellij-plugin-chinese-project-settings](//note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
 
 如果Project未绑定SonarQube连接，默认使用已添加的第一个SonarQube连接。
 
@@ -61,11 +59,11 @@ Project级别设置主要包含：
 
 添加属性：
 
-![sonar-intellij-plugin-中文-添加属性](https://note.yujunyang.com/static/2021/8/ffee76b3d64701e96dbc2ec52811c439.png)
+![sonar-intellij-plugin-chinese-add-property](//note.yujunyang.com/static/2021/8/03b5135f1cd20e4d4711a8dbd7294e09.png)
 
 你可以在IDE级别和Project级别管理属性，在IDE级别添加所有Project都需要的属性，然后可以在Project设置中控制是否继承IDE级别添加的属性，以及管理当前Project的专用属性：
 
-![sonar-intellij-plugin-中文-project绑定连接](https://note.yujunyang.com/static/2021/8/b7ebf0765e7b7ac96260329327895021.png)
+![sonar-intellij-plugin-chinese-project-settings](//note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
 
 ### 分析
 
@@ -79,15 +77,14 @@ Project级别设置主要包含：
 
 开始代码分析后，插件将启动代码编译，编译成功后再使用SonarScanner完成代码分析。在SonarAnalyzer Tool Window的`日志`中会输出整个操作日志：
 
-![sonar-intellij-plugin-中文-log](https://note.yujunyang.com/static/2021/8/e5c3b801d1b894359357e79768293006.png)
+![sonar-intellij-plugin-chinese-log](//note.yujunyang.com/static/2021/8/3bf7ca60ceb9fdc6d707bd85ef65808e.png)
 
 
 #### 分析结果
 
 当代码分析完成后会在SonarAnalyzer Tool Window的`报告`中展示完整的分析报告，同时也会在编辑器中对问题代码行进行提示：
 
-![sonar-intellij-plugin-中文-report](https://note.yujunyang.com/static/2021/8/06c4023eef64a4f9a0fabc4005715f94.png)
-
+![sonar-intellij-plugin-chinese-report](//note.yujunyang.com/static/2021/8/1d028ec39075b3abfd3d19faf707d8da.png)
 
 
 ## 如何贡献
