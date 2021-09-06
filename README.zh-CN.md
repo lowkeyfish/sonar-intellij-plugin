@@ -1,5 +1,5 @@
 <p align="center">
-<img width="200" src="src/main/resources/icons/logo.svg">
+<img width="100" src="https://note.yujunyang.com/static/2021/8/f9c570f2e7e3aab5367db99c35512efc.png">
 </p>
 
 <h1 align="center">Sonar Intellij Plugin</h1>
@@ -44,11 +44,11 @@ Project级别设置主要包含：
 
 每个SonarQube连接必须提供名称、URL和Token。新增SonarQube连接：
 
-![sonar-intellij-plugin-chinese-add-connection](//note.yujunyang.com/static/2021/8/8c8571056a7f297f9a5d816f657e84f4.png)
+![sonar-intellij-plugin-chinese-add-connection](https://note.yujunyang.com/static/2021/8/8c8571056a7f297f9a5d816f657e84f4.png)
 
 在Project级别设置中可以为Project指定要绑定的SonarQube连接：
 
-![sonar-intellij-plugin-chinese-project-settings](//note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
+![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
 
 如果Project未绑定SonarQube连接，默认使用已添加的第一个SonarQube连接。
 
@@ -59,11 +59,11 @@ Project级别设置主要包含：
 
 添加属性：
 
-![sonar-intellij-plugin-chinese-add-property](//note.yujunyang.com/static/2021/8/03b5135f1cd20e4d4711a8dbd7294e09.png)
+![sonar-intellij-plugin-chinese-add-property](https://note.yujunyang.com/static/2021/8/03b5135f1cd20e4d4711a8dbd7294e09.png)
 
 你可以在IDE级别和Project级别管理属性，在IDE级别添加所有Project都需要的属性，然后可以在Project设置中控制是否继承IDE级别添加的属性，以及管理当前Project的专用属性：
 
-![sonar-intellij-plugin-chinese-project-settings](//note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
+![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
 
 ### 分析
 
@@ -77,14 +77,14 @@ Project级别设置主要包含：
 
 开始代码分析后，插件将启动代码编译，编译成功后再使用SonarScanner完成代码分析。在SonarAnalyzer Tool Window的`日志`中会输出整个操作日志：
 
-![sonar-intellij-plugin-chinese-log](//note.yujunyang.com/static/2021/8/3bf7ca60ceb9fdc6d707bd85ef65808e.png)
+![sonar-intellij-plugin-chinese-log](https://note.yujunyang.com/static/2021/8/3bf7ca60ceb9fdc6d707bd85ef65808e.png)
 
 
 #### 分析结果
 
 当代码分析完成后会在SonarAnalyzer Tool Window的`报告`中展示完整的分析报告，同时也会在编辑器中对问题代码行进行提示：
 
-![sonar-intellij-plugin-chinese-report](//note.yujunyang.com/static/2021/8/1d028ec39075b3abfd3d19faf707d8da.png)
+![sonar-intellij-plugin-chinese-report](https://note.yujunyang.com/static/2021/8/1d028ec39075b3abfd3d19faf707d8da.png)
 
 
 ## 如何贡献

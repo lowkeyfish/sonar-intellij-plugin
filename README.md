@@ -1,5 +1,5 @@
 <p align="center">
-<img width="200" src="src/main/resources/icons/logo.svg">
+<img width="100" src="https://note.yujunyang.com/static/2021/8/f9c570f2e7e3aab5367db99c35512efc.png">
 </p>
 
 <h1 align="center">Sonar Intellij Plugin</h1>
@@ -43,11 +43,11 @@ All SonarQube connections can be managed at the IDE level, and SonarQube connect
 
 Each SonarQube connection must provide a name, URL, and Token. Add SonarQube connection: 
 
-![sonar-intellij-plugin-english-add-connection](//note.yujunyang.com/static/2021/8/220507e0146db0d6bf1ca4d56d62d5fb.png)
+![sonar-intellij-plugin-english-add-connection](https://note.yujunyang.com/static/2021/8/220507e0146db0d6bf1ca4d56d62d5fb.png)
 
 In the Project level settings, you can specify the SonarQube connection to be bound for the Project: 
 
-![sonar-intellij-plugin-english-project-settings](//note.yujunyang.com/static/2021/8/f8bdb764bc28f9b6e20ac866a80db975.png)
+![sonar-intellij-plugin-english-project-settings](https://note.yujunyang.com/static/2021/8/f8bdb764bc28f9b6e20ac866a80db975.png)
 
 If the Project does not specify a SonarQube connection, the first SonarQube connection that has been added is used by default. 
 
@@ -58,15 +58,15 @@ When using SonarScanner inside the plugin, reasonable and complete properties ha
 
 Add property:
 
-![sonar-intellij-plugin-english-add-property](//note.yujunyang.com/static/2021/8/2d87655831fa07b60caa079b21bb80ec.png)
+![sonar-intellij-plugin-english-add-property](https://note.yujunyang.com/static/2021/8/2d87655831fa07b60caa079b21bb80ec.png)
 
 You can manage properties at the IDE level and the Project level, add the properties required by all projects at the IDE level, and then you can set whether to inherit the properties added at the IDE level in the Project settings, and manage the special properties of the current Project: 
 
-![sonar-intellij-plugin-english-project-settings](//note.yujunyang.com/static/2021/8/f8bdb764bc28f9b6e20ac866a80db975.png)
+![sonar-intellij-plugin-english-project-settings](https://note.yujunyang.com/static/2021/8/f8bdb764bc28f9b6e20ac866a80db975.png)
 
 ### Analysis
 
-#### Start Anslysis
+#### Start Analysis
 
 After setting the plugin, you can trigger the project code analysis in the following places: 
 
@@ -76,13 +76,13 @@ After setting the plugin, you can trigger the project code analysis in the follo
 
 After starting the code analysis, the plugin will start the code compilation, and then use SonarScanner to complete the code analysis after the compilation is successful. The entire operation log will be output in the `Log` of the SonarAnalyzer Tool Window: 
 
-![sonar-intellij-plugin-english-log](//note.yujunyang.com/static/2021/8/1913d1020b5b20c0f82383957d737366.png)
+![sonar-intellij-plugin-english-log](https://note.yujunyang.com/static/2021/8/1913d1020b5b20c0f82383957d737366.png)
 
 #### Analysis Result
 
 When the code analysis is completed, the complete analysis report will be displayed in the `Report` of the SonarAnalyzer Tool Window, and the problem code line will also be prompted in the editor: 
 
-![sonar-intellij-plugin-english-report](//note.yujunyang.com/static/2021/8/e832ccc752fcb55577da923e77f3b58b.png)
+![sonar-intellij-plugin-english-report](https://note.yujunyang.com/static/2021/8/e832ccc752fcb55577da923e77f3b58b.png)
 
 
 ## Contributing
