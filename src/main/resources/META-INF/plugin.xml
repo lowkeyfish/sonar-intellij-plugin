@@ -4,17 +4,7 @@
     <vendor email="hnyujunyang@163.com" url="https://github.com/lowkeyfish">Yu Junyang</vendor>
 
     <description>
-        <![CDATA[
-        Sonar Intellij plugin底层使用SonarScanner执行代码检查，直接在Intellij IDEA中对Java项目进行Sonar代码检查和查看检测结果。
-        <br/><br/>
-        <p>
-        特点：
-        <ul>
-            <li>代码问题按Bugs、漏洞、异味分类展示</li>
-            <li>检测结果直接在Intellij IDEA中查看，不需要再打开SonarQube</li>
-        </ul>
-        </p>
-        ]]>
+        Perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes.
     </description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

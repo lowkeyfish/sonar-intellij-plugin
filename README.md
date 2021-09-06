@@ -5,7 +5,7 @@
 <h1 align="center">Sonar Intellij Plugin</h1>
 
 <p>
-<img src="https://img.shields.io/jetbrains/plugin/v/1234"/>
+<img src="https://img.shields.io/jetbrains/plugin/v/17542"/>
 <img src="https://img.shields.io/github/license/lowkeyfish/sonar-intellij-plugin"/>
 </p>
 
@@ -16,7 +16,7 @@ Sonar Intellij Plugin is an Intellij IDEA plugin, you can use Sonar Intellij Plu
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.0](). 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.1](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer). 
 
 ## Usage
 

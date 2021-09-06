@@ -5,7 +5,7 @@
 <h1 align="center">Sonar Intellij Plugin</h1>
 
 <p>
-<img src="https://img.shields.io/jetbrains/plugin/v/1234"/>
+<img src="https://img.shields.io/jetbrains/plugin/v/17542"/>
 <img src="https://img.shields.io/github/license/lowkeyfish/sonar-intellij-plugin"/>
 </p>
 
@@ -17,7 +17,7 @@ Sonar Intellij Plugin是一个Intellij IDEA插件，使用Sonar Intellij Plugin�
 
 ## 安装
 
-Sonar Intellij Plugin已经发布到JetBrains插件市场，最新版本是[0.1.0]()。
+Sonar Intellij Plugin已经发布到JetBrains插件市场，最新版本是[0.1.1](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer)。
 
 ## 用法
 
