@@ -1,5 +1,5 @@
 <p align="center">
-<img width="100" src="https://note.yujunyang.com/static/2021/8/f9c570f2e7e3aab5367db99c35512efc.png">
+<img width="100" src="https://note.yujunyang.com/static/2021/8/057b00d5f6f8f467f89293e3dfa246b6.png">
 </p>
 
 <h1 align="center">Sonar Intellij Plugin</h1>
