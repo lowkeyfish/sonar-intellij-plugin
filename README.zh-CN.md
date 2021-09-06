@@ -48,7 +48,7 @@ Project级别设置主要包含：
 
 在Project级别设置中可以为Project指定要绑定的SonarQube连接：
 
-![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
+![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png?t=1)
 
 如果Project未绑定SonarQube连接，默认使用已添加的第一个SonarQube连接。
 
@@ -63,7 +63,7 @@ Project级别设置主要包含：
 
 你可以在IDE级别和Project级别管理属性，在IDE级别添加所有Project都需要的属性，然后可以在Project设置中控制是否继承IDE级别添加的属性，以及管理当前Project的专用属性：
 
-![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png)
+![sonar-intellij-plugin-chinese-project-settings](https://note.yujunyang.com/static/2021/8/08a91380e7f634041369872adf1c88e4.png?t=1)
 
 ### 分析
 
