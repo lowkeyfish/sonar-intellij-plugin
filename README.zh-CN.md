@@ -19,6 +19,12 @@ Sonar Intellij Plugin是一个Intellij IDEA插件，使用Sonar Intellij Plugin�
 
 Sonar Intellij Plugin已经发布到JetBrains插件市场，最新版本是[0.1.1](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer)。
 
+打开`Settings` / `Plugins` / `Marketplace`（macOS下为`Preferences` / `Plugins` / `Marketplace`），使用关键词`SonarAnalyzer`搜索插件然后安装插件`SonarAnalyzer`：
+
+![sonar-intellij-plugin-install](https://note.yujunyang.com/static/2021/8/6d863e1d7b882d586f695b149c83671c.png)
+
+插件安装成功后重启IDE即可生效。
+
 ## 用法
 
 Sonar Intellij Plugin底层使用[SonarScanner](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/)执行代码分析，SonarScanner需要连接SonarQube服务器，因此使用Sonar Intellij Plugin前需要做一些必要的设置，然后再对项目执行代码分析。
