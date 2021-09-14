@@ -24,6 +24,7 @@ package com.yujunyang.intellij.plugin.sonar.service;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -42,6 +43,10 @@ public class ProblemCacheService {
     private int duplicatedBlocksCount;
     private int securityHotSpotCount;
 
+    private CopyOnWriteArraySet<String> profileLanguages;
+    private CopyOnWriteArraySet<String> ignoreRules;
+    private int ignoreIssueCount;
+
     public ProblemCacheService(Project project) {
         this.project = project;
         issues = new ConcurrentHashMap<>();
@@ -50,6 +55,10 @@ public class ProblemCacheService {
         vulnerabilityCount = 0;
         duplicatedBlocksCount = 0;
         securityHotSpotCount = 0;
+
+        profileLanguages = new CopyOnWriteArraySet<>();
+        ignoreRules = new CopyOnWriteArraySet<>();
+        ignoreIssueCount = 0;
     }
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
@@ -80,6 +89,18 @@ public class ProblemCacheService {
         return securityHotSpotCount;
     }
 
+    public CopyOnWriteArraySet<String> getProfileLanguages() {
+        return profileLanguages;
+    }
+
+    public CopyOnWriteArraySet<String> getIgnoreRules() {
+        return ignoreRules;
+    }
+
+    public int getIgnoreIssueCount() {
+        return ignoreIssueCount;
+    }
+
     public void setStats(int bugCount, int codeSmellCount, int vulnerabilityCount, int duplicatedBlocksCount, int securityHotSpotCount) {
         initialized = true;
         this.bugCount = bugCount;
@@ -101,6 +122,10 @@ public class ProblemCacheService {
         vulnerabilityCount = 0;
         duplicatedBlocksCount = 0;
         securityHotSpotCount = 0;
+
+        profileLanguages.clear();
+        ignoreRules.clear();
+        ignoreIssueCount = 0;
     }
 
     public static ProblemCacheService getInstance(@NotNull Project project) {

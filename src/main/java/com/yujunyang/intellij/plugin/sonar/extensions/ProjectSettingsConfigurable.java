@@ -21,17 +21,14 @@
 
 package com.yujunyang.intellij.plugin.sonar.extensions;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.config.ProjectSettings;
-import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
 import com.yujunyang.intellij.plugin.sonar.gui.settings.ProjectSettingsPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;

@@ -7,6 +7,15 @@
         Perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes.
     </description>
 
+    <change-notes>
+        <![CDATA[
+        <p style="font-weight:bold;">0.1.2</p>
+        <ul>
+            <li>When the rule is not found, continue to parse the report and display the analysis result.</li>
+        </ul>
+        ]]>
+    </change-notes>
+
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>

@@ -74,7 +74,9 @@ public class SonarApiImpl {
             if (profiles == null || profiles.size() == 0) {
                 throw new ApiRequestFailedException("The default profiles empty");
             }
-            return profiles.stream().filter(n -> languages.contains(n.getLanguage())).collect(Collectors.toMap(n -> n.getLanguage(), n -> n.getKey()));
+            return profiles.stream()
+                    .filter(n -> n.getActiveRuleCount() > 0 && languages.contains(n.getLanguage()))
+                    .collect(Collectors.toMap(n -> n.getLanguage(), n -> n.getKey()));
         } catch (IOException e) {
             throw new ApiRequestFailedException("The default profiles search failed:" + e.getMessage(), e);
         }

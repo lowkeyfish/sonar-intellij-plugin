@@ -27,10 +27,8 @@ import javax.annotation.Nullable;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;

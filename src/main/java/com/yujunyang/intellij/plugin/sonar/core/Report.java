@@ -24,9 +24,12 @@ package com.yujunyang.intellij.plugin.sonar.core;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import com.intellij.openapi.project.Project;
@@ -38,7 +41,9 @@ import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.common.exceptions.ApiRequestFailedException;
 import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.sonar.core.util.CloseableIterator;
 import org.sonar.scanner.protocol.output.ScannerReport;
 import org.sonar.scanner.protocol.output.ScannerReportReader;
@@ -53,11 +58,14 @@ public class Report {
     private int duplicatedBlocksCount;
     private int securityHotSpotCount;
     private ConcurrentMap<PsiFile, List<AbstractIssue>> issues;
+    private CopyOnWriteArraySet<String> ignoreRules;
+    private int ignoreIssueCount;
 
     public Report(@NotNull Project project, @NotNull File reportDir) {
         this.project = project;
         this.reportDir = reportDir;
         issues = new ConcurrentHashMap<>();
+        ignoreRules = new CopyOnWriteArraySet<>();
         analyze();
     }
 
@@ -83,6 +91,14 @@ public class Report {
 
     public ConcurrentMap<PsiFile, List<AbstractIssue>> getIssues() {
         return issues;
+    }
+
+    public CopyOnWriteArraySet<String> getIgnoreRules() {
+        return ignoreRules;
+    }
+
+    public int getIgnoreIssueCount() {
+        return ignoreIssueCount;
     }
 
     private void analyze() {
@@ -115,6 +131,13 @@ public class Report {
                 String issueRuleKey = String.format("%s:%s", reportIssue.getRuleRepository(), reportIssue.getRuleKey());
                 RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
 
+                if (rule == null) {
+                    ignoreRules.add(issueRuleKey);
+                    ignoreIssueCount++;
+                    MessageBusManager.publishLogToEDT(project, String.format("Rule[%s] 未获取到, 展示的报告中将忽略此类型相关问题, 在后续插件更新中可能会增加支持", issueRuleKey), LogOutput.Level.ERROR);
+                    continue;
+                }
+
                 boolean ignoreIssue = false;
                 switch (rule.getType()) {
                     case "BUG":
@@ -135,6 +158,7 @@ public class Report {
                 }
 
                 if (ignoreIssue) {
+                    ignoreRules.add(issueRuleKey);
                     MessageBusManager.publishLogToEDT(project, String.format("Rule[%s] type[%s] 暂未被报告解析程序支持, 展示的报告中将忽略此类型相关问题, 在后续插件更新中可能会增加支持", issueRuleKey, rule.getType()), LogOutput.Level.ERROR);
                     continue;
                 }
@@ -155,12 +179,18 @@ public class Report {
                         rule.getHtmlDesc());
 
                 issues.get(psiFile).add(issue);
-
             }
 
             while (reportDuplications.hasNext()) {
                 String issueRuleKey = String.format("%s:%s", "common-java", "DuplicatedBlocks");
                 RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
+
+                if (rule == null) {
+                    ignoreRules.add(issueRuleKey);
+                    ignoreIssueCount++;
+                    MessageBusManager.publishLogToEDT(project, String.format("Rule[%s] 未获取到, 展示的报告中将忽略此类型相关问题, 在后续插件更新中可能会增加支持", issueRuleKey), LogOutput.Level.ERROR);
+                    continue;
+                }
 
                 boolean currentFileNotExistDuplicatedBlocksIssue = issues.get(psiFile).stream().filter(n -> n.ruleKey.equalsIgnoreCase("DuplicatedBlocks")).findFirst().orElse(null) == null;
                 if (currentFileNotExistDuplicatedBlocksIssue) {
@@ -243,19 +273,26 @@ public class Report {
 
     private List<RulesSearchResponse.Rule> getRules() {
         try {
-            List<String> languages = WorkspaceSettings.getInstance().languages;
-            List<RulesSearchResponse.Rule> rules = new SonarApiImpl(project).getRules(languages);
+            Set<String> languages = new HashSet<>();
+            Set<String> sonarScannerLogProfileLanguages = ProblemCacheService.getInstance(project).getProfileLanguages();
+            if (sonarScannerLogProfileLanguages.size() != 0) {
+                languages.addAll(sonarScannerLogProfileLanguages);
+            } else {
+                languages.addAll(WorkspaceSettings.getInstance().languages);
+            }
+            List<RulesSearchResponse.Rule> rules = new SonarApiImpl(project).getRules(languages.stream().collect(Collectors.toList()));
             return rules;
         } catch (ApiRequestFailedException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private @NotNull RulesSearchResponse.Rule findRule(List<RulesSearchResponse.Rule> rules, String ruleKey) {
+    private @Nullable RulesSearchResponse.Rule findRule(List<RulesSearchResponse.Rule> rules, String ruleKey) {
         RulesSearchResponse.Rule rule = rules.stream().filter(n -> n.getKey().equalsIgnoreCase(ruleKey)).findFirst().orElse(null);
-        if (rule == null) {
-            throw new RuntimeException(String.format("No rule named [%s] was found", ruleKey));
-        }
         return rule;
+        // if (rule == null) {
+        //     throw new RuntimeException(String.format("No rule named [%s] was found", ruleKey));
+        // }
+        // return rule;
     }
 }

@@ -63,7 +63,7 @@ public final class EmbeddedScannerHelper {
 
     public static void startEmbeddedScanner(Project project, LogOutput logOutput) {
         Map<String, String> taskProperties = createTaskProperties(project);
-        EmbeddedScanner scanner = EmbeddedScanner.create("Intellij Sonar plugin", "1.0.0", logOutput);
+        EmbeddedScanner scanner = EmbeddedScanner.create("Intellij Sonar plugin", IdeaUtils.getPluginVersion(), logOutput);
         scanner.addGlobalProperties(taskProperties);
         scanner.start();
         scanner.execute(taskProperties);

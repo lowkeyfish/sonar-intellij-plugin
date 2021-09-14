@@ -37,6 +37,7 @@ public class QualityProfilesSearchResponse {
     public static class Profile {
         private String key;
         private String language;
+        private int activeRuleCount;
 
         public String getKey() {
             return key;
@@ -52,6 +53,14 @@ public class QualityProfilesSearchResponse {
 
         public void setLanguage(String language) {
             this.language = language;
+        }
+
+        public int getActiveRuleCount() {
+            return activeRuleCount;
+        }
+
+        public void setActiveRuleCount(int activeRuleCount) {
+            this.activeRuleCount = activeRuleCount;
         }
     }
 }

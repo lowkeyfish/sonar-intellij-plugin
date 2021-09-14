@@ -22,6 +22,8 @@
 package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.concurrent.FutureTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.intellij.openapi.project.Project;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
@@ -31,7 +33,12 @@ import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.sonarsource.scanner.api.LogOutput;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
 public class LogOutputImpl implements LogOutput {
+    private static final String PROFILE_LANGUAGE_REGEX = "Quality\\s*profile\\s*for\\s*(.+?):";
+    private static final Pattern PROFILE_LANGUAGE_PATTERN = Pattern.compile(PROFILE_LANGUAGE_REGEX, CASE_INSENSITIVE);
+
     private Project project;
 
 
@@ -41,6 +48,14 @@ public class LogOutputImpl implements LogOutput {
 
     @Override
     public void log(String formattedMessage, Level level) {
+         if (formattedMessage.startsWith("Quality profile for ")) {
+             Matcher matcher = PROFILE_LANGUAGE_PATTERN.matcher(formattedMessage);
+             if (matcher.find()) {
+                 String profileLanguage = matcher.group(1);
+                 ProblemCacheService.getInstance(project).getProfileLanguages().add(profileLanguage);
+             }
+         }
+
         if (formattedMessage.startsWith("Analysis report generated in")) {
             MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.copy.start"), Level.INFO);
             ReportUtils.copyReportDir(project);
