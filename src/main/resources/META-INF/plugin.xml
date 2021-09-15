@@ -9,11 +9,11 @@
 
     <change-notes>
         <![CDATA[
-        <p style="font-weight:bold;">0.1.3</p>
+        <h3>0.1.3</h3>
         <ul>
             <li>Fix used wrong Java version.</li>
         </ul>
-        <p style="font-weight:bold;">0.1.2</p>
+        <h3>0.1.2</h3>
         <ul>
             <li>Fix files with code problems become read-only.</li>
             <li>When the rule is not found, continue to parse the report and display the analysis result.</li>
