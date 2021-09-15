@@ -26,6 +26,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.intellij.history.core.Paths;
 import com.intellij.ide.plugins.PluginManager;
@@ -79,6 +81,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class IdeaUtils {
+    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("java\\s+version\\s+\"(.+?)\"");
 
     private IdeaUtils() {
     }
@@ -504,7 +507,19 @@ public final class IdeaUtils {
 
     public static String getProjectSdkVersion(Project project) {
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        return sdk.getName();
+        String javaVersion = sdk.getVersionString();
+
+        Matcher matcher = JAVA_VERSION_PATTERN.matcher(javaVersion);
+        if (matcher.find()) {
+            String version = matcher.group(1);
+            if (version.startsWith("1.")) {
+                return version.substring(0, 3);
+            } else {
+                return version.split("\\.")[0];
+            }
+        } else {
+            return "8";
+        }
     }
 
     public static String getProjectFileEncoding(Project project) {

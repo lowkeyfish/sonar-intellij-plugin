@@ -9,6 +9,10 @@
 
     <change-notes>
         <![CDATA[
+        <p style="font-weight:bold;">0.1.3</p>
+        <ul>
+            <li>Fix used wrong Java version.</li>
+        </ul>
         <p style="font-weight:bold;">0.1.2</p>
         <ul>
             <li>Fix files with code problems become read-only.</li>
