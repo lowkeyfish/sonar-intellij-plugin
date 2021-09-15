@@ -156,7 +156,6 @@ public class IssueCodePanel extends JBPanel {
 
     private Editor createEditor(PsiFile psiFile) {
         final Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-        document.setReadOnly(true);
         final Editor editor = EditorFactory.getInstance().createEditor(document, project, psiFile.getFileType(), false);
         editor.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
 

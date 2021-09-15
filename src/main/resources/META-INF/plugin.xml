@@ -11,6 +11,7 @@
         <![CDATA[
         <p style="font-weight:bold;">0.1.2</p>
         <ul>
+            <li>Fix files with code problems become read-only.</li>
             <li>When the rule is not found, continue to parse the report and display the analysis result.</li>
         </ul>
         ]]>
