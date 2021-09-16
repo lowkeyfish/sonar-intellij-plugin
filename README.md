@@ -16,7 +16,7 @@ Sonar Intellij Plugin is an Intellij IDEA plugin, you can use Sonar Intellij Plu
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.3](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer). 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.4](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer). 
 
 Go to `Settings` / `Plugins` / `Marketplace` (under macOS is`Preferences` / `Plugins` / `Marketplace`), search plugin by keyword `SonarAnalyzer` then install `SonarAnalyzer` plugin:
 
