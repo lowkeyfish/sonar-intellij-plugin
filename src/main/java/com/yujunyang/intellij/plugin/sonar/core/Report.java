@@ -185,6 +185,8 @@ public class Report {
                 String issueRuleKey = String.format("%s:%s", "common-java", "DuplicatedBlocks");
                 RulesSearchResponse.Rule rule = findRule(rules, issueRuleKey);
 
+                ScannerReport.Duplication duplication = reportDuplications.next();
+
                 if (rule == null) {
                     ignoreRules.add(issueRuleKey);
                     ignoreIssueCount++;
@@ -197,7 +199,6 @@ public class Report {
                     codeSmellCount++;
                 }
 
-                ScannerReport.Duplication duplication = reportDuplications.next();
                 DuplicatedBlocksIssue issue = new DuplicatedBlocksIssue(
                         psiFile,
                         "common-java",

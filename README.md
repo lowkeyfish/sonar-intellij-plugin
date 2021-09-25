@@ -11,12 +11,13 @@
 
 English | [简体中文](README.zh-CN.md)
 
-Sonar Intellij Plugin is an Intellij IDEA plugin, you can use Sonar Intellij Plugin in Intellij IDEA to perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes. 
+Sonar Intellij Plugin is an Intellij IDEA plugin, you can use Sonar Intellij Plugin in Intellij IDEA to perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes.
+All you have to do is to bind SonarQube, and you can use all functions without leaving the IDE.
 
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.4](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer). 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is [0.1.5](https://plugins.jetbrains.com/plugin/17542-sonaranalyzer). 
 
 Go to `Settings` / `Plugins` / `Marketplace` (under macOS is`Preferences` / `Plugins` / `Marketplace`), search plugin by keyword `SonarAnalyzer` then install `SonarAnalyzer` plugin:
 

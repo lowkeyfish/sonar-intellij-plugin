@@ -50,10 +50,10 @@ public class IssueListPanel extends JBPanel {
         removeAll();
         ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
         ConcurrentMap<PsiFile, List<AbstractIssue>> issues = problemCacheService.getIssues();
-        issues.entrySet().stream().
-                sorted(Comparator.comparing(o -> IdeaUtils.getPath(o.getKey()))).
-                collect(Collectors.toList()).
-                forEach(n -> add(new IssueFileGroupPanel(n.getKey(), n.getValue())));
+        issues.entrySet().stream().filter(n -> n.getValue().size() > 0)
+                .sorted(Comparator.comparing(o -> IdeaUtils.getPath(o.getKey())))
+                .collect(Collectors.toList())
+                .forEach(n -> add(new IssueFileGroupPanel(n.getKey(), n.getValue())));
 //        for (Map.Entry<PsiFile, List<AbstractIssue>> fileIssues : issues.entrySet()) {
 //            add(new IssueFileGroupPanel(fileIssues.getKey(), fileIssues.getValue()));
 //        }

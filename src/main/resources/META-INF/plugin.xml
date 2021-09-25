@@ -5,10 +5,15 @@
 
     <description>
         Perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes.
+        All you have to do is to bind SonarQube, and you can use all functions without leaving the IDE.
     </description>
 
     <change-notes>
         <![CDATA[
+        <h3>0.1.5</h3>
+        <ul>
+            <li>Fix the infinite loop caused by the rule[common-java:DuplicatedBlocks] not being found when parsing the report.</li>
+        </ul>
         <h3>0.1.4</h3>
         <ul>
             <li>Fix NoSuchMethodError: 'okhttp3.HttpUrl.get(java.lang.String)' in some cases.</li>
