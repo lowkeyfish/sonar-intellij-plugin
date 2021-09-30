@@ -82,8 +82,9 @@ public class LogOutputImpl implements LogOutput {
                 MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.success"), Level.INFO);
             } catch (Exception e) {
                 // TODO:log中抛出的异常并不会被外层捕获
-                MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.failed", e.getMessage() + LogUtils.formatStackTrace(e.getStackTrace())), Level.ERROR);
+                MessageBusManager.publishLogToEDT(project, ResourcesLoader.getString("analysis.report.parse.failed", LogUtils.formatException(e)), Level.ERROR);
                 // throw new RuntimeException("报告解析出错: " + e.getMessage());
+
             }
         }
         EventDispatchThreadHelper.invokeLater(() -> {

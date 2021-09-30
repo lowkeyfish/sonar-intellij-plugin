@@ -21,6 +21,9 @@
 
 package com.yujunyang.intellij.plugin.sonar.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class LogUtils {
 
     public static String formatStackTrace(StackTraceElement[] stackTraceElements) {
@@ -38,6 +41,35 @@ public final class LogUtils {
             builder.append(item.getLineNumber());
             builder.append(")");
         }
+
+        return builder.toString();
+    }
+
+    public static String formatException(Exception exc) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(exc.getClass().getName());
+        builder.append(": ");
+        builder.append(exc.getMessage());
+        builder.append(formatStackTrace(exc.getStackTrace()));
+
+        List<Throwable> causes = new ArrayList<>();
+        Throwable cause = exc.getCause();
+        int level = 0;
+        while (cause != null && level < 3) {
+            causes.add(cause);
+            cause = cause.getCause();
+            level++;
+        }
+
+        causes.forEach(n -> {
+            builder.append("\n\t\n\t");
+            builder.append("Caused by: ");
+            builder.append(n.getClass().getName());
+            builder.append(": ");
+            builder.append(n.getMessage());
+            builder.append(formatStackTrace(n.getStackTrace()));
+        });
 
         return builder.toString();
     }

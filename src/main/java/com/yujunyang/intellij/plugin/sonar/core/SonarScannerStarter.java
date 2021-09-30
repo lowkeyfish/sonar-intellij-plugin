@@ -225,7 +225,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
             // }
             EventDispatchThreadHelper.invokeLater(() -> {
                 BalloonTipFactory.showToolWindowErrorNotifier(project, createErrorInfo(exc.getMessage()).toString());
-                String logMessage = exc instanceof ConfigException || exc instanceof ScannerException ? exc.getMessage() : exc.getMessage() + LogUtils.formatStackTrace(exc.getStackTrace());
+                String logMessage = exc instanceof ConfigException || exc instanceof ScannerException ? exc.getMessage() : LogUtils.formatException(exc);
                 MessageBusManager.publishLog(project, logMessage, LogOutput.Level.ERROR);
             });
         } finally {
