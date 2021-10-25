@@ -10,6 +10,11 @@
 
     <change-notes>
         <![CDATA[
+        <h3>0.1.6</h3>
+        <ul>
+            <li>Change 'sonar.working.directory' to '.idea/'.</li>
+            <li>Change 'sonar.projectKey' and 'sonar.projectName'.</li>
+        </ul>
         <h3>0.1.5</h3>
         <ul>
             <li>Fix the infinite loop caused by the rule[common-java:DuplicatedBlocks] not being found when parsing the report.</li>

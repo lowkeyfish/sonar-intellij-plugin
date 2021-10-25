@@ -35,8 +35,8 @@ import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import org.apache.commons.io.FileUtils;
 
 public final class ReportUtils {
-    private static final String ORIGINAL_REPORT_DIR = "target/.scannerwork/scanner-report";
-    private static final String TARGET_REPORT_DIR = "target/.scannerwork/scanner-report-copy";
+    private static final String ORIGINAL_REPORT_DIR = ".idea/SonarAnalyzer/.scannerwork/scanner-report";
+    private static final String TARGET_REPORT_DIR = ".idea/SonarAnalyzer/.scannerwork/scanner-report-copy";
 
     public static void copyReportDir(Project project) {
         String projectPath = project.getBasePath();
