@@ -5,8 +5,8 @@
 <h1 align="center">Sonar Intellij Plugin</h1>
 
 <p>
-<a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer"><img src="https://img.shields.io/jetbrains/plugin/v/17542"/></a>
-<a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer"><img src="https://img.shields.io/jetbrains/plugin/d/17542"/></a>
+<a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank"><img src="https://img.shields.io/jetbrains/plugin/v/17542"/></a>
+<a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank"><img src="https://img.shields.io/jetbrains/plugin/d/17542"/></a>
 <img src="https://img.shields.io/github/license/lowkeyfish/sonar-intellij-plugin"/>
 </p>
 
