@@ -6,6 +6,7 @@
 
 <p>
 <img src="https://img.shields.io/jetbrains/plugin/v/17542"/>
+<img src="https://img.shields.io/jetbrains/plugin/d/17542"/>
 <img src="https://img.shields.io/github/license/lowkeyfish/sonar-intellij-plugin"/>
 </p>
 
