@@ -18,7 +18,7 @@ All you have to do is to bind SonarQube, and you can use all functions without l
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank"><img src="https://img.shields.io/jetbrains/plugin/v/17542"/></a>. 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank"><img src="https://img.shields.io/jetbrains/plugin/v/17542?style=social"/></a>. 
 
 Go to `Settings` / `Plugins` / `Marketplace` (under macOS is`Preferences` / `Plugins` / `Marketplace`), search plugin by keyword `SonarAnalyzer` then install `SonarAnalyzer` plugin:
 
