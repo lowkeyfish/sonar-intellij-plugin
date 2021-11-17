@@ -62,7 +62,22 @@ If the Project does not specify a SonarQube connection, the first SonarQube conn
 
 #### SonarScanner Property
 
-When using SonarScanner inside the plugin, reasonable and complete properties have been used as much as possible, but you may still need to set some properties independently. Currently, you can set two properties: `sonar.exclusions` and `sonar.cpd.exclusions`. 
+When using SonarScanner inside the plugin, reasonable and complete properties have been used as much as possible, but you may still need to set some properties independently, 
+but please note that the following properties do not support settings: 
+
+* `sonar.host.url` 
+* `sonar.login` 
+* `sonar.password` 
+* `sonar.projectBaseDir` 
+* `sonar.working.directory` 
+* `sonar.java.source` 
+* `sonar.tests` 
+* `sonar.sources`
+* `sonar.java.libraries` 
+* `sonar.java.binaries` 
+* `sonar.sourceEncoding`
+
+The properties `sonar.projectKey` and `sonar.projectName` can use the placeholder `<projectName>` to represent the project name. The default `sonar.projectKey` and `sonar.projectName` values are `SonarAnalyzer:<projectName>`. 
 
 Add property:
 

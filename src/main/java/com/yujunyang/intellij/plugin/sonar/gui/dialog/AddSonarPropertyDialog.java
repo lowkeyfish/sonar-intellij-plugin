@@ -50,14 +50,13 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import com.yujunyang.intellij.plugin.sonar.core.EmbeddedScannerHelper;
 import com.yujunyang.intellij.plugin.sonar.gui.error.ErrorPainter;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AddSonarPropertyDialog extends DialogWrapper {
-    private static final List<String> VALID_PROPERTIES = Arrays.asList("sonar.exclusions", "sonar.cpd.exclusions");
-
     private ErrorPainter errorPainter;
     private JBTextField nameField;
     private JBTextArea valueTextArea;
@@ -183,13 +182,21 @@ public class AddSonarPropertyDialog extends DialogWrapper {
         String value = valueTextArea.getText().trim();
 
         if (!edit && existNames.contains(name)) {
-            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.repeat"), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.repeat"),
+                    "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 
-        if (!VALID_PROPERTIES.contains(name)) {
+        if (!name.startsWith("sonar.")) {
+            Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.invalid"),
+                    "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+            return;
+        }
+
+        if (EmbeddedScannerHelper.EXCLUDED_PROPERTIES.contains(name)) {
             Messages.showDialog(ResourcesLoader.getString("error.dialog.sonarScannerProperty.name.unsupported",
-                    String.join(", ", VALID_PROPERTIES)), "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
+                    String.join(", ", EmbeddedScannerHelper.EXCLUDED_PROPERTIES)),
+                    "Error", new String[] { "Ok" }, 0, Messages.getErrorIcon());
             return;
         }
 

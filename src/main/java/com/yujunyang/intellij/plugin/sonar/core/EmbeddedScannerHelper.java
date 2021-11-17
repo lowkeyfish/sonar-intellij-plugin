@@ -21,7 +21,9 @@
 
 package com.yujunyang.intellij.plugin.sonar.core;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.intellij.openapi.project.Project;
@@ -32,6 +34,20 @@ import org.sonarsource.scanner.api.EmbeddedScanner;
 import org.sonarsource.scanner.api.LogOutput;
 
 public final class EmbeddedScannerHelper {
+    public static final List<String> EXCLUDED_PROPERTIES = Arrays.asList(
+            "sonar.host.url",
+            "sonar.login",
+            "sonar.password",
+            "sonar.projectBaseDir",
+            "sonar.working.directory",
+            "sonar.java.source",
+            "sonar.tests",
+            "sonar.sources",
+            "sonar.java.libraries",
+            "sonar.java.binaries",
+            "sonar.sourceEncoding"
+    );
+
     public static Map<String, String> createTaskProperties(Project project) {
         Map<String, String> props = new HashMap<>();
         {
@@ -39,8 +55,6 @@ public final class EmbeddedScannerHelper {
             props.put("sonar.host.url", connection.url);
             props.put("sonar.login", connection.token);
             props.put("sonar.projectKey", "SonarAnalyzer:" + project.getName());
-            props.put("sonar.projectName", "SonarAnalyzer:" + project.getName());
-            props.put("sonar.projectVersion", "1.0.0");
             props.put("sonar.projectBaseDir", project.getBasePath());
             props.put("sonar.working.directory", "./.idea/SonarAnalyzer/.scannerwork");
             props.put("sonar.java.source", IdeaUtils.getProjectSdkVersion(project));
@@ -52,8 +66,13 @@ public final class EmbeddedScannerHelper {
 
             Map<String, String> settingsProperties = SettingsUtils.getSonarProperties(project);
             for (Map.Entry<String, String> item : settingsProperties.entrySet()) {
-                if (item.getKey().equals("sonar.exclusions") || item.getKey().equals("sonar.cpd.exclusions")) {
-                    props.put(item.getKey(), item.getValue());
+                String propertyName = item.getKey();
+                String propertyValue = item.getValue();
+                if (!EXCLUDED_PROPERTIES.contains(propertyName)) {
+                    if (propertyName.equals("sonar.projectKey") || propertyName.equals("sonar.projectName")) {
+                        propertyValue = propertyValue.replaceAll("<projectName>", project.getName());
+                    }
+                    props.put(propertyName, propertyValue);
                 }
             }
         }

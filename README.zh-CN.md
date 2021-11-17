@@ -62,7 +62,21 @@ Project级别设置主要包含：
 
 #### SonarScanner属性
 
-插件内部在使用SonarScanner时已经尽量使用了合理完善的属性，但是你可能仍需要独立设置一些属性，目前可以设置两个属性：`sonar.exclusions`和`sonar.cpd.exclusions`。
+插件内部在使用SonarScanner时已经尽量使用了合理完善的属性，但是你可能仍需要独立设置一些属性，但请注意以下属性不支持设置：
+
+* `sonar.host.url` 
+* `sonar.login` 
+* `sonar.password` 
+* `sonar.projectBaseDir` 
+* `sonar.working.directory` 
+* `sonar.java.source` 
+* `sonar.tests` 
+* `sonar.sources`
+* `sonar.java.libraries` 
+* `sonar.java.binaries` 
+* `sonar.sourceEncoding`
+
+属性`sonar.projectKey`和`sonar.projectName`可以使用占位符`<projectName>`表示项目名称。默认的`sonar.projectKey`和`sonar.projectName`值为`SonarAnalyzer:<projectName>`。
 
 添加属性：
 
