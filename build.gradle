@@ -6,7 +6,7 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 group 'com.yujunyang'
-version '0.1.7'
+version '0.2.0-beta'
 
 sourceCompatibility = 1.8
 
@@ -37,7 +37,7 @@ intellij {
 
     pluginName 'sonar-intellij-plugin'
 
-    plugins 'java'
+    plugins = ['java', 'Git4Idea']
 }
 patchPluginXml {
     sinceBuild '191'

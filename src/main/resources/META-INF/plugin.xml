@@ -10,6 +10,12 @@
 
     <change-notes>
         <![CDATA[
+        <h3>0.2.0</h3>
+        <ul>
+            <li>Support code analysis by scope, such as package, module, and single file.</li>
+            <li>The report shows support for filtering, sorting, and marking resolved issues.</li>
+            <li></li>
+        </ul>
         <h3>0.1.7</h3>
         <ul>
             <li>Support more SonarScanner properties, such as 'sonar.projectKey', 'sonar.projectName', 'sonar.projectVersion', etc.</li>
@@ -44,6 +50,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
+    <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings"/>
