@@ -47,6 +47,8 @@ public abstract class AbstractIssue {
     protected int offsetStart;
     protected int offsetEnd;
 
+    protected boolean fixed;
+
     public AbstractIssue(
             PsiFile psiFile,
             String ruleRepository,
@@ -108,6 +110,14 @@ public abstract class AbstractIssue {
 
     public int getLineEnd() {
         return lineEnd;
+    }
+
+    public boolean isFixed() {
+        return fixed;
+    }
+
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
     }
 
     public TextRange getTextRange() {

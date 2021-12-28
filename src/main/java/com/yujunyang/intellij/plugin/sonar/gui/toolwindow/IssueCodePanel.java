@@ -65,49 +65,6 @@ public class IssueCodePanel extends JBPanel {
         init();
     }
 
-//    public void show(List<? extends AbstractIssue> issues) {
-//        AbstractIssue issue = issues.get(0);
-//        if (issue.getPsiFile() != lastPsiFile && editor != null) {
-//            EditorFactory.getInstance().releaseEditor(editor);
-//            editor = null;
-//            lastPsiFile = null;
-//            removeAll();
-//        }
-//
-//        if (editor == null) {
-//            JBLabel filePathLabel = new JBLabel(issue.getPsiFile().getName(), issue.getPsiFile().getIcon(Iconable.ICON_FLAG_READ_STATUS), SwingConstants.LEFT);
-//            filePathLabel.setBorder(JBUI.Borders.empty(5));
-//            add(filePathLabel, BorderLayout.NORTH);
-//
-//            lastPsiFile = issue.getPsiFile();
-//            editor = createEditor(lastPsiFile);
-//            JComponent component = editor.getComponent();
-//            add(component, BorderLayout.CENTER);
-//        }
-//
-//        // 使用红框标出问题代码行
-//        editor.getMarkupModel().removeAllHighlighters();
-//
-//        for (int i = 0; i < issues.size(); i++) {
-//            addRangeHighlighter(issues.get(i), editor);
-//        }
-//
-////        // 必要，否则界面部分将无法正常显示
-////        revalidate();
-////        repaint();
-//
-//        // 打开源文件并定位到问题代码
-//        UIUtils.navigateToOffset(issue.getPsiFile(), issue.getTextRange().getStartOffset());
-//
-//        // 滚动定位到第一个问题代码（重复块可能有多个）
-////        editor.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
-////        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-//
-//        LogicalPosition pos = new LogicalPosition(editor.getDocument().getLineNumber(issue.getTextRange().getStartOffset()), 0);
-//        editor.getCaretModel().moveToLogicalPosition(pos);
-//        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-//    }
-
     public void show(List<? extends AbstractIssue> issues) {
         AbstractIssue issue = issues.get(0);
         removeAll();
@@ -126,9 +83,6 @@ public class IssueCodePanel extends JBPanel {
 
         JComponent component = e.getComponent();
         add(component, BorderLayout.CENTER);
-
-//        // 打开源文件并定位到问题代码
-//        UIUtils.navigateToOffset(issue.getPsiFile(), issue.getTextRange().getStartOffset());
 
         // 立即调用问题代码的定位会存在不能准确滚动到问题行的问题
         // 用invokeLater解决了

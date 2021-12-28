@@ -22,7 +22,9 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Rectangle;
+import javax.swing.BorderFactory;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 
@@ -30,6 +32,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBViewport;
+import com.intellij.util.ui.JBEmptyBorder;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 
@@ -38,6 +41,8 @@ public class IssuesPanel extends JBPanel {
     private SummaryPanel summaryPanel;
     private IssueListPanel issueListPanel;
     private JBScrollPane listScrollPane;
+    private JBScrollPane displayControlScrollPane;
+    private IssuesDisplayControlPanel issuesDisplayControlPanel;
 
     public IssuesPanel(Project project) {
         this.project = project;
@@ -46,14 +51,33 @@ public class IssuesPanel extends JBPanel {
 
     private void init() {
         setLayout(new BorderLayout());
+        setSize(300, 300);
+
+        displayControlScrollPane = new JBScrollPane();
+        displayControlScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        displayControlScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        issuesDisplayControlPanel = new IssuesDisplayControlPanel(project);
+        displayControlScrollPane.setViewport(new JBViewport() {
+            @Override
+            public void scrollRectToVisible(Rectangle bounds) {
+            }
+        });
+        displayControlScrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(
+                0, 0, 0, 1, UIUtils.borderColor()),
+                JBUI.Borders.empty(5)));
+        displayControlScrollPane.setViewportView(issuesDisplayControlPanel);
+        displayControlScrollPane.setPreferredSize(new Dimension(180, 0));
+        add(displayControlScrollPane, BorderLayout.WEST);
+
 
         summaryPanel = new SummaryPanel(project);
-        add(summaryPanel, BorderLayout.NORTH);
+//        add(summaryPanel, BorderLayout.NORTH);
 
         listScrollPane = new JBScrollPane();
         listScrollPane.setBorder(JBUI.Borders.empty());
         listScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         listScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//        listScrollPane.setPreferredSize(new Dimension(200, 100));
         add(listScrollPane, BorderLayout.CENTER);
 
         issueListPanel = new IssueListPanel(project);
@@ -72,13 +96,13 @@ public class IssuesPanel extends JBPanel {
     public void refresh() {
         // 每次加载数据把纵向滚动条回原，再配合设置的Viewport可以使每次加载数据纵向滚动条都在顶部
         listScrollPane.getVerticalScrollBar().setValue(0);
-        summaryPanel.refresh();
+        issuesDisplayControlPanel.refresh();
         issueListPanel.refresh();
         UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
 
     public void reset() {
-        summaryPanel.reset();
+        issuesDisplayControlPanel.reset();
         issueListPanel.reset();
     }
 }

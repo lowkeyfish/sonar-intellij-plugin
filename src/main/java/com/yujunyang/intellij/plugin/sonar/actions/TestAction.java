@@ -41,6 +41,7 @@ import com.yujunyang.intellij.plugin.sonar.core.Report;
 import com.yujunyang.intellij.plugin.sonar.core.ReportUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import com.yujunyang.intellij.plugin.sonar.service.GitService;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,8 +52,8 @@ public class TestAction extends AbstractAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        e.getPresentation().setEnabled(false);
-        e.getPresentation().setVisible(false);
+        e.getPresentation().setEnabled(true);
+        e.getPresentation().setVisible(true);
     }
 
 
@@ -88,22 +89,22 @@ public class TestAction extends AbstractAction {
 //        String version = sdk.getVersionString();
 //
 //
-//        Thread thread = new Thread(() -> {
-//            Report report = ReportUtils.createReport(e.getProject());
-//            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
-//            problemCacheService.setIssues(report.getIssues());
-//            problemCacheService.setStats(
-//                    report.getBugCount(),
-//                    report.getCodeSmellCount(),
-//                    report.getVulnerabilityCount(),
-//                    report.getDuplicatedBlocksCount(),
-//                    report.getSecurityHotSpotCount());
-//            EventDispatchThreadHelper.invokeLater(() -> {
-//                DaemonCodeAnalyzer.getInstance(project).restart();
-//                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
-//            });
-//        });
-//        thread.start();
+        Thread thread = new Thread(() -> {
+            Report report = ReportUtils.createReport(e.getProject());
+            ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
+            problemCacheService.setIssues(report.getIssues());
+            problemCacheService.setStats(
+                    report.getBugCount(),
+                    report.getCodeSmellCount(),
+                    report.getVulnerabilityCount(),
+                    report.getDuplicatedBlocksCount(),
+                    report.getSecurityHotSpotCount());
+            EventDispatchThreadHelper.invokeLater(() -> {
+                DaemonCodeAnalyzer.getInstance(project).restart();
+                MessageBusManager.publishAnalysisFinished(e.getProject(), new Object(), null);
+            });
+        });
+        thread.start();
 
 //        NotificationGroup.balloonGroup("Sonar Intellij plugin Balloon Notification").createNotification(
 //                "Sonar Intellij plugin",
@@ -116,6 +117,10 @@ public class TestAction extends AbstractAction {
 //                    }
 //                }).notify(e.getProject());
 
-        System.out.println(IdeaUtils.getFullClassPath(e.getProject()));
+        // System.out.println(IdeaUtils.getFullClassPath(e.getProject()));
+
+//        GitService.getInstance(project).getChangedFiles().forEach(n -> {
+//            System.out.println(n.getVirtualFile().getCanonicalPath());
+//        });
     }
 }

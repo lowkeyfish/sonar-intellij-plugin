@@ -22,6 +22,7 @@
 package com.yujunyang.intellij.plugin.sonar.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -126,6 +127,49 @@ public class ProblemCacheService {
         profileLanguages.clear();
         ignoreRules.clear();
         ignoreIssueCount = 0;
+    }
+
+    public int getUpdatedFilesIssueCount() {
+        List<PsiFile> changedFiles = GitService.getInstance(project).getChangedFiles();
+        int count = 0;
+        for (Map.Entry<PsiFile, List<AbstractIssue>> entry : issues.entrySet()) {
+            PsiFile psiFile = entry.getKey();
+            List<AbstractIssue> issueList = entry.getValue();
+            if (changedFiles.contains(psiFile)) {
+                count += issueList.size();
+            }
+        }
+        return count;
+    }
+
+    public int getNotUpdatedFilesIssueCount() {
+        List<PsiFile> changedFiles = GitService.getInstance(project).getChangedFiles();
+        int count = 0;
+        for (Map.Entry<PsiFile, List<AbstractIssue>> entry : issues.entrySet()) {
+            PsiFile psiFile = entry.getKey();
+            List<AbstractIssue> issueList = entry.getValue();
+            if (!changedFiles.contains(psiFile)) {
+                count += issueList.size();
+            }
+        }
+        return count;
+    }
+
+    public int getFixedIssueCount() {
+        int count = 0;
+        for (Map.Entry<PsiFile, List<AbstractIssue>> entry : issues.entrySet()) {
+            List<AbstractIssue> issueList = entry.getValue();
+            for (AbstractIssue n : issueList) {
+                if (n.isFixed()) {
+                    count += 1;
+                }
+            }
+        }
+        return count;
+    }
+
+    public int getUnresolvedIssueCount() {
+        return bugCount + codeSmellCount + vulnerabilityCount + securityHotSpotCount + duplicatedBlocksCount - getFixedIssueCount();
     }
 
     public static ProblemCacheService getInstance(@NotNull Project project) {

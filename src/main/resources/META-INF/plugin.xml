@@ -62,6 +62,7 @@
                 anchor="bottom"
         />
         <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService"/>
+        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.GitService"/>
         <externalAnnotator language="JAVA"
                            implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
         <externalAnnotator language="XML"

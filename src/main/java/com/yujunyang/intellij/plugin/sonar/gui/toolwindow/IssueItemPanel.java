@@ -25,6 +25,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -32,8 +33,11 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
+import com.intellij.ide.plugins.newui.ColorButton;
+import com.intellij.ide.plugins.newui.InstallButton;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
@@ -43,8 +47,10 @@ import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
+import com.yujunyang.intellij.plugin.sonar.gui.common.FixButton;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 
 
 public class IssueItemPanel extends JBPanel {
@@ -73,10 +79,15 @@ public class IssueItemPanel extends JBPanel {
         setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.borderColor()), JBUI.Borders.empty(5)));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        JButton fixButton = new InstallButton(false);
+        fixButton.setPreferredSize(new Dimension(70, 18));
+        fixButton.setVisible(false);
+
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 highlight();
+                fixButton.setVisible(true);
             }
 
             @Override
@@ -92,6 +103,7 @@ public class IssueItemPanel extends JBPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 cancelHighlight();
+                fixButton.setVisible(false);
             }
         };
         addMouseListener(mouseAdapter);
@@ -101,9 +113,35 @@ public class IssueItemPanel extends JBPanel {
         msgTextArea.addMouseListener(mouseAdapter);
         add(msgTextArea, BorderLayout.NORTH);
 
+        JBPanel infoPanelParent = new JBPanel(new BorderLayout());
         JBPanel infoPanel = UIUtils.createBoxLayoutPanel(BoxLayout.X_AXIS);
         infoPanel.setBorder(JBUI.Borders.empty(5, 0, 0, 0));
-        add(infoPanel, isDuplicatedBlockIssue ? BorderLayout.SOUTH : BorderLayout.CENTER);
+        add(infoPanelParent, isDuplicatedBlockIssue ? BorderLayout.SOUTH : BorderLayout.CENTER);
+        infoPanelParent.add(infoPanel, BorderLayout.CENTER);
+
+
+        MouseAdapter fixButtonClickMouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                highlight();
+                fixButton.setVisible(true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                cancelHighlight();
+                fixButton.setVisible(false);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+        };
+        fixButton.addMouseListener(fixButtonClickMouseAdapter);
+        fixButton.setText(ResourcesLoader.getString("toolWindow.report.issue.fixButtonText"));
+        infoPanelParent.add(fixButton, BorderLayout.EAST);
+
 
         String type = !isDuplicatedBlockIssue ? issue.getType() : duplicatedBlocksIssues.get(0).getType();
         Pair<String, Icon> typeInfo = UIUtils.typeInfo(type);
