@@ -28,6 +28,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -38,7 +39,9 @@ import javax.swing.SwingConstants;
 
 import com.intellij.ide.plugins.newui.ColorButton;
 import com.intellij.ide.plugins.newui.InstallButton;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextArea;
@@ -51,22 +54,33 @@ import com.yujunyang.intellij.plugin.sonar.gui.common.FixButton;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import icons.PluginIcons;
 
 
 public class IssueItemPanel extends JBPanel {
+    private Project project;
     private boolean selected = false;
     private boolean isDuplicatedBlockIssue;
-    private Issue issue;
+//    private Issue issue;
     private List<DuplicatedBlocksIssue> duplicatedBlocksIssues;
+    private AbstractIssue issue;
 
-    public IssueItemPanel(Issue issue) {
+//    public IssueItemPanel(Issue issue) {
+//        this.project = issue.getPsiFile().getProject();
+//        this.issue = issue;
+//        init();
+//    }
+//
+//    public IssueItemPanel(List<DuplicatedBlocksIssue> duplicatedBlocksIssues) {
+//        this.project = duplicatedBlocksIssues.get(0).getPsiFile().getProject();
+//        this.duplicatedBlocksIssues = duplicatedBlocksIssues;
+//        this.isDuplicatedBlockIssue = true;
+//        init();
+//    }
+
+    public IssueItemPanel(AbstractIssue issue) {
+        this.project = issue.getPsiFile().getProject();
         this.issue = issue;
-        init();
-    }
-
-    public IssueItemPanel(List<DuplicatedBlocksIssue> duplicatedBlocksIssues) {
-        this.duplicatedBlocksIssues = duplicatedBlocksIssues;
-        this.isDuplicatedBlockIssue = true;
         init();
     }
 
@@ -87,7 +101,9 @@ public class IssueItemPanel extends JBPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 highlight();
-                fixButton.setVisible(true);
+                if (!issue.isFixed()) {
+                    fixButton.setVisible(true);
+                }
             }
 
             @Override
@@ -103,7 +119,9 @@ public class IssueItemPanel extends JBPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 cancelHighlight();
-                fixButton.setVisible(false);
+                if (!issue.isFixed()) {
+                    fixButton.setVisible(false);
+                }
             }
         };
         addMouseListener(mouseAdapter);
@@ -120,28 +138,36 @@ public class IssueItemPanel extends JBPanel {
         infoPanelParent.add(infoPanel, BorderLayout.CENTER);
 
 
-        MouseAdapter fixButtonClickMouseAdapter = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                highlight();
-                fixButton.setVisible(true);
-            }
+        if (issue.isFixed()) {
+            addResolvedLabel(infoPanelParent);
+        } else {
+            MouseAdapter fixButtonClickMouseAdapter = new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    highlight();
+                    fixButton.setVisible(true);
+                }
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                cancelHighlight();
-                fixButton.setVisible(false);
-            }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    cancelHighlight();
+                    fixButton.setVisible(false);
+                }
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    issue.setFixed(true);
+                    infoPanelParent.remove(fixButton);
+                    addResolvedLabel(infoPanelParent);
+                    MessageBusManager.publishIssueResolved(project);
+                    validate();
+                }
+            };
+            fixButton.addMouseListener(fixButtonClickMouseAdapter);
+            fixButton.setText(ResourcesLoader.getString("toolWindow.report.issue.fixButtonText"));
 
-            }
-        };
-        fixButton.addMouseListener(fixButtonClickMouseAdapter);
-        fixButton.setText(ResourcesLoader.getString("toolWindow.report.issue.fixButtonText"));
-        infoPanelParent.add(fixButton, BorderLayout.EAST);
-
+            infoPanelParent.add(fixButton, BorderLayout.EAST);
+        }
 
         String type = !isDuplicatedBlockIssue ? issue.getType() : duplicatedBlocksIssues.get(0).getType();
         Pair<String, Icon> typeInfo = UIUtils.typeInfo(type);
@@ -168,6 +194,12 @@ public class IssueItemPanel extends JBPanel {
         }
     }
 
+    private void addResolvedLabel(JBPanel parent) {
+        JBLabel issueResolvedLabel = new JBLabel(ResourcesLoader.getString("toolWindow.report.issue.fixButtonText"), PluginIcons.ISSUE_RESOLVED, SwingConstants.LEFT);
+        issueResolvedLabel.setForeground(JBColor.namedColor("Plugins.Button.installForeground", new JBColor(0x5D9B47, 0x2B7B50)));
+        parent.add(issueResolvedLabel, BorderLayout.EAST);
+    }
+
     private void highlight() {
         UIUtils.setBackgroundRecursively(this, UIUtils.highlightBackgroundColor());
         this.setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.highlightBorderColor()), JBUI.Borders.empty(5)));
@@ -189,10 +221,10 @@ public class IssueItemPanel extends JBPanel {
     private void select() {
         highlight();
         selected = true;
-        if (isDuplicatedBlockIssue) {
-            MessageBusManager.publishDuplicatedBlocksIssueClick(duplicatedBlocksIssues.get(0).getPsiFile().getProject(), duplicatedBlocksIssues);
+        if (issue instanceof DuplicatedBlocksIssue) {
+            MessageBusManager.publishDuplicatedBlocksIssueClick(issue.getPsiFile().getProject(), Arrays.asList((DuplicatedBlocksIssue)issue));
         } else {
-            MessageBusManager.publishIssueClick(issue.getPsiFile().getProject(), issue);
+            MessageBusManager.publishIssueClick(issue.getPsiFile().getProject(), (Issue)issue);
         }
     }
 

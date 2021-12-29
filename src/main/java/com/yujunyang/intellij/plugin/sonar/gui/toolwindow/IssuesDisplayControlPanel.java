@@ -26,6 +26,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Set;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,6 +37,8 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.layout.SampleVerticalScrollLayout;
+import com.yujunyang.intellij.plugin.sonar.messages.IssueResolvedListener;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 
@@ -46,23 +49,15 @@ public class IssuesDisplayControlPanel extends JBPanel {
     private JBLabel codeSmellCountLabel;
     private JBLabel securityHotSpotCountLabel;
     private JBLabel duplicatedBlocksCountLabel;
-    private JBLabel fixedCountLabel;
+    private JBLabel resolvedCountLabel;
     private JBLabel unresolvedCountLabel;
     private JBLabel updatedFilesCountLabel;
     private JBLabel notUpdatedFilesCountLabel;
-    private boolean vulnerabilitySelected;
-    private boolean bugSelected;
-    private boolean codeSmellSelected;
-    private boolean securityHotSpotSelected;
-    private boolean duplicatedBlocksSelected;
-    private boolean fixedSelected;
-    private boolean unresolvedSelected;
-    private boolean updatedFilesSelected;
-    private boolean notUpdatedFilesSelected;
 
     public IssuesDisplayControlPanel(Project project) {
         this.project = project;
         init();
+        MessageBusManager.subscribe(project, this, IssueResolvedListener.TOPIC, this::refresh);
     }
 
     private void init() {
@@ -70,30 +65,31 @@ public class IssuesDisplayControlPanel extends JBPanel {
 
         addTitleLabel(ResourcesLoader.getString("toolWindow.report.displayControl.issueTypeTitle"));
         bugCountLabel = createCountLabel("0");
-        addControlItemPanel("issueType.bug", bugCountLabel, this::bugClick, () -> bugSelected);
+        addControlItemPanel("issueType.bug", bugCountLabel, "BUG");
         codeSmellCountLabel = createCountLabel("0");
-        addControlItemPanel("issueType.codeSmell", codeSmellCountLabel, this::codeSmellClick, () -> codeSmellSelected);
+        addControlItemPanel("issueType.codeSmell", codeSmellCountLabel, "CODE_SMELL");
         vulnerabilityCountLabel = createCountLabel("0");
-        addControlItemPanel("issueType.vulnerability", vulnerabilityCountLabel, this::vulnerabilityClick, () -> vulnerabilitySelected);
+        addControlItemPanel("issueType.vulnerability", vulnerabilityCountLabel, "VULNERABILITY");
         securityHotSpotCountLabel = createCountLabel("0");
-        addControlItemPanel("issueType.securityHotspot", securityHotSpotCountLabel, this::securityHotSpotClick, () -> securityHotSpotSelected);
+        addControlItemPanel("issueType.securityHotspot", securityHotSpotCountLabel, "SECURITY_HOTSPOT");
         duplicatedBlocksCountLabel = createCountLabel("0");
-        addControlItemPanel("issueType.duplication", duplicatedBlocksCountLabel, this::duplicatedBlocksClick, () -> duplicatedBlocksSelected);
+        addControlItemPanel("issueType.duplication", duplicatedBlocksCountLabel, "DUPLICATION");
 
         add(Box.createVerticalStrut(5));
         addTitleLabel(ResourcesLoader.getString("toolWindow.report.displayControl.scopeTitle"));
         updatedFilesCountLabel = createCountLabel("0");
-        addControlItemPanel("toolWindow.report.displayControl.scope.updatedFiles", updatedFilesCountLabel, this::updatedFilesClick, () -> updatedFilesSelected);
+        addControlItemPanel("toolWindow.report.displayControl.scope.updatedFiles", updatedFilesCountLabel, "UPDATED_FILES");
         notUpdatedFilesCountLabel = createCountLabel("0");
-        addControlItemPanel("toolWindow.report.displayControl.scope.notUpdatedFiles", notUpdatedFilesCountLabel, this::notUpdatedFilesClick, () -> notUpdatedFilesSelected);
+        addControlItemPanel("toolWindow.report.displayControl.scope.notUpdatedFiles", notUpdatedFilesCountLabel, "NOT_UPDATED_FILES");
 
         add(Box.createVerticalStrut(5));
         addTitleLabel(ResourcesLoader.getString("toolWindow.report.displayControl.statusTitle"));
-        fixedCountLabel = createCountLabel("0");
-        addControlItemPanel("toolWindow.report.displayControl.status.fixed", fixedCountLabel, this::fixedClick, () -> fixedSelected);
+        resolvedCountLabel = createCountLabel("0");
+        addControlItemPanel("toolWindow.report.displayControl.status.resolved", resolvedCountLabel, "RESOLVED");
         unresolvedCountLabel = createCountLabel("0");
-        addControlItemPanel("toolWindow.report.displayControl.status.unresolved", unresolvedCountLabel, this::unresolvedClick, () -> unresolvedSelected);
+        addControlItemPanel("toolWindow.report.displayControl.status.unresolved", unresolvedCountLabel, "UNRESOLVED");
 
+        UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
 
     public void refresh() {
@@ -105,7 +101,7 @@ public class IssuesDisplayControlPanel extends JBPanel {
         securityHotSpotCountLabel.setText(String.valueOf(problemCacheService.getSecurityHotSpotCount()));
         updatedFilesCountLabel.setText(String.valueOf(problemCacheService.getUpdatedFilesIssueCount()));
         notUpdatedFilesCountLabel.setText(String.valueOf(problemCacheService.getNotUpdatedFilesIssueCount()));
-        fixedCountLabel.setText(String.valueOf(problemCacheService.getFixedIssueCount()));
+        resolvedCountLabel.setText(String.valueOf(problemCacheService.getFixedIssueCount()));
         unresolvedCountLabel.setText(String.valueOf(problemCacheService.getUnresolvedIssueCount()));
     }
 
@@ -117,56 +113,23 @@ public class IssuesDisplayControlPanel extends JBPanel {
         securityHotSpotCountLabel.setText("0");
         updatedFilesCountLabel.setText("0");
         notUpdatedFilesCountLabel.setText("0");
-        fixedCountLabel.setText("0");
+        resolvedCountLabel.setText("0");
         unresolvedCountLabel.setText("0");
     }
 
-    private void bugClick() {
-        bugSelected = !bugSelected;
-    }
-
-    private void codeSmellClick() {
-        codeSmellSelected = !codeSmellSelected;
-    }
-
-    private void vulnerabilityClick() {
-        vulnerabilitySelected = !vulnerabilitySelected;
-    }
-
-    private void securityHotSpotClick() {
-        securityHotSpotSelected = !securityHotSpotSelected;
-    }
-
-    private void duplicatedBlocksClick() {
-        duplicatedBlocksSelected = !duplicatedBlocksSelected;
-    }
-
-    private void fixedClick() {
-        fixedSelected = !fixedSelected;
-    }
-
-    private void unresolvedClick() {
-        unresolvedSelected = !unresolvedSelected;
-    }
-
-    private void updatedFilesClick() {
-        updatedFilesSelected = !updatedFilesSelected;
-    }
-
-    private void notUpdatedFilesClick() {
-        notUpdatedFilesSelected = !notUpdatedFilesSelected;
-    }
-
-    private MouseAdapter createMouseAdapter(JBPanel target, Runnable clickHandler, Supplier<Boolean> selectedSupplier) {
+    private MouseAdapter createMouseAdapter(JBPanel target, String filter) {
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                clickHandler.run();
-                if (selectedSupplier.get()) {
+                Set<String> filters = ProblemCacheService.getInstance(project).getFilters();
+                if (!filters.contains(filter)) {
+                    filters.add(filter);
                     highlight(target);
                 } else {
                     cancelHighlight(target);
+                    filters.remove(filter);
                 }
+                MessageBusManager.publishIssueFilter(project);
             }
 
             @Override
@@ -176,7 +139,8 @@ public class IssuesDisplayControlPanel extends JBPanel {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (selectedSupplier.get()) {
+                Set<String> filters = ProblemCacheService.getInstance(project).getFilters();
+                if (filters.contains(filter)) {
                     return;
                 }
                 cancelHighlight(target);
@@ -195,7 +159,7 @@ public class IssuesDisplayControlPanel extends JBPanel {
         target.setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.borderColor()), JBUI.Borders.empty(3, 5)));
     }
 
-    private void addControlItemPanel(String resourceKey, JBLabel countLabel, Runnable clickHandler, Supplier<Boolean> selectedSupplier) {
+    private void addControlItemPanel(String resourceKey, JBLabel countLabel, String filter) {
         JBPanel panel = new JBPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(JBUI.Borders.customLine(UIUtils.borderColor()), JBUI.Borders.empty(3, 5)));
 
@@ -203,7 +167,7 @@ public class IssuesDisplayControlPanel extends JBPanel {
         panel.add(countLabel, BorderLayout.EAST);
 
         panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        panel.addMouseListener(createMouseAdapter(panel, clickHandler, selectedSupplier));
+        panel.addMouseListener(createMouseAdapter(panel, filter));
 
         add(panel);
 

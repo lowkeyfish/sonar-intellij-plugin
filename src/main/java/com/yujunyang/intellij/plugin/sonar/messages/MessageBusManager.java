@@ -164,6 +164,16 @@ public final class MessageBusManager {
         publish(project, DuplicatedBlocksIssueClickListener.TOPIC).click(issues);
     }
 
+    public static void publishIssueResolved(@NotNull final Project project) {
+        EventDispatchThreadHelper.checkEDT();
+        publish(project, IssueResolvedListener.TOPIC).click();
+    }
+
+    public static void publishIssueFilter(@NotNull final Project project) {
+        EventDispatchThreadHelper.checkEDT();
+        publish(project, IssueFilterListener.TOPIC).click();
+    }
+
     @NotNull
     private static <L> L publish(@NotNull final Project project, @NotNull final Topic<L> topic) {
         EventDispatchThreadHelper.checkEDT();

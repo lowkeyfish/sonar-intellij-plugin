@@ -21,26 +21,20 @@
 
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
-import java.awt.Dimension;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.util.ui.JBEmptyBorder;
-import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
+import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.layout.SampleVerticalScrollLayout;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
-import groovy.swing.factory.BoxLayoutFactory;
-import org.intellij.lang.annotations.JdkConstants;
 
 public class IssueListPanel extends JBPanel {
     private Project project;
@@ -59,11 +53,13 @@ public class IssueListPanel extends JBPanel {
         add(Box.createVerticalStrut(5));
 
         ProblemCacheService problemCacheService = ProblemCacheService.getInstance(project);
-        ConcurrentMap<PsiFile, List<AbstractIssue>> issues = problemCacheService.getIssues();
+        ConcurrentMap<PsiFile, List<AbstractIssue>> issues = problemCacheService.getFilteredIssues();
         issues.entrySet().stream().filter(n -> n.getValue().size() > 0)
                 .sorted(Comparator.comparing(o -> IdeaUtils.getPath(o.getKey())))
                 .collect(Collectors.toList())
                 .forEach(n -> add(new IssueFileGroupPanel(n.getKey(), n.getValue())));
+
+        UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
 
     public void reset() {

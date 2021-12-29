@@ -22,31 +22,36 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import javax.swing.BorderFactory;
-import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBViewport;
-import com.intellij.util.ui.JBEmptyBorder;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.messages.IssueFilterListener;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 
 public class IssuesPanel extends JBPanel {
     private Project project;
-    private SummaryPanel summaryPanel;
     private IssueListPanel issueListPanel;
     private JBScrollPane listScrollPane;
     private JBScrollPane displayControlScrollPane;
     private IssuesDisplayControlPanel issuesDisplayControlPanel;
+    private JBPanel listPanelParent;
+    private CardLayout listPanelParentLayout;
 
     public IssuesPanel(Project project) {
         this.project = project;
         init();
+        MessageBusManager.subscribe(project, this, IssueFilterListener.TOPIC, this::filter);
     }
 
     private void init() {
@@ -69,16 +74,18 @@ public class IssuesPanel extends JBPanel {
         displayControlScrollPane.setPreferredSize(new Dimension(180, 0));
         add(displayControlScrollPane, BorderLayout.WEST);
 
-
-        summaryPanel = new SummaryPanel(project);
-//        add(summaryPanel, BorderLayout.NORTH);
+        listPanelParentLayout = new CardLayout();
+        listPanelParent = new JBPanel(listPanelParentLayout);
+        add(listPanelParent, BorderLayout.CENTER);
+        listPanelParent.add("ISSUES_EMPTY", new MessagePanel(ResourcesLoader.getString("toolWindow.report.issues.emptyText")));
 
         listScrollPane = new JBScrollPane();
         listScrollPane.setBorder(JBUI.Borders.empty());
         listScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         listScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//        listScrollPane.setPreferredSize(new Dimension(200, 100));
-        add(listScrollPane, BorderLayout.CENTER);
+        listPanelParent.add("ISSUES_LIST", listScrollPane);
+
+        listPanelParentLayout.show(listPanelParent, "ISSUES_EMPTY");
 
         issueListPanel = new IssueListPanel(project);
 
@@ -89,8 +96,6 @@ public class IssuesPanel extends JBPanel {
             }
         });
         listScrollPane.setViewportView(issueListPanel);
-
-        UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }
 
     public void refresh() {
@@ -98,7 +103,23 @@ public class IssuesPanel extends JBPanel {
         listScrollPane.getVerticalScrollBar().setValue(0);
         issuesDisplayControlPanel.refresh();
         issueListPanel.refresh();
-        UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
+        if (ProblemCacheService.getInstance(project).getFilteredIssues().size() > 0) {
+            listPanelParentLayout.show(listPanelParent, "ISSUES_LIST");
+        } else {
+            listPanelParentLayout.show(listPanelParent, "ISSUES_EMPTY");
+        }
+    }
+
+    private void filter() {
+        listScrollPane.getVerticalScrollBar().setValue(0);
+        issueListPanel.refresh();
+        if (ProblemCacheService.getInstance(project).getFilteredIssues().size() > 0) {
+            listPanelParentLayout.show(listPanelParent, "ISSUES_LIST");
+        } else {
+            listPanelParentLayout.show(listPanelParent, "ISSUES_EMPTY");
+        }
+        issueListPanel.validate();
+        issueListPanel.repaint();
     }
 
     public void reset() {

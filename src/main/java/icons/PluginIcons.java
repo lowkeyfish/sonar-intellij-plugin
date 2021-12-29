@@ -58,4 +58,6 @@ public interface PluginIcons {
     Icon MAJOR = ResourcesLoader.loadIcon("major.svg");
     Icon MINOR = ResourcesLoader.loadIcon("minor.svg");
     Icon INFO = ResourcesLoader.loadIcon("info.svg");
+
+    Icon ISSUE_RESOLVED = ResourcesLoader.loadIcon("resolved.svg");
 }

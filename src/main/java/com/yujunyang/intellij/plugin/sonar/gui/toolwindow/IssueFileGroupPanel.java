@@ -61,7 +61,8 @@ public class IssueFileGroupPanel extends JBPanel {
         add(Box.createVerticalStrut(2));
 
         if (duplicatedBlocksIssues.size() > 0) {
-            addIssue(duplicatedBlocksIssues);
+            // addIssue(duplicatedBlocksIssues);
+            duplicatedBlocksIssues.forEach(n -> addIssue(n));
         }
         normalIssues.forEach(n -> addIssue(n));
         add(Box.createVerticalStrut(10));
@@ -74,14 +75,21 @@ public class IssueFileGroupPanel extends JBPanel {
         add(textArea);
     }
 
-    private void addIssue(List<DuplicatedBlocksIssue> issues) {
-        IssueItemPanel panel = new IssueItemPanel(issues);
-        panel.setAlignmentX(LEFT_ALIGNMENT);
-        add(panel);
-        add(Box.createVerticalStrut(5));
-    }
+//    private void addIssue(List<DuplicatedBlocksIssue> issues) {
+//        IssueItemPanel panel = new IssueItemPanel(issues);
+//        panel.setAlignmentX(LEFT_ALIGNMENT);
+//        add(panel);
+//        add(Box.createVerticalStrut(5));
+//    }
+//
+//    private void addIssue(Issue issue) {
+//        IssueItemPanel panel = new IssueItemPanel(issue);
+//        panel.setAlignmentX(LEFT_ALIGNMENT);
+//        add(panel);
+//        add(Box.createVerticalStrut(5));
+//    }
 
-    private void addIssue(Issue issue) {
+    private void addIssue(AbstractIssue issue) {
         IssueItemPanel panel = new IssueItemPanel(issue);
         panel.setAlignmentX(LEFT_ALIGNMENT);
         add(panel);
