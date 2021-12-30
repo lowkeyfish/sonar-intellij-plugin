@@ -30,6 +30,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -65,18 +66,19 @@ public class IssueItemPanel extends JBPanel {
     private List<DuplicatedBlocksIssue> duplicatedBlocksIssues;
     private AbstractIssue issue;
 
-//    public IssueItemPanel(Issue issue) {
-//        this.project = issue.getPsiFile().getProject();
-//        this.issue = issue;
-//        init();
-//    }
-//
-//    public IssueItemPanel(List<DuplicatedBlocksIssue> duplicatedBlocksIssues) {
-//        this.project = duplicatedBlocksIssues.get(0).getPsiFile().getProject();
-//        this.duplicatedBlocksIssues = duplicatedBlocksIssues;
-//        this.isDuplicatedBlockIssue = true;
-//        init();
-//    }
+    public IssueItemPanel(Issue issue) {
+        this.project = issue.getPsiFile().getProject();
+        this.issue = issue;
+        init();
+    }
+
+    public IssueItemPanel(List<DuplicatedBlocksIssue> duplicatedBlocksIssues) {
+        this.project = duplicatedBlocksIssues.get(0).getPsiFile().getProject();
+        this.duplicatedBlocksIssues = duplicatedBlocksIssues;
+        this.isDuplicatedBlockIssue = true;
+        this.issue = duplicatedBlocksIssues.get(0);
+        init();
+    }
 
     public IssueItemPanel(AbstractIssue issue) {
         this.project = issue.getPsiFile().getProject();
@@ -141,6 +143,7 @@ public class IssueItemPanel extends JBPanel {
         if (issue.isFixed()) {
             addResolvedLabel(infoPanelParent);
         } else {
+            IssueItemPanel that = this;
             MouseAdapter fixButtonClickMouseAdapter = new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -156,11 +159,16 @@ public class IssueItemPanel extends JBPanel {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    issue.setFixed(true);
+                    if (isDuplicatedBlockIssue) {
+                        duplicatedBlocksIssues.forEach(n -> n.setFixed(true));
+                    } else {
+                        issue.setFixed(true);
+                    }
                     infoPanelParent.remove(fixButton);
                     addResolvedLabel(infoPanelParent);
                     MessageBusManager.publishIssueResolved(project);
-                    validate();
+                    that.revalidate();
+                    ((Consumer<IssueItemPanel>)getClientProperty("RESOLVE_CALLBACK")).accept(that);
                 }
             };
             fixButton.addMouseListener(fixButtonClickMouseAdapter);
@@ -169,14 +177,16 @@ public class IssueItemPanel extends JBPanel {
             infoPanelParent.add(fixButton, BorderLayout.EAST);
         }
 
-        String type = !isDuplicatedBlockIssue ? issue.getType() : duplicatedBlocksIssues.get(0).getType();
+//        String type = !isDuplicatedBlockIssue ? issue.getType() : duplicatedBlocksIssues.get(0).getType();
+        String type = issue.getType();
         Pair<String, Icon> typeInfo = UIUtils.typeInfo(type);
         JBLabel typeLabel = new JBLabel(typeInfo.first, typeInfo.second, SwingConstants.LEFT);
         infoPanel.add(typeLabel);
 
         infoPanel.add(Box.createHorizontalStrut(10));
 
-        String severity = !isDuplicatedBlockIssue ? issue.getSeverity() : duplicatedBlocksIssues.get(0).getSeverity();
+//        String severity = !isDuplicatedBlockIssue ? issue.getSeverity() : duplicatedBlocksIssues.get(0).getSeverity();
+        String severity = issue.getSeverity();
         Pair<String, Icon> severityInfo = UIUtils.severityInfo(severity);
         JBLabel severityLabel = new JBLabel(severityInfo.first, severityInfo.second, SwingConstants.LEFT);
         infoPanel.add(severityLabel);

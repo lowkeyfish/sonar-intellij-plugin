@@ -23,7 +23,9 @@ package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.swing.Box;
 
@@ -34,6 +36,7 @@ import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.gui.layout.SampleVerticalScrollLayout;
+import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 
 public class IssueListPanel extends JBPanel {
@@ -57,7 +60,23 @@ public class IssueListPanel extends JBPanel {
         issues.entrySet().stream().filter(n -> n.getValue().size() > 0)
                 .sorted(Comparator.comparing(o -> IdeaUtils.getPath(o.getKey())))
                 .collect(Collectors.toList())
-                .forEach(n -> add(new IssueFileGroupPanel(n.getKey(), n.getValue())));
+                .forEach(n -> {
+                    IssueFileGroupPanel issueFileGroupPanel = new IssueFileGroupPanel(n.getKey(), n.getValue());
+                    Consumer<IssueFileGroupPanel> resolveCallback = (IssueFileGroupPanel item) -> {
+                        Set<String> filters = ProblemCacheService.getInstance(project).getFilters();
+                        if (filters.contains("UNRESOLVED") &&
+                                !filters.contains("RESOLVED") &&
+                                ProblemCacheService.getInstance(project).getFilteredIssues().size() == 0) {
+                            // 没有要展示的问题了
+                            MessageBusManager.publishIssueFilter(project);
+                        } else {
+                            remove(item);
+                            revalidate();
+                        }
+                    };
+                    issueFileGroupPanel.putClientProperty("RESOLVE_CALLBACK", resolveCallback);
+                    add(issueFileGroupPanel);
+                });
 
         UIUtils.setBackgroundRecursively(this, UIUtils.backgroundColor());
     }

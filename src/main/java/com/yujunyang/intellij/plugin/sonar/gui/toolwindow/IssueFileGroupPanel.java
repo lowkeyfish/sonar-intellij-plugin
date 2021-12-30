@@ -22,11 +22,15 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextArea;
@@ -37,12 +41,15 @@ import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 
 public class IssueFileGroupPanel extends JBPanel {
+    private Project project;
     private PsiFile psiFile;
     private List<AbstractIssue> issues;
 
     public IssueFileGroupPanel(PsiFile psiFile, List<AbstractIssue> issues) {
+        this.project = psiFile.getProject();
         this.psiFile = psiFile;
         this.issues = issues;
         init();
@@ -61,8 +68,8 @@ public class IssueFileGroupPanel extends JBPanel {
         add(Box.createVerticalStrut(2));
 
         if (duplicatedBlocksIssues.size() > 0) {
-            // addIssue(duplicatedBlocksIssues);
-            duplicatedBlocksIssues.forEach(n -> addIssue(n));
+             addIssue(duplicatedBlocksIssues);
+//            duplicatedBlocksIssues.forEach(n -> addIssue(n));
         }
         normalIssues.forEach(n -> addIssue(n));
         add(Box.createVerticalStrut(10));
@@ -75,24 +82,58 @@ public class IssueFileGroupPanel extends JBPanel {
         add(textArea);
     }
 
-//    private void addIssue(List<DuplicatedBlocksIssue> issues) {
-//        IssueItemPanel panel = new IssueItemPanel(issues);
-//        panel.setAlignmentX(LEFT_ALIGNMENT);
-//        add(panel);
-//        add(Box.createVerticalStrut(5));
-//    }
-//
-//    private void addIssue(Issue issue) {
-//        IssueItemPanel panel = new IssueItemPanel(issue);
-//        panel.setAlignmentX(LEFT_ALIGNMENT);
-//        add(panel);
-//        add(Box.createVerticalStrut(5));
-//    }
-
-    private void addIssue(AbstractIssue issue) {
-        IssueItemPanel panel = new IssueItemPanel(issue);
+    private void addIssue(List<DuplicatedBlocksIssue> issues) {
+        IssueItemPanel panel = new IssueItemPanel(issues);
+        Consumer<IssueItemPanel> resolveCallback = this::issueItemPanelResolved;
+        panel.putClientProperty("RESOLVE_CALLBACK", resolveCallback);
         panel.setAlignmentX(LEFT_ALIGNMENT);
         add(panel);
         add(Box.createVerticalStrut(5));
+    }
+
+    private void addIssue(Issue issue) {
+        IssueItemPanel panel = new IssueItemPanel(issue);
+        Consumer<IssueItemPanel> resolveCallback = this::issueItemPanelResolved;
+        panel.putClientProperty("RESOLVE_CALLBACK", resolveCallback);
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+        add(panel);
+        add(Box.createVerticalStrut(5));
+    }
+
+    private void addIssue(AbstractIssue issue) {
+        IssueItemPanel panel = new IssueItemPanel(issue);
+        Consumer<IssueItemPanel> resolveCallback = this::issueItemPanelResolved;
+        panel.putClientProperty("RESOLVE_CALLBACK", resolveCallback);
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+        add(panel);
+        add(Box.createVerticalStrut(5));
+    }
+
+    private void issueItemPanelResolved(IssueItemPanel issueItemPanel) {
+        Set<String> filters = ProblemCacheService.getInstance(project).getFilters();
+        if (filters.contains("UNRESOLVED") && !filters.contains("RESOLVED")) {
+            // 如果当前过滤条件仅展示 未解决 的问题
+            // 进一步查看是否移除当前操作的问题组件或文件组件
+
+            if (issues.stream().filter(n -> !n.isFixed()).count() > 0) {
+                // 文件当前展示的问题中还有未解决的
+                // 仅移除当前问题组件即可
+                Component[] components = getComponents();
+                for (int i = 0; i < components.length; i++) {
+                    Component component = components[i];
+                    if (component.equals(issueItemPanel)) {
+                        remove(issueItemPanel);
+                        // 这是每个问题后的 verticalStrut
+                        remove(components[i + 1]);
+                        break;
+                    }
+                }
+                revalidate();
+            } else {
+                // 文件所有问题都被解决了
+                // 通知当前组件的父组件移除自己
+                ((Consumer<IssueFileGroupPanel>)getClientProperty("RESOLVE_CALLBACK")).accept(this);
+            }
+        }
     }
 }
