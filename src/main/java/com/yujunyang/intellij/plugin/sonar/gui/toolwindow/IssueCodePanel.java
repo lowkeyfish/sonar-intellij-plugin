@@ -23,7 +23,6 @@ package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.io.FileDescriptor;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -34,14 +33,13 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
-import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.editor.ScrollType;
+import com.intellij.openapi.editor.impl.EditorFactoryImpl;
 import com.intellij.openapi.editor.markup.EffectType;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.openapi.util.TextRange;
@@ -50,15 +48,14 @@ import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.util.Alarm;
 import com.intellij.util.ui.JBUI;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
-import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
+import com.yujunyang.intellij.plugin.sonar.service.ProjectCloseListener;
 
 public class IssueCodePanel extends JBPanel {
     private Project project;
-    private Editor editor;
     private PsiFile lastPsiFile;
+    private Editor editor;
 
     public IssueCodePanel(Project project) {
         this.project = project;
@@ -73,22 +70,26 @@ public class IssueCodePanel extends JBPanel {
         filePathLabel.setBorder(JBUI.Borders.empty(5));
         add(filePathLabel, BorderLayout.NORTH);
 
-        Editor e = createEditor(issue.getPsiFile());
+        if (editor != null) {
+            EditorFactoryImpl.getInstance().releaseEditor(editor);
+        }
+        editor = createEditor(issue.getPsiFile());
+        ProjectCloseListener.getInstance(project).setEditor(editor);
 
         // 使用红框标出问题代码行
-        e.getMarkupModel().removeAllHighlighters();
+        editor.getMarkupModel().removeAllHighlighters();
         for (int i = 0; i < issues.size(); i++) {
-            addRangeHighlighter(issues.get(i), e);
+            addRangeHighlighter(issues.get(i), editor);
         }
 
-        JComponent component = e.getComponent();
+        JComponent component = editor.getComponent();
         add(component, BorderLayout.CENTER);
 
         // 立即调用问题代码的定位会存在不能准确滚动到问题行的问题
         // 用invokeLater解决了
         SwingUtilities.invokeLater(() -> {
-            e.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
-            e.getScrollingModel().scrollToCaret(ScrollType.CENTER);
+            editor.getCaretModel().moveToOffset(issue.getTextRange().getStartOffset());
+            editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
         });
 
     }

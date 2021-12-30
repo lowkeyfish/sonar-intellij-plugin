@@ -13,7 +13,7 @@
         <h3>0.2.0</h3>
         <ul>
             <li>Support code analysis by scope, such as package, module, and single file.</li>
-            <li>The report shows support for filtering, sorting, and marking resolved issues.</li>
+            <li>The report shows support for filtering and marking resolved issues.</li>
             <li></li>
         </ul>
         <h3>0.1.7</h3>
@@ -63,6 +63,7 @@
         />
         <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService"/>
         <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.GitService"/>
+        <projectService serviceImplementation="com.yujunyang.intellij.plugin.sonar.service.ProjectCloseListener"/>
         <externalAnnotator language="JAVA"
                            implementationClass="com.yujunyang.intellij.plugin.sonar.extensions.SonarIssueExternalAnnotator"/>
         <externalAnnotator language="XML"
