@@ -22,10 +22,16 @@
 package com.yujunyang.intellij.plugin.sonar.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.compiler.CompileScope;
+import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.util.Consumer;
+import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
-import com.yujunyang.intellij.plugin.sonar.service.GitService;
+import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class AnalyzeChangelistFiles extends AbstractAnalyzeAction {
@@ -35,7 +41,17 @@ public class AnalyzeChangelistFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
+        new SonarScannerStarter(project, ResourcesLoader.getString("task.analysis.title", project.getName())) {
+            @Override
+            protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
+                consumer.consume(compilerManager.createProjectCompileScope(project));
+            }
 
+            @Override
+            protected AnalyzeScope createAnalyzeScope() {
+                return new AnalyzeScope(project, AnalyzeScope.ScopeType.CHANGELIST_FILES, IdeaUtils.getValidChangelistFiles(project));
+            }
+        }.start();
     }
 
     @Override
@@ -44,10 +60,11 @@ public class AnalyzeChangelistFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        boolean existChangedFiles = GitService.getInstance(project).getChangedFiles().size() > 0;
+        boolean existChangedFiles = IdeaUtils.getValidChangelistFiles(project).size() > 0;
         final boolean enable = state.isIdle() && existChangedFiles;
 
         e.getPresentation().setEnabled(enable);
         e.getPresentation().setVisible(true);
+        e.getPresentation().setText(ResourcesLoader.getString("action.analyze.changelistFiles"));
     }
 }

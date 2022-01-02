@@ -37,6 +37,10 @@ public interface PluginIcons {
 
 
     Icon ANALYZE_PROJECT_FILES_NOT_INCLUDING_TESTS_ICON = LayeredIcon.create(AllIcons.Nodes.Project, AllIcons.Nodes.RunnableMark);
+    Icon ANALYZE_PACKAGE_FILES_ICON = LayeredIcon.create(AllIcons.Nodes.Package, AllIcons.Nodes.RunnableMark);
+    Icon ANALYZE_MODULE_FILES_NOT_INCLUDING_TESTS_ICON = LayeredIcon.create(AllIcons.Nodes.Module, AllIcons.Nodes.RunnableMark);
+    Icon ANALYZE_CHANGELIST_FILES_ICON = LayeredIcon.create(AllIcons.Scope.ChangedFiles, AllIcons.Nodes.RunnableMark);
+    Icon ANALYZE_OPEN_FILES_ICON = LayeredIcon.create(AllIcons.FileTypes.Any_type, AllIcons.Nodes.RunnableMark);
 
     Icon ANALYZE_EXECUTE = AllIcons.Actions.Execute;
     Icon ANALYZE_SUSPEND = AllIcons.Actions.Suspend;

@@ -28,6 +28,7 @@ import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.util.Consumer;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
 import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
@@ -66,6 +67,11 @@ public abstract class AnalyzeProjectFiles extends AbstractAnalyzeAction {
             @Override
             protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
                 consumer.consume(compilerManager.createProjectCompileScope(project));
+            }
+
+            @Override
+            protected AnalyzeScope createAnalyzeScope() {
+                return new AnalyzeScope(project, AnalyzeScope.ScopeType.PROJECT_FILES);
             }
         }.start();
     }

@@ -24,7 +24,6 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import java.util.List;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.project.Project;
@@ -38,7 +37,7 @@ import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
-public class AnalyzeSelectedFiles extends AbstractAnalyzeAction {
+public class AnalyzeOpenFiles extends AbstractAnalyzeAction {
     @Override
     public void analyze(
             @NotNull AnActionEvent e,
@@ -53,9 +52,10 @@ public class AnalyzeSelectedFiles extends AbstractAnalyzeAction {
 
             @Override
             protected AnalyzeScope createAnalyzeScope() {
-                return new AnalyzeScope(project, AnalyzeScope.ScopeType.SELECTED_FILES, IdeaUtils.getValidSelectedFiles(e.getDataContext()));
+                return new AnalyzeScope(project, AnalyzeScope.ScopeType.OPEN_FILES, IdeaUtils.getValidOpenFiles(project));
             }
         }.start();
+
     }
 
     @Override
@@ -64,26 +64,12 @@ public class AnalyzeSelectedFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        final List<VirtualFile> selectedFiles = IdeaUtils.getValidSelectedFiles(e.getDataContext());
-
-        boolean enable = false;
-        if (state.isIdle()) {
-            enable = selectedFiles != null &&
-                    selectedFiles.size() > 0;
-        }
+        List<VirtualFile> openFiles = IdeaUtils.getValidOpenFiles(project);
+        boolean enable = openFiles.size() > 0;
 
         e.getPresentation().setEnabled(enable);
         e.getPresentation().setVisible(true);
-        setText(e);
+        e.getPresentation().setText(ResourcesLoader.getString("action.analyze.openFiles"));
     }
-
-    private void setText(AnActionEvent e) {
-        if (PlatformDataKeys.EDITOR.getData(e.getDataContext()) == null) {
-            e.getPresentation().setText(ResourcesLoader.getString("action.analyze.selectedFiles"));
-        } else {
-            e.getPresentation().setText(ResourcesLoader.getString("action.analyze.currentFile"));
-        }
-    }
-
 
 }

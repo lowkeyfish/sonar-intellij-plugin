@@ -85,6 +85,17 @@
             <add-to-group anchor="last" group-id="AnalyzeMenu"/>
             <add-to-group anchor="after" group-id="EditorPopupMenu" relative-to-action="AnalyzeMenu"/>
             <add-to-group anchor="after" group-id="ProjectViewPopupMenu" relative-to-action="AnalyzeMenu"/>
+            <action class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeSelectedFiles"
+                    id="SonarAnalyzer.AnalyzeSelectedFiles"></action>
+
+            <action class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeOpenFiles"
+                    id="SonarAnalyzer.AnalyzeOpenFiles" icon="PluginIcons.ANALYZE_OPEN_FILES_ICON"></action>
+            <action class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeChangelistFiles"
+                    id="SonarAnalyzer.AnalyzeChangelistFiles" icon="PluginIcons.ANALYZE_CHANGELIST_FILES_ICON"></action>
+            <action class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzePackageFiles"
+                    id="SonarAnalyzer.AnalyzePackageFiles" icon="PluginIcons.ANALYZE_PACKAGE_FILES_ICON"></action>
+            <action class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeModuleFilesNotIncludingTests"
+                    id="SonarAnalyzer.AnalyzeModuleFilesNotIncludingTests" icon="PluginIcons.ANALYZE_MODULE_FILES_NOT_INCLUDING_TESTS_ICON"></action>
             <action id="SonarAnalyzer.ProjectFilesNotIncludingTestsAction"
                     class="com.yujunyang.intellij.plugin.sonar.actions.AnalyzeProjectFilesNotIncludingTests"
                     icon="PluginIcons.ANALYZE_PROJECT_FILES_NOT_INCLUDING_TESTS_ICON">

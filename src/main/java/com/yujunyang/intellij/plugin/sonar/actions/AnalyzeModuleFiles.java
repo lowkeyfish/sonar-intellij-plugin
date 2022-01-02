@@ -23,10 +23,16 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.compiler.CompileScope;
+import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.util.Consumer;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AnalyzeModuleFiles extends AbstractAnalyzeAction {
@@ -36,7 +42,17 @@ public abstract class AnalyzeModuleFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
+        new SonarScannerStarter(project, ResourcesLoader.getString("task.analysis.title", project.getName())) {
+            @Override
+            protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
+                consumer.consume(compilerManager.createProjectCompileScope(project));
+            }
 
+            @Override
+            protected AnalyzeScope createAnalyzeScope() {
+                return new AnalyzeScope(project, AnalyzeScope.ScopeType.MODULE_FILES, getModule(e));
+            }
+        }.start();
     }
 
     @Override

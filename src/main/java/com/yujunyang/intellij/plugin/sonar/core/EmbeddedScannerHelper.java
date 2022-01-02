@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
 import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
@@ -48,7 +49,7 @@ public final class EmbeddedScannerHelper {
             "sonar.sourceEncoding"
     );
 
-    public static Map<String, String> createTaskProperties(Project project) {
+    public static Map<String, String> createTaskProperties(Project project, AnalyzeScope analyzeScope) {
         Map<String, String> props = new HashMap<>();
         {
             SonarQubeSettings connection = SettingsUtils.getSonarQubeConnection(project);
@@ -59,7 +60,8 @@ public final class EmbeddedScannerHelper {
             props.put("sonar.working.directory", "./.idea/SonarAnalyzer/.scannerwork");
             props.put("sonar.java.source", IdeaUtils.getProjectSdkVersion(project));
             props.put("sonar.tests", "");
-            props.put("sonar.sources", IdeaUtils.getAllSourceRootPath(project));
+            // props.put("sonar.sources", IdeaUtils.getAllSourceRootPath(project));
+            props.put("sonar.sources", analyzeScope.getSources());
             props.put("sonar.java.libraries", IdeaUtils.getFullClassPath(project));
             props.put("sonar.java.binaries", IdeaUtils.getAllCompilerOutPath(project));
             props.put("sonar.sourceEncoding", IdeaUtils.getProjectFileEncoding(project));
@@ -80,8 +82,8 @@ public final class EmbeddedScannerHelper {
         return props;
     }
 
-    public static void startEmbeddedScanner(Project project, LogOutput logOutput) {
-        Map<String, String> taskProperties = createTaskProperties(project);
+    public static void startEmbeddedScanner(Project project, AnalyzeScope analyzeScope, LogOutput logOutput) {
+        Map<String, String> taskProperties = createTaskProperties(project, analyzeScope);
         EmbeddedScanner scanner = EmbeddedScanner.create("Intellij Sonar plugin", IdeaUtils.getPluginVersion(), logOutput);
         scanner.addGlobalProperties(taskProperties);
         scanner.start();

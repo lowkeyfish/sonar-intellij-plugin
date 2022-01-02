@@ -21,7 +21,11 @@
 
 package com.yujunyang.intellij.plugin.sonar.actions;
 
+import java.util.Arrays;
+
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.compiler.CompileScope;
+import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -29,8 +33,12 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
+import com.intellij.util.Consumer;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.AnalyzeState;
+import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
+import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import org.jetbrains.annotations.NotNull;
 
 public class AnalyzePackageFiles extends AbstractAnalyzeAction {
@@ -40,7 +48,17 @@ public class AnalyzePackageFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
+        new SonarScannerStarter(project, ResourcesLoader.getString("task.analysis.title", project.getName())) {
+            @Override
+            protected void createCompileScope(@NotNull CompilerManager compilerManager, @NotNull Consumer<CompileScope> consumer) {
+                consumer.consume(compilerManager.createProjectCompileScope(project));
+            }
 
+            @Override
+            protected AnalyzeScope createAnalyzeScope() {
+                return new AnalyzeScope(project, AnalyzeScope.ScopeType.PACKAGE_FILES, Arrays.asList(getDirectory(e, project)));
+            }
+        }.start();
     }
 
     @Override
@@ -53,6 +71,7 @@ public class AnalyzePackageFiles extends AbstractAnalyzeAction {
         boolean enable = state.isIdle() && directory != null && ModuleUtilCore.findModuleForFile(directory, project) != null;
         e.getPresentation().setEnabled(enable);
         e.getPresentation().setVisible(true);
+        e.getPresentation().setText(ResourcesLoader.getString("action.analyze.packageFiles"));
     }
 
     private static VirtualFile getDirectory(AnActionEvent e, Project project) {

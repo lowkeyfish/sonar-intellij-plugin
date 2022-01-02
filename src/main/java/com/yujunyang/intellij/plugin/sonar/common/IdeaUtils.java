@@ -25,9 +25,12 @@ import java.awt.EventQueue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.intellij.history.core.Paths;
 import com.intellij.ide.plugins.PluginManager;
@@ -44,6 +47,7 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -55,6 +59,7 @@ import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.ChangeListManagerEx;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.encoding.EncodingManager;
@@ -77,11 +82,19 @@ import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.yujunyang.intellij.plugin.sonar.service.GitService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class IdeaUtils {
     private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("java\\s+version\\s+\"(.+?)\"");
+    private static final Set<FileType> SUPPORTED_FILE_TYPES;
+
+    static {
+        SUPPORTED_FILE_TYPES = new HashSet<>();
+        SUPPORTED_FILE_TYPES.add(StdFileTypes.JAVA);
+        SUPPORTED_FILE_TYPES.add(StdFileTypes.XML);
+    }
 
     private IdeaUtils() {
     }
@@ -495,6 +508,25 @@ public final class IdeaUtils {
         return String.join(",", ret);
     }
 
+    public static String getAllSourceRootPath(Module module) {
+        List<String> ret = new ArrayList<>();
+        ModuleRootManager rootManager = ModuleRootManager.getInstance(module);
+        VirtualFile[] sourceRoots = rootManager.getSourceRoots(false);
+        for (VirtualFile sourceRoot : sourceRoots) {
+            ret.add(sourceRoot.getCanonicalPath());
+        }
+        return String.join(",", ret);
+    }
+
+    public static String getAllSourceRootPath(List<VirtualFile> files) {
+        List<String> ret = new ArrayList<>();
+        files.forEach(n -> {
+            ret.add(n.getCanonicalPath());
+        });
+
+        return String.join(",", ret);
+    }
+
     public static PsiFile getPsiFile(Project project, File file) {
         return PsiManager.getInstance(project).findFile(findFileByIoFile(file));
     }
@@ -526,4 +558,33 @@ public final class IdeaUtils {
         return EncodingProjectManager.getInstance(project).getDefaultCharsetName();
     }
 
+    public static boolean isValidFileType(FileType fileType) {
+        return fileType != null && SUPPORTED_FILE_TYPES.contains(fileType);
+    }
+
+    public static VirtualFile[] getOpenFiles(Project project) {
+        return FileEditorManager.getInstance(project).getOpenFiles();
+    }
+
+    public static List<VirtualFile> getValidOpenFiles(Project project) {
+        VirtualFile[] openFiles = getOpenFiles(project);
+        if (openFiles == null || openFiles.length == 0) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.stream(openFiles).filter(n -> isValidFileType(n.getFileType())).collect(Collectors.toList());
+    }
+
+    public static List<VirtualFile> getValidChangelistFiles(Project project) {
+        ChangeListManagerEx changeListManager = (ChangeListManagerEx) ChangeListManager.getInstance(project);
+        return changeListManager.getAffectedPaths().stream().
+                map(n -> LocalFileSystem.getInstance().findFileByIoFile(n)).
+                filter(n -> isValidFileType(n.getFileType())).
+                collect(Collectors.toList());
+    }
+
+    public static List<VirtualFile> getValidSelectedFiles(DataContext dataContext) {
+        VirtualFile[] selectedFiles = IdeaUtils.getVirtualFiles(dataContext);
+        return Arrays.stream(selectedFiles).filter(n -> !n.isDirectory() && isValidFileType(n.getFileType())).collect(Collectors.toList());
+    }
 }

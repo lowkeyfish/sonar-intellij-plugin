@@ -169,7 +169,11 @@ public class ProblemCacheService {
     }
 
     public void setIssues(ConcurrentMap<PsiFile, List<AbstractIssue>> issues) {
-        this.issues = issues;
+        issues.forEach(((psiFile, issueList) -> {
+            if (issueList.size() > 0) {
+                this.issues.put(psiFile, issueList);
+            }
+        }));
     }
 
     public int getBugCount() {

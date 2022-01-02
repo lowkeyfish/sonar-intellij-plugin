@@ -160,6 +160,8 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
             @NotNull final CompilerManager compilerManager,
             @NotNull final Consumer<CompileScope> consumer);
 
+    protected abstract AnalyzeScope createAnalyzeScope();
+
 
 //    protected final void showWarning(@NotNull final String message) {
 //        EventDispatchThreadHelper.invokeLater(() -> BalloonTipFactory.showToolWindowWarnNotifier(
@@ -235,7 +237,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     private void asyncStartImpl(@NotNull final ProgressIndicator indicator, final boolean justCompiled) {
         LogOutput logOutput = new LogOutputImpl(project);
-        EmbeddedScannerHelper.startEmbeddedScanner(project, logOutput);
+        EmbeddedScannerHelper.startEmbeddedScanner(project, createAnalyzeScope(), logOutput);
     }
 
     private boolean configCompleted() {
