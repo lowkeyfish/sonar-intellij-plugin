@@ -107,14 +107,24 @@ public class IssuesDisplayControlPanel extends JBPanel {
 
     public void reset() {
         vulnerabilityCountLabel.setText("0");
+        cancelHighlight((JBPanel)(vulnerabilityCountLabel.getParent()));
         bugCountLabel.setText("0");
+        cancelHighlight((JBPanel)(bugCountLabel.getParent()));
         codeSmellCountLabel.setText("0");
+        cancelHighlight((JBPanel)(codeSmellCountLabel.getParent()));
         duplicatedBlocksCountLabel.setText("0");
+        cancelHighlight((JBPanel)(duplicatedBlocksCountLabel.getParent()));
         securityHotSpotCountLabel.setText("0");
+        cancelHighlight((JBPanel)(securityHotSpotCountLabel.getParent()));
         updatedFilesCountLabel.setText("0");
+        cancelHighlight((JBPanel)(updatedFilesCountLabel.getParent()));
         notUpdatedFilesCountLabel.setText("0");
+        cancelHighlight((JBPanel)(notUpdatedFilesCountLabel.getParent()));
         resolvedCountLabel.setText("0");
+        cancelHighlight((JBPanel)(resolvedCountLabel.getParent()));
         unresolvedCountLabel.setText("0");
+        cancelHighlight((JBPanel)(unresolvedCountLabel.getParent()));
+
     }
 
     private MouseAdapter createMouseAdapter(JBPanel target, String filter) {

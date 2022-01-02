@@ -24,10 +24,13 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import java.util.Arrays;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.psi.PsiDirectory;
@@ -56,7 +59,8 @@ public class AnalyzePackageFiles extends AbstractAnalyzeAction {
 
             @Override
             protected AnalyzeScope createAnalyzeScope() {
-                return new AnalyzeScope(project, AnalyzeScope.ScopeType.PACKAGE_FILES, Arrays.asList(getDirectory(e, project)));
+                return ApplicationManager.getApplication().runReadAction(
+                        (Computable<AnalyzeScope>) () -> new AnalyzeScope(project, AnalyzeScope.ScopeType.PACKAGE_FILES, Arrays.asList(getDirectory(e, project))));
             }
         }.start();
     }

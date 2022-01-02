@@ -185,7 +185,12 @@ public final class IdeaUtils {
 
     @Nullable
     public static VirtualFile[] getVirtualFiles(@NotNull final DataContext dataContext) {
-        return PlatformDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
+        if (EventQueue.isDispatchThread()) {
+            return PlatformDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext);
+        } else {
+            return ApplicationManager.getApplication().runReadAction(
+                    (Computable<VirtualFile[]>) () -> PlatformDataKeys.VIRTUAL_FILE_ARRAY.getData(dataContext));
+        }
     }
 
 
