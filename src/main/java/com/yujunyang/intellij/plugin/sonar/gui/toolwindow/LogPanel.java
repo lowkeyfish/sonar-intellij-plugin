@@ -32,6 +32,7 @@ import com.intellij.ui.components.JBPanel;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisStateListener;
 import com.yujunyang.intellij.plugin.sonar.messages.LogListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.sonarsource.scanner.api.LogOutput;
@@ -79,7 +80,9 @@ public class LogPanel extends JBPanel implements AnalysisStateListener {
     @Override
     public void analysisStarted() {
         consoleView.clear();
-        consoleView.print("Sonar analysis start...\n\n", ConsoleViewContentType.LOG_VERBOSE_OUTPUT);
+        consoleView.print("Sonar analysis start...\n", ConsoleViewContentType.LOG_VERBOSE_OUTPUT);
+        consoleView.print(ProblemCacheService.getInstance(project).getAnalyzeScope().getScopeDescription(), ConsoleViewContentType.LOG_VERBOSE_OUTPUT);
+        consoleView.print("\n\n",ConsoleViewContentType.NORMAL_OUTPUT);
     }
 
 

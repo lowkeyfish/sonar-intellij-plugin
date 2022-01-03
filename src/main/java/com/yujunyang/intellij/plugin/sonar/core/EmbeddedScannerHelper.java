@@ -31,6 +31,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 import com.yujunyang.intellij.plugin.sonar.common.SettingsUtils;
 import com.yujunyang.intellij.plugin.sonar.config.SonarQubeSettings;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
+import org.jetbrains.annotations.NotNull;
 import org.sonarsource.scanner.api.EmbeddedScanner;
 import org.sonarsource.scanner.api.LogOutput;
 
@@ -82,7 +84,7 @@ public final class EmbeddedScannerHelper {
         return props;
     }
 
-    public static void startEmbeddedScanner(Project project, AnalyzeScope analyzeScope, LogOutput logOutput) {
+    public static void startEmbeddedScanner(@NotNull Project project, @NotNull AnalyzeScope analyzeScope, @NotNull LogOutput logOutput) {
         Map<String, String> taskProperties = createTaskProperties(project, analyzeScope);
         EmbeddedScanner scanner = EmbeddedScanner.create("Intellij Sonar plugin", IdeaUtils.getPluginVersion(), logOutput);
         scanner.addGlobalProperties(taskProperties);

@@ -46,6 +46,7 @@ import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
 import com.yujunyang.intellij.plugin.sonar.messages.AnalysisAbortingListener;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
+import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.sonarsource.scanner.api.LogOutput;
 import org.sonarsource.scanner.api.internal.ScannerException;
@@ -98,6 +99,7 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
 
     public final void start() {
         EventDispatchThreadHelper.checkEDT();
+        ProblemCacheService.getInstance(project).setAnalyzeScope(createAnalyzeScope());
         MessageBusManager.publishAnalysisStarted(project);
 
         if (!ApplicationManager.getApplication().isUnitTestMode()) {

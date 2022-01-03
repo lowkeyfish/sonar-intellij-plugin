@@ -47,6 +47,8 @@ public class IssueFileGroupPanel extends JBPanel {
     private Project project;
     private PsiFile psiFile;
     private List<AbstractIssue> issues;
+    private int issueCount;
+    private JBTextArea titleTextArea;
 
     public IssueFileGroupPanel(PsiFile psiFile, List<AbstractIssue> issues) {
         this.project = psiFile.getProject();
@@ -63,23 +65,26 @@ public class IssueFileGroupPanel extends JBPanel {
         List<DuplicatedBlocksIssue> duplicatedBlocksIssues = issues.stream()
                 .filter(n -> n instanceof DuplicatedBlocksIssue).map(n -> (DuplicatedBlocksIssue)n).collect(Collectors.toList());
         List<Issue> normalIssues = issues.stream().filter(n -> n instanceof Issue).map(n -> (Issue)n).collect(Collectors.toList());
-        int count = (duplicatedBlocksIssues.size() > 0 ? 1 : 0) + normalIssues.size();
-        addTitleTextArea(count);
+        issueCount = (duplicatedBlocksIssues.size() > 0 ? 1 : 0) + normalIssues.size();
+        addTitleTextArea(issueCount);
         add(Box.createVerticalStrut(2));
 
         if (duplicatedBlocksIssues.size() > 0) {
              addIssue(duplicatedBlocksIssues);
-//            duplicatedBlocksIssues.forEach(n -> addIssue(n));
         }
         normalIssues.forEach(n -> addIssue(n));
         add(Box.createVerticalStrut(10));
     }
 
     private void addTitleTextArea(int count) {
-        JBTextArea textArea = UIUtils.createWrapLabelLikedTextArea(ResourcesLoader.getString("report.fileSummary", IdeaUtils.getPath(psiFile), count));
-        textArea.setForeground(Color.GRAY);
-        textArea.setAlignmentX(LEFT_ALIGNMENT);
-        add(textArea);
+        titleTextArea = UIUtils.createWrapLabelLikedTextArea(ResourcesLoader.getString("report.fileSummary", IdeaUtils.getPath(psiFile), count));
+        titleTextArea.setForeground(Color.GRAY);
+        titleTextArea.setAlignmentX(LEFT_ALIGNMENT);
+        add(titleTextArea);
+    }
+
+    private void updateTitleTextArea(int count) {
+        titleTextArea.setText(ResourcesLoader.getString("report.fileSummary", IdeaUtils.getPath(psiFile), count));
     }
 
     private void addIssue(List<DuplicatedBlocksIssue> issues) {
@@ -125,6 +130,8 @@ public class IssueFileGroupPanel extends JBPanel {
                         remove(issueItemPanel);
                         // 这是每个问题后的 verticalStrut
                         remove(components[i + 1]);
+                        issueCount--;
+                        updateTitleTextArea(issueCount);
                         break;
                     }
                 }

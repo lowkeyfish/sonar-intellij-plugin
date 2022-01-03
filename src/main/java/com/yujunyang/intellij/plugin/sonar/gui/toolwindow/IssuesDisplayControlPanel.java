@@ -26,6 +26,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
@@ -106,25 +107,19 @@ public class IssuesDisplayControlPanel extends JBPanel {
     }
 
     public void reset() {
-        vulnerabilityCountLabel.setText("0");
-        cancelHighlight((JBPanel)(vulnerabilityCountLabel.getParent()));
-        bugCountLabel.setText("0");
-        cancelHighlight((JBPanel)(bugCountLabel.getParent()));
-        codeSmellCountLabel.setText("0");
-        cancelHighlight((JBPanel)(codeSmellCountLabel.getParent()));
-        duplicatedBlocksCountLabel.setText("0");
-        cancelHighlight((JBPanel)(duplicatedBlocksCountLabel.getParent()));
-        securityHotSpotCountLabel.setText("0");
-        cancelHighlight((JBPanel)(securityHotSpotCountLabel.getParent()));
-        updatedFilesCountLabel.setText("0");
-        cancelHighlight((JBPanel)(updatedFilesCountLabel.getParent()));
-        notUpdatedFilesCountLabel.setText("0");
-        cancelHighlight((JBPanel)(notUpdatedFilesCountLabel.getParent()));
-        resolvedCountLabel.setText("0");
-        cancelHighlight((JBPanel)(resolvedCountLabel.getParent()));
-        unresolvedCountLabel.setText("0");
-        cancelHighlight((JBPanel)(unresolvedCountLabel.getParent()));
-
+        Arrays.asList(
+                vulnerabilityCountLabel,
+                bugCountLabel,
+                codeSmellCountLabel,
+                duplicatedBlocksCountLabel,
+                securityHotSpotCountLabel,
+                updatedFilesCountLabel,
+                notUpdatedFilesCountLabel,
+                resolvedCountLabel,
+                unresolvedCountLabel).forEach(label -> {
+            label.setText("0");
+            cancelHighlight((JBPanel)(label.getParent()));
+        });
     }
 
     private MouseAdapter createMouseAdapter(JBPanel target, String filter) {
@@ -185,8 +180,8 @@ public class IssuesDisplayControlPanel extends JBPanel {
     }
 
     private void addTitleLabel(String title) {
-        Font font = new Font(Font.SANS_SERIF, Font.BOLD, 13);
         JBLabel label = new JBLabel(title);
+        Font font = new Font(label.getFont().getFontName(), Font.BOLD, 13);
         label.setFont(font);
         add(label);
         add(Box.createVerticalStrut(5));
@@ -194,7 +189,7 @@ public class IssuesDisplayControlPanel extends JBPanel {
 
     private JBLabel createCountLabel(String text) {
         JBLabel label = new JBLabel(text);
-        label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        label.setFont(new Font(label.getFont().getFontName(), Font.BOLD, 12));
         return label;
     }
 }

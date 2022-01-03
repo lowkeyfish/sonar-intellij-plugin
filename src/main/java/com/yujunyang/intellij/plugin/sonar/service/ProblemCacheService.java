@@ -34,6 +34,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
+import com.yujunyang.intellij.plugin.sonar.core.AnalyzeScope;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,8 @@ public class ProblemCacheService {
     private int ignoreIssueCount;
 
     private Set<String> filters;
+
+    private AnalyzeScope analyzeScope;
 
     public ProblemCacheService(Project project) {
         this.project = project;
@@ -219,6 +222,14 @@ public class ProblemCacheService {
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public void setAnalyzeScope(AnalyzeScope analyzeScope) {
+        this.analyzeScope = analyzeScope;
+    }
+
+    public AnalyzeScope getAnalyzeScope() {
+        return analyzeScope;
     }
 
     public void reset() {

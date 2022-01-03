@@ -24,9 +24,11 @@ package com.yujunyang.intellij.plugin.sonar.actions;
 import java.util.List;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompileScope;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.util.Consumer;
@@ -52,7 +54,8 @@ public class AnalyzeOpenFiles extends AbstractAnalyzeAction {
 
             @Override
             protected AnalyzeScope createAnalyzeScope() {
-                return new AnalyzeScope(project, AnalyzeScope.ScopeType.OPEN_FILES, IdeaUtils.getValidOpenFiles(project));
+                return ApplicationManager.getApplication().runReadAction((Computable<AnalyzeScope>) () ->
+                        new AnalyzeScope(project, AnalyzeScope.ScopeType.OPEN_FILES, IdeaUtils.getValidOpenFiles(project)));
             }
         }.start();
 
@@ -65,7 +68,7 @@ public class AnalyzeOpenFiles extends AbstractAnalyzeAction {
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
         List<VirtualFile> openFiles = IdeaUtils.getValidOpenFiles(project);
-        boolean enable = openFiles.size() > 0;
+        boolean enable = state.isIdle() && openFiles.size() > 0;
 
         e.getPresentation().setEnabled(enable);
         e.getPresentation().setVisible(true);

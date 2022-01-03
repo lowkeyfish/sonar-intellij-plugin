@@ -65,6 +65,44 @@ public class AnalyzeScope {
         return IdeaUtils.getAllSourceRootPath(project);
     }
 
+    public String getScopeDescription() {
+        StringBuilder ret = new StringBuilder("Analyze scope: ");
+        if (ScopeType.PROJECT_FILES.equals(type)) {
+            ret.append("Project files\n");
+            return ret.toString();
+        }
+
+        if (ScopeType.MODULE_FILES.equals(type)) {
+            ret.append("Module[");
+            ret.append(module.getName());
+            ret.append("] files\n");
+            return ret.toString();
+        }
+
+        if (ScopeType.PACKAGE_FILES.equals(type)) {
+            ret.append("Package files\n");
+            ret.append("\t");
+            ret.append(files.get(0).getCanonicalPath());
+            ret.append("\n");
+            return ret.toString();
+        }
+
+        if (ScopeType.OPEN_FILES.equals(type)) {
+            ret.append("Open files\n");
+        } else if (ScopeType.CHANGELIST_FILES.equals(type)) {
+            ret.append("Changelist files\n");
+        } else if (ScopeType.SELECTED_FILES.equals(type)) {
+            ret.append("Selected files\n");
+        }
+
+        files.forEach(n -> {
+            ret.append("\t");
+            ret.append(n.getCanonicalPath());
+            ret.append("\n");
+        });
+        return ret.toString();
+    }
+
     public enum ScopeType {
         PROJECT_FILES,
         MODULE_FILES,

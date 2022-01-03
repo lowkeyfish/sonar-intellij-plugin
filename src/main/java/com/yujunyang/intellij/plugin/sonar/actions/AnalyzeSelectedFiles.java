@@ -56,7 +56,7 @@ public class AnalyzeSelectedFiles extends AbstractAnalyzeAction {
             @Override
             protected AnalyzeScope createAnalyzeScope() {
                 return ApplicationManager.getApplication().runReadAction((Computable<AnalyzeScope>) () ->
-                        new AnalyzeScope(project, AnalyzeScope.ScopeType.SELECTED_FILES, IdeaUtils.getValidSelectedFiles(e.getDataContext())));
+                        new AnalyzeScope(project, AnalyzeScope.ScopeType.SELECTED_FILES, IdeaUtils.getValidSelectedFiles(project, e.getDataContext())));
             }
         }.start();
     }
@@ -67,7 +67,7 @@ public class AnalyzeSelectedFiles extends AbstractAnalyzeAction {
             @NotNull Project project,
             @NotNull ToolWindow toolWindow,
             @NotNull AnalyzeState state) {
-        final List<VirtualFile> selectedFiles = IdeaUtils.getValidSelectedFiles(e.getDataContext());
+        final List<VirtualFile> selectedFiles = IdeaUtils.getValidSelectedFiles(project, e.getDataContext());
 
         boolean enable = false;
         if (state.isIdle()) {

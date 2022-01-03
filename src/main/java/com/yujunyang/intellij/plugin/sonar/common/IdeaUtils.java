@@ -62,6 +62,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ChangeListManagerEx;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.encoding.EncodingManager;
 import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
 import com.intellij.psi.JavaPsiFacade;
@@ -75,6 +76,7 @@ import com.intellij.psi.PsiCompiledElement;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiLambdaExpression;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
@@ -567,7 +569,7 @@ public final class IdeaUtils {
         return fileType != null && SUPPORTED_FILE_TYPES.contains(fileType);
     }
 
-    public static VirtualFile[] getOpenFiles(Project project) {
+    private static VirtualFile[] getOpenFiles(Project project) {
         return FileEditorManager.getInstance(project).getOpenFiles();
     }
 
@@ -577,7 +579,7 @@ public final class IdeaUtils {
             return new ArrayList<>();
         }
 
-        return Arrays.stream(openFiles).filter(n -> isValidFileType(n.getFileType())).collect(Collectors.toList());
+        return Arrays.stream(openFiles).filter(n -> isValidFileType(n.getFileType()) && isInProject(project, n)).collect(Collectors.toList());
     }
 
     public static List<VirtualFile> getValidChangelistFiles(Project project) {
@@ -588,8 +590,16 @@ public final class IdeaUtils {
                 collect(Collectors.toList());
     }
 
-    public static List<VirtualFile> getValidSelectedFiles(DataContext dataContext) {
+    public static List<VirtualFile> getValidSelectedFiles(Project project, DataContext dataContext) {
         VirtualFile[] selectedFiles = IdeaUtils.getVirtualFiles(dataContext);
-        return Arrays.stream(selectedFiles).filter(n -> !n.isDirectory() && isValidFileType(n.getFileType())).collect(Collectors.toList());
+        if (selectedFiles == null || selectedFiles.length == 0) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(selectedFiles).filter(n -> !n.isDirectory() && isValidFileType(n.getFileType()) && isInProject(project, n)).collect(Collectors.toList());
+    }
+
+    public static boolean isInProject(Project project, VirtualFile virtualFile) {
+        PsiManager psiManager = PsiManager.getInstance(project);
+        return psiManager.isInProject(psiManager.findFile(virtualFile));
     }
 }
