@@ -15,10 +15,13 @@ English | [简体中文](README.zh-CN.md)
 Sonar Intellij Plugin is an Intellij IDEA plugin, you can use Sonar Intellij Plugin in Intellij IDEA to perform Sonar code analysis on Java projects, view code analysis reports, and prompt problem codes.
 All you have to do is to bind SonarQube, and you can use all functions without leaving the IDE.
 
+Support code analysis by scope, such as project files, module files, package files, changelist files, open files, and selected files. The report shows support for filtering and marking resolved issues.
+
+![SonarAnalyzer](https://note.yujunyang.com/static/2022/0/45ed47f86440bb82cbb66b6b22f5f1cb.png)
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.1.7</a>. 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.2.0</a>. 
 
 Go to `Settings` / `Plugins` / `Marketplace` (under macOS is`Preferences` / `Plugins` / `Marketplace`), search plugin by keyword `SonarAnalyzer` then install `SonarAnalyzer` plugin:
 
@@ -97,6 +100,15 @@ After setting the plugin, you can trigger the project code analysis in the follo
 * The `SonarAnalyzer` menu in the context menu of the code editor 
 * The start action button in the SonarAnalyzer Tool Window
 
+Supported analyze scopes:
+
+* Project files
+* Module files
+* Package files
+* Changelist files
+* Open files
+* Selected files
+
 After starting the code analysis, the plugin will start the code compilation, and then use SonarScanner to complete the code analysis after the compilation is successful. The entire operation log will be output in the `Log` of the SonarAnalyzer Tool Window: 
 
 ![sonar-intellij-plugin-english-log](https://note.yujunyang.com/static/2021/8/1913d1020b5b20c0f82383957d737366.png)
@@ -105,7 +117,22 @@ After starting the code analysis, the plugin will start the code compilation, an
 
 When the code analysis is completed, the complete analysis report will be displayed in the `Report` of the SonarAnalyzer Tool Window, and the problem code line will also be prompted in the editor: 
 
-![sonar-intellij-plugin-english-report](https://note.yujunyang.com/static/2021/8/e832ccc752fcb55577da923e77f3b58b.png)
+![sonar-intellij-plugin-tool-window](https://note.yujunyang.com/static/2022/0/a2f70651a84f5717d3b2fed4a59f7b22.png)
+
+You can filter the issues by the following categories:
+
+* Type
+    * Bug
+    * Code Smell
+    * Vulnerability
+    * Security Hotspot
+    * Duplication
+* Scope
+    * Updated files
+    * Not updated files
+* Resolution
+    * Resolved
+    * Unresolved
 
 
 ## Contributing

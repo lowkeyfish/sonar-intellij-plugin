@@ -15,10 +15,13 @@
 Sonar Intellij Plugin是一个Intellij IDEA插件，使用Sonar Intellij Plugin你可以在Intellij IDEA中对Java项目执行Sonar代码分析、查看代码分析报告以及对问题代码进行提示。
 你必须要做的配置只有绑定SonarQube，然后即可在不离开IDE的情况下使用所有功能。
 
+支持按范围进行代码分析，例如项目文件、模块文件、包文件、更改列表文件、打开的文件和选择的文件。分析报告支持问题的筛选和标记已解决的问题。
+
+![SonarAnalyzer](https://note.yujunyang.com/static/2022/0/45ed47f86440bb82cbb66b6b22f5f1cb.png)
 
 ## 安装
 
-Sonar Intellij Plugin已经发布到JetBrains插件市场，最新版本是 <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.1.7</a>。
+Sonar Intellij Plugin已经发布到JetBrains插件市场，最新版本是 <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.2.0</a>。
 
 打开`Settings` / `Plugins` / `Marketplace`（macOS下为`Preferences` / `Plugins` / `Marketplace`），使用关键词`SonarAnalyzer`搜索插件然后安装插件`SonarAnalyzer`：
 
@@ -96,6 +99,15 @@ Project级别设置主要包含：
 * 代码编辑器右键菜单中的`SonarAnalyzer`菜单
 * SonarAnalyzer Tool Window中的开始按钮
 
+支持的代码分析范围：
+
+* 项目文件
+* 模块文件
+* 包文件
+* 更改列表文件
+* 打开的文件
+* 选择的文件
+
 开始代码分析后，插件将启动代码编译，编译成功后再使用SonarScanner完成代码分析。在SonarAnalyzer Tool Window的`日志`中会输出整个操作日志：
 
 ![sonar-intellij-plugin-chinese-log](https://note.yujunyang.com/static/2021/8/3bf7ca60ceb9fdc6d707bd85ef65808e.png)
@@ -105,7 +117,22 @@ Project级别设置主要包含：
 
 当代码分析完成后会在SonarAnalyzer Tool Window的`报告`中展示完整的分析报告，同时也会在编辑器中对问题代码行进行提示：
 
-![sonar-intellij-plugin-chinese-report](https://note.yujunyang.com/static/2021/8/1d028ec39075b3abfd3d19faf707d8da.png)
+![sonar-intellij-plugin-tool-window](https://note.yujunyang.com/static/2022/0/a2f70651a84f5717d3b2fed4a59f7b22.png)
+
+你可以按照以下分类过滤问题:
+
+* 类型
+    * Bug
+    * 异味
+    * 漏洞
+    * 安全热点
+    * 重复块
+* 范围
+    * 更新的文件
+    * 未更新的文件
+* 解决
+    * 已解决
+    * 未解决
 
 
 ## 如何贡献
