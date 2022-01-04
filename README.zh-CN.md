@@ -83,7 +83,7 @@ Project级别设置主要包含：
 
 添加属性：
 
-![sonar-intellij-plugin-chinese-add-property](https://note.yujunyang.com/static/2021/8/03b5135f1cd20e4d4711a8dbd7294e09.png)
+![sonar-intellij-plugin-chinese-add-property](https://note.yujunyang.com/static/2021/8/03b5135f1cd20e4d4711a8dbd7294e09.png?a=1)
 
 你可以在IDE级别和Project级别管理属性，在IDE级别添加所有Project都需要的属性，然后可以在Project设置中控制是否继承IDE级别添加的属性，以及管理当前Project的专用属性：
 
