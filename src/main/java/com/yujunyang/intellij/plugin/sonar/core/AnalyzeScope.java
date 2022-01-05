@@ -23,8 +23,10 @@ package com.yujunyang.intellij.plugin.sonar.core;
 
 import java.util.List;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.yujunyang.intellij.plugin.sonar.common.IdeaUtils;
 
@@ -63,6 +65,24 @@ public class AnalyzeScope {
         }
 
         return IdeaUtils.getAllSourceRootPath(project);
+    }
+
+    public String getJavaBinaries() {
+        return ApplicationManager.getApplication().runReadAction((Computable<String>)() -> {
+            if (ScopeType.PROJECT_FILES.equals(type)) {
+                return IdeaUtils.getAllCompilerOutputPath(project);
+            }
+
+            if (ScopeType.MODULE_FILES.equals(type)) {
+                return IdeaUtils.getAllCompilerOutputPath(module);
+            }
+
+            if (files != null && files.size() > 0) {
+                return IdeaUtils.getAllCompilerOutputPath(project, files);
+            }
+
+            return IdeaUtils.getAllCompilerOutputPath(project);
+        });
     }
 
     public String getScopeDescription() {

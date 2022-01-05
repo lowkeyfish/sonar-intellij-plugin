@@ -23,6 +23,7 @@ package com.yujunyang.intellij.plugin.sonar.common;
 
 import java.awt.EventQueue;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,6 +57,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEnumerator;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -73,6 +75,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassOwner;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiCompiledElement;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -82,6 +85,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.yujunyang.intellij.plugin.sonar.service.GitService;
@@ -489,7 +493,7 @@ public final class IdeaUtils {
         return String.join(",", ret);
     }
 
-    public static String getAllCompilerOutPath(Project project) {
+    public static String getAllCompilerOutputPath(Project project) {
         List<String> ret = new ArrayList<>();
         Module[] modules = ModuleManager.getInstance(project).getModules();
         for (Module module : modules) {
@@ -500,6 +504,47 @@ public final class IdeaUtils {
             }
         }
         return String.join(",", ret);
+    }
+
+    public static String getAllCompilerOutputPath(Module module) {
+        List<String> ret = new ArrayList<>();
+        CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
+        VirtualFile compilerOutPath = compilerModuleExtension.getCompilerOutputPath();
+        if (compilerOutPath != null) {
+            ret.add(compilerOutPath.getCanonicalPath());
+        }
+        return String.join(",", ret);
+    }
+
+    public static String getAllCompilerOutputPath(Project project, List<VirtualFile> files) {
+        Set<String> ret = new HashSet<>();
+        for (VirtualFile virtualFile : files) {
+            String outputPathDirectoryOfFile = getCompilerOutputPath(project, virtualFile);
+            ret.removeIf(n -> n.length() > outputPathDirectoryOfFile.length() && n.startsWith(outputPathDirectoryOfFile));
+            ret.add(outputPathDirectoryOfFile);
+        }
+        return String.join(",", ret);
+    }
+
+    public static String getCompilerOutputPath(Project project, VirtualFile virtualFile) {
+        final ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+        final Module module = ModuleUtilCore.findModuleForFile(virtualFile, project);
+        CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
+        VirtualFile compilerOutputPath;
+        if (projectFileIndex.isInTestSourceContent(virtualFile)) {
+            compilerOutputPath = compilerModuleExtension.getCompilerOutputPathForTests();
+        } else {
+            compilerOutputPath = compilerModuleExtension.getCompilerOutputPath();
+        }
+
+        VirtualFile packageVirtualFile = virtualFile;
+        if (!virtualFile.isDirectory()) {
+            packageVirtualFile = virtualFile.getParent();
+        }
+
+        final PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(packageVirtualFile);
+        String packageName = PsiDirectoryFactory.getInstance(project).getQualifiedName(psiDirectory, false);
+        return MessageFormat.format("{0}/{1}", compilerOutputPath.getCanonicalPath(), packageName.replace(".", "/"));
     }
 
     public static String getAllSourceRootPath(Project project) {
@@ -602,4 +647,5 @@ public final class IdeaUtils {
         PsiManager psiManager = PsiManager.getInstance(project);
         return psiManager.isInProject(psiManager.findFile(virtualFile));
     }
+
 }

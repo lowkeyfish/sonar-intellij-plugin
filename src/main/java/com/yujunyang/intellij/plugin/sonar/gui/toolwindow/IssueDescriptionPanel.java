@@ -22,7 +22,9 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
+import java.text.MessageFormat;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -48,8 +50,8 @@ public class IssueDescriptionPanel extends JBPanel {
     private Project project;
     private JTextArea nameTextArea;
     private JBPanel infoPanel;
+    private JTextArea issueKeyTextArea;
     private JEditorPane descriptionEditorPane;
-    private JBScrollPane descriptionScrollPane;
 
     public IssueDescriptionPanel(Project project) {
         this.project = project;
@@ -72,8 +74,16 @@ public class IssueDescriptionPanel extends JBPanel {
         nameTextArea.setFont(font);
         headerPanel.add(sp, BorderLayout.NORTH);
         infoPanel = UIUtils.createBoxLayoutPanel(BoxLayout.X_AXIS);
-        infoPanel.setBorder(JBUI.Borders.empty(10, 0, 0, 0));
+        infoPanel.setBorder(JBUI.Borders.empty(10, 0, 10, 0));
         headerPanel.add(infoPanel, BorderLayout.CENTER);
+
+        issueKeyTextArea = UIUtils.createWrapLabelLikedTextArea("");
+        issueKeyTextArea.setForeground(Color.GRAY);
+        JBScrollPane sp2 = new JBScrollPane();
+        sp2.setBorder(JBUI.Borders.empty());
+        sp2.setViewportView(issueKeyTextArea);
+        headerPanel.add(sp2, BorderLayout.SOUTH);
+
 
         descriptionEditorPane = new JEditorPane();
         descriptionEditorPane.setBorder(JBUI.Borders.empty(10));
@@ -104,6 +114,8 @@ public class IssueDescriptionPanel extends JBPanel {
         infoPanel.add(Box.createHorizontalStrut(10));
         Pair<String, Icon> severityInfo = UIUtils.severityInfo(issue.getSeverity());
         infoPanel.add(new JBLabel(severityInfo.first, severityInfo.second, SwingConstants.LEFT));
+
+        issueKeyTextArea.setText(MessageFormat.format("{0}:{1}", issue.getRuleRepository(), issue.getRuleKey()));
 
         descriptionEditorPane.setText(String.format("<html><head><style>body{overflow:auto;}</style></head><body>%s</body></body>", issue.getHtmlDesc()));
     }

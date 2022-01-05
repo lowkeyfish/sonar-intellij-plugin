@@ -15,6 +15,11 @@
 
     <change-notes>
         <![CDATA[
+        <h3>0.2.1</h3>
+        <ul>
+            <li>Set 'sonar.java.binaries' according to the scope of code analysis to reduce the time-consuming of the SpotBugs analysis.</li>
+            <li>Issue description shows its associated rule.</li>
+        </ul>
         <h3>0.2.0</h3>
         <ul>
             <li>Support code analysis by scope, such as project files, module files, package files, changelist files, open files, and selected files.</li>
