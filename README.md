@@ -21,7 +21,7 @@ Support code analysis by scope, such as project files, module files, package fil
 
 ## Install
 
-Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.2.0</a>. 
+Sonar Intellij Plugin has been released to the JetBrains plugin marketplace, the latest version is <a href="https://plugins.jetbrains.com/plugin/17542-sonaranalyzer" target="_blank">v0.2.1</a>. 
 
 Go to `Settings` / `Plugins` / `Marketplace` (under macOS is`Preferences` / `Plugins` / `Marketplace`), search plugin by keyword `SonarAnalyzer` then install `SonarAnalyzer` plugin:
 
