@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.intellij.history.core.Paths;
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -64,8 +65,6 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ChangeListManagerEx;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.encoding.EncodingManager;
 import com.intellij.openapi.vfs.encoding.EncodingProjectManager;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.JavaRecursiveElementVisitor;
@@ -79,7 +78,6 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiLambdaExpression;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
@@ -88,7 +86,6 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.impl.file.PsiDirectoryFactory;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.yujunyang.intellij.plugin.sonar.service.GitService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -466,7 +463,13 @@ public final class IdeaUtils {
     }
 
     public static String getPluginVersion() {
-        return PluginManager.getPlugin(PluginId.getId(PluginConstants.PLUGIN_ID)).getVersion();
+        for (IdeaPluginDescriptor plugin : PluginManager.getPlugins()) {
+            if (PluginId.getId(PluginConstants.PLUGIN_ID) == plugin.getPluginId()) {
+                return plugin.getVersion();
+            }
+        }
+
+        return "";
     }
 
     public static String getFullClassPath(Project project) {

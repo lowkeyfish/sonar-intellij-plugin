@@ -22,7 +22,6 @@
 package com.yujunyang.intellij.plugin.sonar.gui.toolwindow;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -38,7 +37,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
-import com.intellij.ide.plugins.newui.ColorButton;
 import com.intellij.ide.plugins.newui.InstallButton;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -51,7 +49,6 @@ import com.yujunyang.intellij.plugin.sonar.config.WorkspaceSettings;
 import com.yujunyang.intellij.plugin.sonar.core.AbstractIssue;
 import com.yujunyang.intellij.plugin.sonar.core.DuplicatedBlocksIssue;
 import com.yujunyang.intellij.plugin.sonar.core.Issue;
-import com.yujunyang.intellij.plugin.sonar.gui.common.FixButton;
 import com.yujunyang.intellij.plugin.sonar.gui.common.UIUtils;
 import com.yujunyang.intellij.plugin.sonar.messages.MessageBusManager;
 import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
