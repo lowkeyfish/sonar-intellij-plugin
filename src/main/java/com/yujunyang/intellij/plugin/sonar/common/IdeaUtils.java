@@ -61,6 +61,7 @@ import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ChangeListManagerEx;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -523,6 +524,9 @@ public final class IdeaUtils {
         Set<String> ret = new HashSet<>();
         for (VirtualFile virtualFile : files) {
             String outputPathDirectoryOfFile = getCompilerOutputPath(project, virtualFile);
+            if (StringUtil.isEmpty(outputPathDirectoryOfFile)) {
+                continue;
+            }
             ret.removeIf(n -> n.length() > outputPathDirectoryOfFile.length() && n.startsWith(outputPathDirectoryOfFile));
             ret.add(outputPathDirectoryOfFile);
         }
@@ -538,6 +542,10 @@ public final class IdeaUtils {
             compilerOutputPath = compilerModuleExtension.getCompilerOutputPathForTests();
         } else {
             compilerOutputPath = compilerModuleExtension.getCompilerOutputPath();
+        }
+
+        if (compilerOutputPath == null) {
+            return "";
         }
 
         VirtualFile packageVirtualFile = virtualFile;
