@@ -591,7 +591,12 @@ public final class IdeaUtils {
     }
 
     public static PsiFile getPsiFile(Project project, File file) {
-        return PsiManager.getInstance(project).findFile(findFileByIoFile(file));
+        VirtualFile virtualFile = findFileByIoFile(file);
+        // 当前方法会被获取 Git 更新文件调用，对于 Git 删除的文件或更名的文件此处将获取到 null，应该直接返回 null
+        if (virtualFile == null) {
+            return null;
+        }
+        return PsiManager.getInstance(project).findFile(virtualFile);
     }
 
     public static String getPath(PsiFile psiFile) {
@@ -642,7 +647,7 @@ public final class IdeaUtils {
         ChangeListManagerEx changeListManager = (ChangeListManagerEx) ChangeListManager.getInstance(project);
         return changeListManager.getAffectedPaths().stream().
                 map(n -> LocalFileSystem.getInstance().findFileByIoFile(n)).
-                filter(n -> isValidFileType(n.getFileType())).
+                filter(n -> n != null && isValidFileType(n.getFileType())).
                 collect(Collectors.toList());
     }
 

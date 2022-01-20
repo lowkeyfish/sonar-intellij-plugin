@@ -42,7 +42,10 @@ public class GitService {
 
     public List<PsiFile> getChangedFiles() {
         ChangeListManagerEx changeListManager = (ChangeListManagerEx) ChangeListManager.getInstance(project);
-        return changeListManager.getAffectedPaths().stream().map(n -> IdeaUtils.getPsiFile(project, n)).collect(Collectors.toList());
+        return changeListManager.getAffectedPaths().stream().
+                map(n -> IdeaUtils.getPsiFile(project, n)).
+                filter(n -> n != null).
+                collect(Collectors.toList());
     }
 
     public static GitService getInstance(@NotNull Project project) {

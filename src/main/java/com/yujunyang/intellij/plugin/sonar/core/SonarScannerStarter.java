@@ -263,4 +263,10 @@ public abstract class SonarScannerStarter implements AnalysisAbortingListener {
         return ret;
     }
 
+    public static StringBuilder createReportDisplayErrorInfo() {
+        final StringBuilder ret = new StringBuilder();
+        ret.append(ResourcesLoader.getString("analysis.display.failed.message"));
+        return ret;
+    }
+
 }

@@ -29,6 +29,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.JBPanel;
 import com.yujunyang.intellij.plugin.sonar.common.EventDispatchThreadHelper;
+import com.yujunyang.intellij.plugin.sonar.common.LogUtils;
 import com.yujunyang.intellij.plugin.sonar.core.SonarScannerStarter;
 import com.yujunyang.intellij.plugin.sonar.extensions.ToolWindowFactoryImpl;
 import com.yujunyang.intellij.plugin.sonar.gui.common.BalloonTipFactory;
@@ -40,6 +41,7 @@ import com.yujunyang.intellij.plugin.sonar.resources.ResourcesLoader;
 import com.yujunyang.intellij.plugin.sonar.service.ProblemCacheService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.sonarsource.scanner.api.LogOutput;
 
 public class ReportPanel extends JBPanel implements AnalysisStateListener, ClearListener {
     private Project project;
@@ -109,11 +111,17 @@ public class ReportPanel extends JBPanel implements AnalysisStateListener, Clear
         // 只有成功分析且成功解析分析报告才展示
         if (ProblemCacheService.getInstance(project).isInitialized()) {
             EventDispatchThreadHelper.invokeLater(() -> {
-                BalloonTipFactory.showToolWindowInfoNotifier(project, SonarScannerStarter.createSuccessInfo().toString());
-                refresh();
-                bodyPanelLayout.show(bodyPanel, "REPORT");
-                DaemonCodeAnalyzer.getInstance(project).restart();
-                ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 0);
+                try {
+                    refresh();
+                    bodyPanelLayout.show(bodyPanel, "REPORT");
+                    DaemonCodeAnalyzer.getInstance(project).restart();
+                    ToolWindowFactoryImpl.showWindowContent(ToolWindowFactoryImpl.getWindow(project), 0);
+                    BalloonTipFactory.showToolWindowInfoNotifier(project, SonarScannerStarter.createSuccessInfo().toString());
+                } catch (Exception e) {
+                    BalloonTipFactory.showToolWindowErrorNotifier(project, SonarScannerStarter.createReportDisplayErrorInfo().toString());
+                    MessageBusManager.publishLog(project, ResourcesLoader.getString("analysis.display.failed.message"), LogOutput.Level.ERROR);
+                    MessageBusManager.publishLog(project, LogUtils.formatException(e), LogOutput.Level.ERROR);
+                }
             });
         }
     }
