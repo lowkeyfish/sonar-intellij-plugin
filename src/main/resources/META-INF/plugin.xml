@@ -15,6 +15,10 @@
 
     <change-notes>
         <![CDATA[
+        <h3>0.2.2</h3>
+        <ul>
+            <li>Fix report display error, error occurs when git changelist file is renamed or deleted.</li>
+        </ul>
         <h3>0.2.1</h3>
         <ul>
             <li>Set 'sonar.java.binaries' according to the scope of code analysis to reduce the time-consuming of the SpotBugs analysis.</li>
