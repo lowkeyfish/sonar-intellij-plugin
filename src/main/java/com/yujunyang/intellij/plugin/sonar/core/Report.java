@@ -119,6 +119,11 @@ public class Report {
                 file = Paths.get(project.getBasePath(), projectRelativePath).toFile();
                 psiFile = IdeaUtils.getPsiFile(project, file);
 
+                // 有的项目psiFile为null，导致后续异常
+                if (psiFile == null) {
+                    continue;
+                }
+
                 if (!issues.containsKey(psiFile)) {
                     issues.put(psiFile, new ArrayList<>());
                 }
